@@ -4,8 +4,8 @@ import streamlit as st
 import plotly.graph_objects as go
 
 import data as D
-from theme import (C, hero, section, kpi_row, kpi, encart, style_fig,
-                   barres_donnees, legende, pied, fr)
+from theme import (C, banniere, section, kpi_row, kpi, encart, style_fig,
+                   barres_donnees, legende, pied, fr, titre_carte)
 
 nat = D.national()
 R = nat["reperes"]
@@ -13,12 +13,15 @@ forets = D.forets()
 robust = D.robustesse()
 villes = D.villes()
 
-hero("Objectif 5 · Cartographie des aires protégées",
+banniere("Objectif 5 · Cartographie des aires protégées",
      "Cinquante-trois forêts classées, neuf priorités qui ne bougent pas",
      "Protéger « les forêts » n'est pas une décision opérationnelle : protéger "
      "Assoukoko l'est. Cette page construit un indice de vulnérabilité à trois "
      "composantes, le rend entièrement réglable, et vérifie quelles priorités "
-     "résistent au changement de pondération.")
+     "résistent au changement de pondération.",
+     reperes=[("Forêts classées", f"{R['forets']['nb']}"),
+              ("Priorités robustes", f"{R['forets']['nb_robustes']}"),
+              ("Éloignement médian", f"{R['forets']['dist_mediane']:.0f} km")])
 
 kpi_row([
     ("Forêts classées analysées", f"{R['forets']['nb']}",
@@ -131,7 +134,7 @@ with gauche:
         lat=villes["lat"], lon=villes["lon"], mode="markers+text",
         marker=dict(size=9, color=C["energie"]),
         text=villes["ville"], textposition="top right",
-        textfont=dict(size=10.5, color=C["ink"]),
+        textfont=dict(size=10.5, color=C["encre"]),
         hovertemplate="<b>%{text}</b><br>station de rattachement<extra></extra>",
         showlegend=False))
 

@@ -4,42 +4,52 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 import data as D
-from theme import (C, hero, section, kpi_row, encart, style_fig, annote,
-                   legende, pied, fr)
+from theme import (C, banniere, section, kpi_row, encart, style_fig, annote,
+                   titre_carte, pied, fr)
 
 nat = D.national()
 R = nat["reperes"]
 an_min = st.session_state.get("an_min", 1998)
 an_max = st.session_state.get("an_max", 2023)
 
-hero("Défi 2 · synthèse décisionnelle",
-     "Électrifier les campagnes sans brûler les forêts",
-     "Le Togo vise l'accès universel en 2030. Les données du défi montrent que l'objectif "
-     "ne se joue pas seulement sur le réseau électrique : il se joue sur la cuisson des "
-     "ménages, qui consomme la forêt. Voici le diagnostic en cinq chiffres, la preuve, "
-     "et l'endroit où agir.")
-
-# ------------------------------------------------------------------ chiffres clés
 er, ec, rs = R["elec_rural"], R["ecart_urbain_rural"], R["ruraux_sans_elec"]
 cb, df_, fi = R["combustibles"], R["deforestation"], R["fiabilite"]
+
+banniere(
+    "Synthèse décisionnelle",
+    "Électrifier les campagnes sans brûler les forêts",
+    "Le Togo vise l'accès universel à l'électricité en 2030. Les données du défi montrent "
+    "que l'objectif ne se joue pas seulement sur le réseau : il se joue sur la cuisson des "
+    "ménages, qui consomme la forêt. Diagnostic en cinq chiffres, preuve, et lieu d'action.",
+    reperes=[("Accès rural", f"{er['valeur']:.0f} %"),
+             ("Ménages au bois", f"{cb['biomasse'][1]:.0f} %"),
+             ("Forêt / an", f"−{fr(df_['perte_ha_par_an'])} ha")])
+
+# ------------------------------------------------------------------ chiffres clés
+s_elec = list(D.serie(nat, "elec_rural")["valeur"])
+s_foret = list(D.serie(nat, "foret_pct")["valeur"])
+s_cuis = list(D.serie(nat, "cuisson_rural")["valeur"])
+s_pop = list(D.serie(nat, "pop_rurale")["valeur"])
 
 kpi_row([
     ("Accès rural à l'électricité", f"{er['valeur']:.0f} %",
      f"contre {ec['urbain']:.0f} % en ville en {ec['annee']} — un écart de "
-     f"{ec['valeur']:.0f} points", C["energie"], f"+{er['rythme_observe']:.1f} pt/an"),
+     f"{ec['valeur']:.0f} points", C["energie"],
+     f"+{er['rythme_observe']:.1f} pt/an", s_elec),
     ("Ruraux sans électricité", f"{rs['personnes']/1e6:.1f} M",
      f"personnes, soit {100-er['valeur']:.0f} % de la population rurale "
-     f"({er['annee']})", C["risque"]),
+     f"({er['annee']})", C["risque"], None, s_pop),
     ("Ménages au bois ou au charbon", f"{cb['biomasse'][1]:.0f} %",
      f"en {cb['annees'][1]} — la dépendance n'a pas reculé depuis "
-     f"{cb['annees'][0]} ({cb['biomasse'][0]:.0f} %)", C["risque"], "stable"),
+     f"{cb['annees'][0]} ({cb['biomasse'][0]:.0f} %)", C["risque"], "stable",
+     cb["biomasse"]),
     ("Forêt perdue chaque année", f"{fr(df_['perte_ha_par_an'])} ha",
      f"soit −{df_['perte_pct_relative']:.0f} % du couvert entre "
-     f"{df_['annee_debut']} et {df_['annee_fin']}", C["foret"]),
+     f"{df_['annee_debut']} et {df_['annee_fin']}", C["foret"], None, s_foret),
     ("Accélération requise", f"× {er['facteur_acceleration']:.0f}",
-     f"pour tenir l'accès universel rural en 2030 "
-     f"(+{er['rythme_requis_2030']:.1f} pt/an au lieu de "
-     f"+{er['rythme_observe']:.1f})", C["risque"]),
+     f"pour l'accès universel rural en 2030 : +{er['rythme_requis_2030']:.1f} pt/an "
+     f"au lieu de +{er['rythme_observe']:.1f}", C["risque"], "hors trajectoire",
+     s_cuis),
 ])
 
 st.write("")
@@ -55,40 +65,46 @@ encart("alerte",
 
 # ------------------------------------------------- la preuve : électrifier ≠ sauver la forêt
 section("La preuve en un graphique",
-        "Électrifier ne suffit pas : l'accès progresse depuis 25 ans, "
+        "Électrifier ne suffit pas : l'accès progresse depuis vingt-cinq ans, "
         "le couvert forestier recule sans discontinuer sur la même période.")
 
 elec = D.serie(nat, "elec_rural", an_min, an_max)
 foret = D.serie(nat, "foret_pct", an_min, an_max)
 cuis = D.serie(nat, "cuisson_rural", an_min, an_max)
 
-fig = make_subplots(specs=[[{"secondary_y": True}]])
-fig.add_trace(go.Scatter(
-    x=elec["annee"], y=elec["valeur"], name="Accès rural à l'électricité",
-    line=dict(color=C["energie"], width=3.2), mode="lines",
-    hovertemplate="%{x} · %{y:.1f} %<extra>Accès rural</extra>"), secondary_y=False)
-fig.add_trace(go.Scatter(
-    x=cuis["annee"], y=cuis["valeur"], name="Accès rural à une cuisson propre",
-    line=dict(color=C["risque"], width=2.6, dash="dot"), mode="lines",
-    hovertemplate="%{x} · %{y:.1f} %<extra>Cuisson propre rurale</extra>"), secondary_y=False)
-fig.add_trace(go.Scatter(
-    x=foret["annee"], y=foret["valeur"], name="Couvert forestier (% du territoire)",
-    line=dict(color=C["foret"], width=3.2), mode="lines", fill="tozeroy",
-    fillcolor="rgba(27,122,67,.08)",
-    hovertemplate="%{x} · %{y:.1f} %<extra>Couvert forestier</extra>"), secondary_y=True)
+with st.container(border=True):
+    titre_carte("Accès à l'énergie et couvert forestier, sur la même période",
+                "Deux échelles distinctes : accès à gauche, couvert forestier à droite.",
+                C["foret"])
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    fig.add_trace(go.Scatter(
+        x=elec["annee"], y=elec["valeur"], name="Accès rural à l'électricité",
+        line=dict(color=C["energie"], width=3.4), mode="lines",
+        hovertemplate="%{x} · %{y:.1f} %<extra>Accès rural</extra>"), secondary_y=False)
+    fig.add_trace(go.Scatter(
+        x=cuis["annee"], y=cuis["valeur"], name="Accès rural à une cuisson propre",
+        line=dict(color=C["risque"], width=2.6, dash="dot"), mode="lines",
+        hovertemplate="%{x} · %{y:.1f} %<extra>Cuisson propre rurale</extra>"),
+        secondary_y=False)
+    fig.add_trace(go.Scatter(
+        x=foret["annee"], y=foret["valeur"], name="Couvert forestier (% du territoire)",
+        line=dict(color=C["foret"], width=3.4), mode="lines", fill="tozeroy",
+        fillcolor="rgba(15,122,74,.10)",
+        hovertemplate="%{x} · %{y:.1f} %<extra>Couvert forestier</extra>"),
+        secondary_y=True)
 
-style_fig(fig, hauteur=400)
-fig.update_yaxes(title="Accès (% de la population rurale)", ticksuffix=" %",
-                 range=[0, 40], secondary_y=False)
-fig.update_yaxes(title="Couvert forestier (% du territoire)", ticksuffix=" %",
-                 range=[21, 26], secondary_y=True, showgrid=False)
-if len(elec):
-    annote(fig, int(elec["annee"].iloc[-1]), float(elec["valeur"].iloc[-1]),
-           f"{elec['valeur'].iloc[-1]:.0f} %", C["energie"], ax=-30, ay=-26)
-if len(cuis):
-    annote(fig, int(cuis["annee"].iloc[-1]), float(cuis["valeur"].iloc[-1]),
-           f"{cuis['valeur'].iloc[-1]:.1f} % — quasi nul", C["risque"], ax=-58, ay=26)
-st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
+    style_fig(fig, hauteur=390)
+    fig.update_yaxes(title="Accès (% de la population rurale)", ticksuffix=" %",
+                     range=[0, 40], secondary_y=False)
+    fig.update_yaxes(title="Couvert forestier (% du territoire)", ticksuffix=" %",
+                     range=[21, 26], secondary_y=True, showgrid=False)
+    if len(elec):
+        annote(fig, int(elec["annee"].iloc[-1]), float(elec["valeur"].iloc[-1]),
+               f"{elec['valeur'].iloc[-1]:.0f} %", C["energie"], ax=-30, ay=-26)
+    if len(cuis):
+        annote(fig, int(cuis["annee"].iloc[-1]), float(cuis["valeur"].iloc[-1]),
+               f"{cuis['valeur'].iloc[-1]:.1f} % — quasi nul", C["risque"], ax=-58, ay=26)
+    st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
 
 encart("constat",
        f"Entre {int(elec['annee'].iloc[0]) if len(elec) else an_min} et {er['annee']}, l'accès "
@@ -101,7 +117,7 @@ encart("constat",
 
 # ------------------------------------------------------------------ quatre constats
 section("Quatre constats, quatre pages",
-        "Chaque constat est démontré dans la page correspondante.")
+        "Chaque constat est démontré, chiffré et sourcé dans la page correspondante.")
 
 CARTES = [
     ("Objectif 1", C["energie"], "La fracture ne se referme pas assez vite",
@@ -123,19 +139,19 @@ CARTES = [
      f"top 10 quelle que soit la pondération testée. La cible d'investissement est identifiée.",
      "Où agir", "views/priorisation.py"),
 ]
-cols = st.columns(4)
+cols = st.columns(4, gap="small")
 for col, (objectif, coul, titre, txt, lien, cible) in zip(cols, CARTES):
     with col:
         st.markdown(
-            f'<div style="background:#fff;border:1px solid {C["line"]};'
-            f'border-top:3px solid {coul};border-radius:3px 3px 11px 11px;'
-            f'padding:14px 16px 15px;height:186px;'
-            f'box-shadow:0 1px 2px rgba(21,34,56,.05)">'
-            f'<div style="font-size:10px;font-weight:800;letter-spacing:1.1px;'
+            f'<div style="background:{C["surface"]};border:1px solid {C["bord"]};'
+            f'border-top:3px solid {coul};border-radius:4px 4px 12px 12px;'
+            f'padding:14px 16px 15px;height:184px;'
+            f'box-shadow:0 1px 2px rgba(7,42,32,.05)">'
+            f'<div style="font-size:9.5px;font-weight:900;letter-spacing:1.2px;'
             f'text-transform:uppercase;color:{coul}">{objectif}</div>'
-            f'<div style="font-size:14.2px;font-weight:700;color:{C["ink"]};'
-            f'margin-top:9px;line-height:1.32">{titre}</div>'
-            f'<div style="font-size:12.2px;color:{C["muted"]};margin-top:7px;'
+            f'<div style="font-size:14.4px;font-weight:800;color:{C["encre"]};'
+            f'margin-top:9px;line-height:1.3;letter-spacing:-.2px">{titre}</div>'
+            f'<div style="font-size:12px;color:{C["sourdine"]};margin-top:8px;'
             f'line-height:1.5">{txt}</div></div>', unsafe_allow_html=True)
         st.page_link(cible, label=lien, icon=":material/arrow_forward:")
 

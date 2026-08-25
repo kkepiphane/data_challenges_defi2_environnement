@@ -6,20 +6,23 @@ import streamlit as st
 import plotly.graph_objects as go
 
 import data as D
-from theme import (C, MOIS, RAMPE, hero, section, kpi_row, kpi, encart,
-                   style_fig, annote, pied, fr)
+from theme import (C, MOIS, RAMPE_T, banniere, section, kpi_row, kpi, encart,
+                   style_fig, annote, pied, fr, titre_carte)
 
 nat = D.national()
 R = nat["reperes"]
 an_min = st.session_state.get("an_min", 1998)
 an_max = st.session_state.get("an_max", 2023)
 
-hero("Objectifs 3 & 4 · Émissions et climat",
+banniere("Objectifs 3 & 4 · Émissions et climat",
      "Le secteur énergie n'est marginal que si l'on ne regarde que le CO₂",
      "Le bilan 2018 place l'agriculture et l'usage des terres très loin devant. "
      "Mais un inventaire ne se lit pas seulement en totaux : gaz par gaz, et surtout "
      "en équivalent CO₂, la hiérarchie des secteurs change complètement. "
-     "La seconde partie relie le climat observé aux besoins énergétiques.")
+     "La seconde partie relie le climat observé aux besoins énergétiques.",
+     reperes=[("Total GES 2018", f"{fr(R['ges']['total_gg'])} Gg"),
+              ("Part énergie", f"{R['ges']['part_energie']:.0f} %"),
+              ("Énergie dans le N₂O", f"{R['ges']['energie_dans_n2o']:.0f} %")])
 
 COUL_SECT = {
     "Agriculture & forêts (AFAT)": C["foret"],
@@ -41,7 +44,7 @@ with o1:
     kpi_row([
         ("Total national 2018", f"{fr(R['ges']['total_gg'])} Gg",
          "tous secteurs, tous gaz directs, tel que publié dans l'inventaire",
-         C["ink_soft"]),
+         C["encre_2"]),
         ("Agriculture & forêts", f"{R['ges']['part_afat']:.0f} %",
          "du total en masse brute — de loin le premier poste", C["foret"]),
         ("Secteur énergie", f"{R['ges']['part_energie']:.0f} %",
@@ -82,15 +85,16 @@ with o1:
     g1, g2 = st.columns([1.25, 1])
     with g1:
         unite = "Gg CO₂e" if en_co2e else "Gg"
+        titre_carte(f"Émissions par secteur — {choix_gaz.lower()}",
+                    f"Lecture en {'équivalent CO₂ (PRG 100 ans)' if en_co2e else 'masse brute, Gg'}"
+                    " · changez le gaz ou l'unité, le classement se renverse.", C["urbain"])
         fig = go.Figure(go.Bar(
             y=agg["secteur_court"], x=agg["val"], orientation="h",
             marker_color=[COUL_SECT.get(s, C["neutre"]) for s in agg["secteur_court"]],
             text=[f"{p:.1f} %" for p in agg["part"]], textposition="outside",
             textfont=dict(size=12.5),
             hovertemplate="%{y}<br>%{x:,.0f} " + unite + " · %{text}<extra></extra>"))
-        titre = (f"Émissions par secteur — {choix_gaz.lower()}, "
-                 f"{'équivalent CO₂' if en_co2e else 'masse brute'}")
-        style_fig(fig, titre, hauteur=340, marge_g=0)
+        style_fig(fig, hauteur=326, marge_g=0)
         fig.update_xaxes(title=unite, range=[0, agg["val"].max() * 1.22])
         fig.update_yaxes(title=None)
         st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
@@ -207,17 +211,19 @@ with o2:
         prof_mois = t.groupby(["ville", "mois"], as_index=False)[col_mes].mean()
         lat = villes.set_index("ville")["lat"]
         villes_tri = sorted(choix, key=lambda v: lat.get(v, 0))
+        titre_carte("Saisonnalité des températures, station par station",
+                    "Couleur = latitude, du bleu au Sud au rouge au Nord.", C["risque"])
         fig4 = go.Figure()
         for i, v in enumerate(villes_tri):
             sub = prof_mois[prof_mois["ville"] == v].sort_values("mois")
-            coul = RAMPE[min(len(RAMPE) - 1, int(i / max(1, len(villes_tri) - 1) * 5))]
-            coul = ["#2E6F9E", "#5A8FB5", "#E8B85C", "#E29014",
-                    "#D2691E", "#C0392B"][min(5, int(i / max(1, len(villes_tri)-1) * 5))]
+            # la couleur encode la latitude : bleu au Sud, rouge au Nord
+            rang = i / max(1, len(villes_tri) - 1)
+            coul = RAMPE_T[min(len(RAMPE_T) - 1, int(rang * (len(RAMPE_T) - 1) + .5))]
             fig4.add_trace(go.Scatter(
                 x=[MOIS[m - 1] for m in sub["mois"]], y=sub[col_mes], name=v,
                 mode="lines", line=dict(color=coul, width=2.4),
                 hovertemplate=f"{v} · %{{x}} : %{{y:.1f}} °C<extra></extra>"))
-        style_fig(fig4, f"{mesure} moyenne par mois (°C)", hauteur=400)
+        style_fig(fig4, hauteur=384)
         fig4.update_yaxes(title="°C")
         fig4.update_xaxes(title=None)
         fig4.update_layout(legend=dict(orientation="v", x=1.01, y=1, xanchor="left",
@@ -235,7 +241,7 @@ with o2:
         fig5.add_trace(go.Scatter(
             x=vv["lat"], y=vv[col_mes if col_mes in vv.columns else "t_max"],
             mode="markers+text", text=vv["ville"], textposition="top center",
-            textfont=dict(size=10, color=C["muted"]),
+            textfont=dict(size=10, color=C["sourdine"]),
             marker=dict(size=13, color=vv[col_mes if col_mes in vv.columns else "t_max"],
                         colorscale=[[0, "#2E6F9E"], [.5, C["energie"]], [1, C["risque"]]],
                         line=dict(color="white", width=1.5)),
@@ -250,7 +256,7 @@ with o2:
             r = np.corrcoef(vv["lat"], yv)[0, 1]
             annote(fig5, float(xs[len(xs)//2]), float(a * xs[len(xs)//2] + b),
                    f"+{a:.2f} °C par degré<br>de latitude (r = {r:.2f})",
-                   C["muted"], ax=0, ay=-46)
+                   C["sourdine"], ax=0, ay=-46)
         style_fig(fig5, f"{mesure} selon la latitude", hauteur=400)
         fig5.update_xaxes(title="latitude Nord (°)")
         fig5.update_yaxes(title="°C")

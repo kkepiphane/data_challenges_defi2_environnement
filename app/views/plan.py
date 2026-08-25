@@ -5,8 +5,8 @@ import streamlit as st
 import plotly.graph_objects as go
 
 import data as D
-from theme import (C, hero, section, kpi_row, kpi, encart, style_fig,
-                   legende, pied, fr)
+from theme import (C, banniere, section, kpi_row, kpi, encart, style_fig,
+                   legende, pied, fr, titre_carte)
 
 nat = D.national()
 R = nat["reperes"]
@@ -18,12 +18,15 @@ er, cb, dfr, sa, fi = (R["elec_rural"], R["combustibles"], R["deforestation"],
 pop = D.serie(nat, "pop_totale")["valeur"].iloc[-1]
 an_pop = int(D.serie(nat, "pop_totale")["annee"].iloc[-1])
 
-hero("Objectif 6 · Recommandations",
+banniere("Objectif 6 · Recommandations",
      "Trois leviers, dans cet ordre, et une manière de vérifier qu'ils marchent",
      "Les cinq pages précédentes convergent vers une hiérarchie que les données "
      "imposent : la cuisson propre avant le raccordement, le solaire décentralisé "
      "avant l'extension du réseau, et une protection ciblée plutôt qu'un discours "
-     "général sur la forêt.")
+     "général sur la forêt.",
+     reperes=[("Levier n°1", "Cuisson propre"),
+              ("Population visée", f"{fr(pop*cb['biomasse'][1]/100/1e6, 1)} M"),
+              ("Massifs prioritaires", f"{R['forets']['nb_robustes']}")])
 
 # ================================================== la portée comparée des leviers
 section("Pourquoi cet ordre : la portée comparée des trois leviers",
@@ -143,7 +146,7 @@ LEVIERS[2]["ou"] = (
 
 for lv in LEVIERS:
     st.markdown(
-        f'<div style="background:#fff;border:1px solid {C["line"]};'
+        f'<div style="background:#fff;border:1px solid {C["bord"]};'
         f'border-left:5px solid {lv["coul"]};border-radius:11px;padding:17px 21px;'
         f'margin-bottom:13px;box-shadow:0 1px 2px rgba(21,34,56,.05)">'
         f'<div style="display:flex;align-items:baseline;gap:12px">'
@@ -152,7 +155,7 @@ for lv in LEVIERS:
         f'border-radius:4px;position:relative;top:-2px">LEVIER {lv["n"]}</span>'
         f'<span style="font-size:19px;font-weight:800;color:{C["foret_d"]}">'
         f'{lv["titre"]}</span></div>'
-        f'<div style="font-size:14px;color:{C["ink"]};margin-top:9px;line-height:1.6">'
+        f'<div style="font-size:14px;color:{C["encre"]};margin-top:9px;line-height:1.6">'
         f'{lv["quoi"]}</div></div>', unsafe_allow_html=True)
     c1, c2, c3, c4 = st.columns(4)
     for col, (etiq, txt) in zip(
@@ -164,7 +167,7 @@ for lv in LEVIERS:
                 f'<div style="font-size:10px;font-weight:800;letter-spacing:.9px;'
                 f'text-transform:uppercase;color:{lv["coul"]};margin-bottom:4px">'
                 f'{etiq}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div style="font-size:12.5px;color:{C["muted"]};'
+            st.markdown(f'<div style="font-size:12.5px;color:{C["sourdine"]};'
                         f'line-height:1.55">{txt}</div>', unsafe_allow_html=True)
     st.write("")
 
@@ -239,9 +242,9 @@ fig2.add_trace(go.Bar(y=noms, x=[j[2] - j[1] for j in JAUGES], orientation="h",
                       hovertemplate="%{y} · gain : +%{x:.1f} pts<extra></extra>"))
 for i, j in enumerate(JAUGES):
     fig2.add_shape(type="line", x0=j[3], x1=j[3], y0=i - .34, y1=i + .34,
-                   line=dict(color=C["ink"], width=2.6))
+                   line=dict(color=C["encre"], width=2.6))
 fig2.add_trace(go.Scatter(x=[None], y=[None], mode="lines",
-                          line=dict(color=C["ink"], width=2.6), name="Cible 2030"))
+                          line=dict(color=C["encre"], width=2.6), name="Cible 2030"))
 style_fig(fig2, "Où atterrit le Togo en 2030 avec ces réglages", hauteur=280, marge_g=0)
 fig2.update_layout(barmode="overlay")
 fig2.update_traces(selector=dict(type="bar"), offsetgroup=None)

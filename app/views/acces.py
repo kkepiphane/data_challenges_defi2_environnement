@@ -4,8 +4,8 @@ import streamlit as st
 import plotly.graph_objects as go
 
 import data as D
-from theme import (C, hero, section, kpi_row, kpi, encart, style_fig, annote,
-                   pied, fr)
+from theme import (C, banniere, section, kpi_row, kpi, encart, style_fig, annote,
+                   pied, fr, titre_carte)
 
 nat = D.national()
 R = nat["reperes"]
@@ -14,24 +14,36 @@ an_max = st.session_state.get("an_max", 2023)
 
 er, ec, rs, fi = R["elec_rural"], R["ecart_urbain_rural"], R["ruraux_sans_elec"], R["fiabilite"]
 
-hero("Objectif 1 · Accès à l'électricité",
+banniere("Objectif 1 · Accès à l'électricité",
      "Le réseau progresse, mais ni assez vite ni assez sûrement",
      "Deux questions commandent la stratégie d'électrification : à quelle vitesse l'écart "
      "ville / campagne se referme-t-il, et le courant, une fois arrivé, est-il fiable ? "
-     "Les deux réponses pointent vers la même solution.")
+     "Les deux réponses pointent vers la même solution.",
+     reperes=[("Accès rural", f"{er['valeur']:.0f} %"),
+              ("Écart ville/campagne", f"{ec['valeur']:.0f} pts"),
+              ("Coupures/mois", f"{fi['coupures_mois']:.1f}")])
+
+# séries complètes pour les micro-courbes des tuiles
+_r = D.serie(nat, "elec_rural"); _u = D.serie(nat, "elec_urbain")
+_ecart = list((_u.set_index("annee")["valeur"] - _r.set_index("annee")["valeur"]).dropna())
 
 kpi_row([
     ("Accès rural", f"{er['valeur']:.0f} %",
      f"de la population rurale en {er['annee']}, contre "
      f"{er['valeur_depart']:.1f} % en {er['annee_depart']}", C["energie"],
-     f"× {er['valeur']/er['valeur_depart']:.0f} en {er['annee']-er['annee_depart']} ans"),
+     f"× {er['valeur']/er['valeur_depart']:.0f} en {er['annee']-er['annee_depart']} ans",
+     list(_r["valeur"])),
     ("Accès urbain", f"{ec['urbain']:.0f} %",
-     "les villes sont proches de l'accès universel", C["urbain"]),
+     "les villes sont proches de l'accès universel", C["urbain"], None,
+     list(_u["valeur"])),
     ("Écart ville / campagne", f"{ec['valeur']:.0f} pts",
-     f"l'ampleur de la fracture à combler d'ici 2030", C["risque"]),
+     "l'ampleur de la fracture à combler d'ici 2030", C["risque"],
+     "au plus haut", _ecart),
     ("Coupures subies", f"{fi['coupures_mois']:.1f} /mois",
      f"par les entreprises raccordées en {fi['annee']} "
-     f"(enquête Banque Mondiale)", C["risque"]),
+     f"(enquête Banque Mondiale)", C["risque"],
+     f"{fi['part_entreprises']:.0f} % touchées",
+     [fi["coupures_mois_ref"], fi["coupures_mois"]]),
 ])
 
 # =============================================================================
@@ -59,6 +71,8 @@ with onglet1:
     urbain = D.serie(nat, "elec_urbain", an_min, an_max)
     total = D.serie(nat, "elec_total", an_min, an_max)
 
+    titre_carte("Accès à l'électricité, ville contre campagne",
+                "La zone rouge mesure la fracture. Réglez la cible pour voir l'effort requis.", C["energie"])
     fig = go.Figure()
     # bande d'écart ville/campagne : la fracture devient une surface, pas deux courbes
     fig.add_trace(go.Scatter(x=urbain["annee"], y=urbain["valeur"], name="Urbain",
@@ -69,7 +83,7 @@ with onglet1:
                              fill="tonexty", fillcolor="rgba(192,57,43,.10)",
                              hovertemplate="%{x} · %{y:.1f} %<extra>Rural</extra>"))
     fig.add_trace(go.Scatter(x=total["annee"], y=total["valeur"], name="Ensemble du pays",
-                             line=dict(color=C["muted"], width=1.8, dash="dot"), mode="lines",
+                             line=dict(color=C["sourdine"], width=1.8, dash="dot"), mode="lines",
                              hovertemplate="%{x} · %{y:.1f} %<extra>Ensemble</extra>"))
 
     a0, v0 = er["annee"], er["valeur"]
@@ -176,6 +190,8 @@ with onglet2:
 
     with g1:
         # graphique de pente : deux vagues d'enquête, quatre indicateurs, une lecture
+        titre_carte("Les quatre mesures de fiabilité, entre deux enquêtes",
+                    "Base 100 = la pire des deux valeurs, pour comparer des unités différentes.", C["risque"])
         fig2 = go.Figure()
         for i, (label, a0_, v0_, a1_, v1_, coul, unite) in enumerate(lignes_pente):
             base = max(v0_, v1_)
@@ -188,8 +204,7 @@ with onglet2:
                 textfont=dict(size=11.5, color=coul), name=label,
                 hovertemplate=f"{label}<br>%{{x}} : %{{customdata:.1f}} {unite}<extra></extra>",
                 customdata=[v0_, v1_], showlegend=True))
-        style_fig(fig2, "Évolution entre les deux vagues d'enquête (base 100 = pire valeur)",
-                  hauteur=360)
+        style_fig(fig2, hauteur=344)
         fig2.update_xaxes(tickvals=[2009, 2016], range=[2006, 2019], title=None)
         fig2.update_yaxes(title="Niveau relatif", range=[0, 118], showticklabels=False)
         st.plotly_chart(fig2, width="stretch", config={"displayModeBar": False})
@@ -197,13 +212,15 @@ with onglet2:
     with g2:
         dj, *_ = D.fiab(nat, "demarches_jours")
         dj = dj.drop_duplicates(subset="annee")
+        titre_carte("Délai réglementaire de raccordement",
+                    "Seule série annuelle disponible sur la qualité de service.", C["energie"])
         fig3 = go.Figure(go.Scatter(
             x=dj["annee"], y=dj["valeur"], mode="lines+markers",
             line=dict(color=C["energie"], width=3, shape="hv"),
             marker=dict(size=7, color=C["energie"]), fill="tozeroy",
             fillcolor="rgba(226,144,20,.10)",
             hovertemplate="%{x} · %{y:.0f} jours<extra></extra>"))
-        style_fig(fig3, "Temps réglementaire pour obtenir l'électricité (jours)", hauteur=360)
+        style_fig(fig3, hauteur=344)
         fig3.update_yaxes(title="jours", range=[0, 100])
         fig3.update_xaxes(title=None, dtick=2)
         if len(dj):

@@ -5,8 +5,8 @@ import streamlit as st
 import plotly.graph_objects as go
 
 import data as D
-from theme import (C, hero, section, kpi_row, kpi, encart, style_fig, annote,
-                   pied, fr)
+from theme import (C, banniere, section, kpi_row, kpi, encart, style_fig, annote,
+                   pied, fr, titre_carte)
 
 nat = D.national()
 R = nat["reperes"]
@@ -16,26 +16,32 @@ an_max = st.session_state.get("an_max", 2023)
 cb, rp, dfr, sa = (R["combustibles"], R["renouvelable_piege"],
                    R["deforestation"], R["sante"])
 
-hero("Objectif 2 · Consommation des ménages",
+banniere("Objectif 2 · Consommation des ménages",
      "Le bois de feu n'est pas une énergie du passé : sa part augmente",
      "Neuf ménages togolais sur dix cuisinent au bois ou au charbon. Cette page montre "
      "que la dépendance ne recule pas, qu'elle est masquée par une statistique "
      "flatteuse — le « taux d'énergie renouvelable » — et qu'elle se paie en hectares "
-     "de forêt et en vies humaines.")
+     "de forêt et en vies humaines.",
+     reperes=[("Ménages au bois", f"{cb['biomasse'][1]:.0f} %"),
+              ("Cuisson propre rurale", f"{R['cuisson_rurale']['valeur']:.1f} %"),
+              ("Forêt / an", f"−{fr(dfr['perte_ha_par_an'])} ha")])
 
 kpi_row([
     ("Bois + charbon de bois", f"{cb['biomasse'][1]:.0f} %",
      f"des ménages en {cb['annees'][1]}, contre {cb['biomasse'][0]:.0f} % en "
-     f"{cb['annees'][0]}", C["risque"], "aucun recul"),
+     f"{cb['annees'][0]}", C["risque"], "aucun recul", cb["biomasse"]),
     ("Cuisson propre en milieu rural", f"{R['cuisson_rurale']['valeur']:.1f} %",
      f"en {R['cuisson_rurale']['annee']} — progression de "
-     f"+{R['cuisson_rurale']['rythme_observe']:.2f} pt/an", C["risque"]),
+     f"+{R['cuisson_rurale']['rythme_observe']:.2f} pt/an", C["risque"], None,
+     list(D.serie(nat, "cuisson_rural")["valeur"])),
     ("Forêt perdue", f"{fr(dfr['perte_ha_par_an'])} ha/an",
      f"soit {fr(dfr['perte_km2'])} km² disparus entre {dfr['annee_debut']} "
-     f"et {dfr['annee_fin']}", C["foret"]),
+     f"et {dfr['annee_fin']}", C["foret"], "sans reprise",
+     list(D.serie(nat, "foret_km2")["valeur"])),
     ("Pollution de l'air", f"× {sa['ratio_oms']:.0f}",
      f"la ligne directrice OMS · {sa['pm25']:.0f} µg/m³ de PM2,5 en "
-     f"{sa['annee_pm25']}", C["risque"]),
+     f"{sa['annee_pm25']}", C["risque"], None,
+     list(D.serie(nat, "pm25")["valeur"])),
     ("Mortalité attribuée", f"{sa['mortalite']:.0f}",
      f"décès pour 100 000 habitants liés à la pollution de l'air "
      f"({sa['annee_mortalite']})", C["risque"]),
@@ -60,6 +66,8 @@ with o1:
 
     g1, g2 = st.columns([1.25, 1])
     with g1:
+        titre_carte("Le combustible de cuisson, entre les deux enquêtes",
+                    "Le total biomasse ne bouge pas ; sa composition se dégrade.", C["risque"])
         fig = go.Figure()
         fig.add_trace(go.Bar(y=labels, x=v0, name=str(cb["annees"][0]), orientation="h",
                              marker_color=C["neutre"],
@@ -70,11 +78,10 @@ with o1:
         fig.add_trace(go.Bar(y=labels, x=v1, name=str(cb["annees"][1]), orientation="h",
                              marker_color=[C["risque"], "#8C4A2F", C["foret"], C["energie"]],
                              text=[f"{v:.1f} %" for v in v1], textposition="outside",
-                             textfont=dict(size=11.5, color=C["ink"]),
+                             textfont=dict(size=11.5, color=C["encre"]),
                              hovertemplate="%{y} · %{x:.1f} %<extra>"
                                            f"{cb['annees'][1]}</extra>"))
-        style_fig(fig, "Combustible principal de cuisson (% des ménages)", hauteur=380,
-                  marge_g=0)
+        style_fig(fig, hauteur=360, marge_g=0)
         fig.update_xaxes(range=[0, 66], ticksuffix=" %", title=None)
         fig.update_yaxes(title=None, autorange="reversed")
         fig.update_layout(barmode="group", bargap=.28, bargroupgap=.06)
@@ -86,6 +93,8 @@ with o1:
         # accès à une cuisson propre : rural vs urbain, dans le temps
         cr = D.serie(nat, "cuisson_rural", an_min, an_max)
         cu = D.serie(nat, "cuisson_urbain", an_min, an_max)
+        titre_carte("Accès à une cuisson propre, ville contre campagne",
+                    "La courbe rurale est le point noir du dossier énergétique togolais.", C["risque"])
         fig2 = go.Figure()
         fig2.add_trace(go.Scatter(x=cu["annee"], y=cu["valeur"], name="Urbain",
                                   line=dict(color=C["urbain"], width=3), mode="lines",
@@ -94,7 +103,7 @@ with o1:
                                   line=dict(color=C["risque"], width=3), mode="lines",
                                   fill="tozeroy", fillcolor="rgba(192,57,43,.10)",
                                   hovertemplate="%{x} · %{y:.1f} %<extra>Rural</extra>"))
-        style_fig(fig2, "Accès à une cuisson propre (% de la population)", hauteur=380)
+        style_fig(fig2, hauteur=360)
         fig2.update_yaxes(ticksuffix=" %", range=[0, 32], title=None)
         fig2.update_xaxes(title=None)
         if len(cr):
@@ -125,6 +134,8 @@ with o2:
     ren = D.serie(nat, "renouv", an_min, an_max)
     ct = D.serie(nat, "cuisson_total", an_min, an_max)
 
+    titre_carte("Deux mesures du même système énergétique",
+                "L'écart entre les deux courbes, c'est la biomasse brûlée dans les foyers.", C["foret"])
     fig3 = go.Figure()
     fig3.add_trace(go.Scatter(x=ren["annee"], y=ren["valeur"],
                               name="Part « renouvelable » de l'énergie finale",
@@ -135,7 +146,7 @@ with o2:
                               line=dict(color=C["risque"], width=3.2), mode="lines",
                               fill="tonexty", fillcolor="rgba(192,57,43,.09)",
                               hovertemplate="%{x} · %{y:.1f} %<extra>Cuisson propre</extra>"))
-    style_fig(fig3, "Deux mesures du même système énergétique (%)", hauteur=400)
+    style_fig(fig3, hauteur=384)
     fig3.update_yaxes(ticksuffix=" %", range=[0, 92], title=None)
     fig3.update_xaxes(title=None)
     milieu = int((ren["annee"].iloc[len(ren)//2])) if len(ren) else 2005
