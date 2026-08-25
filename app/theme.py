@@ -11,7 +11,10 @@ logiciel. Ce que cela implique, concrètement :
 - des angles arrondis mesurés (10 px), ni carrés ni bulles ;
 - une seule famille typographique (Inter) : la hiérarchie se fait à la
   graisse et au corps, pas au changement de police ;
-- la couleur reste sémantique : une teinte, une signification, partout.
+- la couleur reste sémantique : une teinte, une signification, partout —
+  et le vert, qui dit « forêt · propre · solution », ne se pose jamais
+  sur un mauvais chiffre : dans une tuile, il annonce une bonne
+  nouvelle, pas un domaine.
 
 Aucune couleur en dur ailleurs que dans ce fichier.
 """
@@ -252,8 +255,10 @@ hr {{ margin:.9rem 0; border-color:{C['bord']}; }}
 def banniere(kicker, titre, accroche, reperes=None):
     """Manchette de page : le sujet, la conclusion en titre, les ordres de grandeur.
 
-    Un à-plat sombre, un filet, rien d'autre. `reperes` place les chiffres
-    directeurs à droite : ils se lisent avant le corps de la page.
+    Un à-plat sombre, rien d'autre. `reperes` place les chiffres directeurs à
+    droite : ils se lisent avant le corps de la page. Rien d'autre ne monte
+    à hauteur du titre — un chiffre composé en grand à côté de lui entre en
+    concurrence avec la phrase, et c'est la phrase qui doit gagner.
     """
     blocs = ""
     if reperes:
@@ -546,12 +551,17 @@ def style_fig(fig, titre=None, hauteur=None, legende_h=True, marge_g=8):
     return fig
 
 
-def annote(fig, x, y, texte, couleur, ax=0, ay=-34, fleche=True):
-    """Annotation directe : un décideur lit le graphe, pas la légende."""
+def annote(fig, x, y, texte, couleur, ax=0, ay=-34, fleche=True,
+           row=None, col=None):
+    """Annotation directe : un décideur lit le graphe, pas la légende.
+
+    `row`/`col` visent un panneau précis quand la figure en compte plusieurs.
+    """
+    cible = dict(row=row, col=col) if row else {}
     fig.add_annotation(x=x, y=y, text=texte, showarrow=fleche, arrowhead=0,
                        arrowwidth=1.2, arrowcolor=couleur, ax=ax, ay=ay,
                        font=dict(size=11.5, color=couleur, family=FONT),
-                       bgcolor="rgba(255,255,255,.92)", borderpad=3)
+                       bgcolor="rgba(255,255,255,.92)", borderpad=3, **cible)
     return fig
 
 

@@ -61,7 +61,7 @@ kpi_row([
      C["risque"], "stable"),
     ("Forêt perdue chaque année", f"{fr(df_['perte_ha_par_an'])} ha",
      f"en moyenne, soit −{df_['perte_pct_relative']:.0f} % du couvert entre "
-     f"{df_['annee_debut']} et {df_['annee_fin']}", C["foret"], None,
+     f"{df_['annee_debut']} et {df_['annee_fin']}", C["risque"], None,
      [v for _, v in _perte], _bornes(_perte)),
     ("Accélération requise", f"× {er['facteur_acceleration']:.0f}",
      f"pour l'accès universel rural en 2030 : il faudrait "
@@ -90,37 +90,51 @@ foret = D.serie(nat, "foret_pct", an_min, an_max)
 cuis = D.serie(nat, "cuisson_rural", an_min, an_max)
 
 with st.container(border=True):
+    # Deux panneaux superposés plutôt qu'un double axe : l'axe secondaire
+    # obligeait à resserrer l'échelle du couvert forestier pour rendre son
+    # recul visible, et une échelle resserrée face à une autre courbe est
+    # toujours attaquable. Ici chaque série garde son échelle, l'axe du
+    # temps est partagé, et la divergence se lit sans qu'aucune courbe
+    # n'ait été redressée. Les valeurs de début et de fin sont écrites en
+    # clair sur le panneau du bas : l'échelle ne cache rien.
     titre_carte("Accès à l'énergie et couvert forestier, sur la même période",
-                "Deux échelles distinctes : accès à gauche, couvert forestier à droite.",
-                C["foret"])
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
+                "Deux panneaux, un seul axe du temps : chaque série garde son "
+                "échelle propre.", C["foret"])
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
+                        vertical_spacing=.09, row_heights=[.58, .42])
     fig.add_trace(go.Scatter(
         x=elec["annee"], y=elec["valeur"], name="Accès rural à l'électricité",
         line=dict(color=C["energie"], width=3.4), mode="lines",
-        hovertemplate="%{x} · %{y:.1f} %<extra>Accès rural</extra>"), secondary_y=False)
+        hovertemplate="%{x} · %{y:.1f} %<extra>Accès rural</extra>"), row=1, col=1)
     fig.add_trace(go.Scatter(
         x=cuis["annee"], y=cuis["valeur"], name="Accès rural à une cuisson propre",
         line=dict(color=C["risque"], width=2.6, dash="dot"), mode="lines",
         hovertemplate="%{x} · %{y:.1f} %<extra>Cuisson propre rurale</extra>"),
-        secondary_y=False)
+        row=1, col=1)
     fig.add_trace(go.Scatter(
         x=foret["annee"], y=foret["valeur"], name="Couvert forestier (% du territoire)",
-        line=dict(color=C["foret"], width=3.4), mode="lines", fill="tozeroy",
-        fillcolor=rgba("foret", .10),
+        line=dict(color=C["foret"], width=3.4), mode="lines",
         hovertemplate="%{x} · %{y:.1f} %<extra>Couvert forestier</extra>"),
-        secondary_y=True)
+        row=2, col=1)
 
-    style_fig(fig, hauteur=390)
+    style_fig(fig, hauteur=440)
     fig.update_yaxes(title="Accès (% de la population rurale)", ticksuffix=" %",
-                     range=[0, 40], secondary_y=False)
+                     range=[0, 40], row=1, col=1)
     fig.update_yaxes(title="Couvert forestier (% du territoire)", ticksuffix=" %",
-                     range=[21, 26], secondary_y=True, showgrid=False)
+                     row=2, col=1)
+    fig.update_xaxes(title=None)
     if len(elec):
         annote(fig, int(elec["annee"].iloc[-1]), float(elec["valeur"].iloc[-1]),
-               f"{elec['valeur'].iloc[-1]:.0f} %", C["energie"], ax=-30, ay=-26)
+               f"{elec['valeur'].iloc[-1]:.0f} %", C["energie"], ax=-30, ay=-26,
+               row=1, col=1)
     if len(cuis):
         annote(fig, int(cuis["annee"].iloc[-1]), float(cuis["valeur"].iloc[-1]),
-               f"{cuis['valeur'].iloc[-1]:.1f} % — quasi nul", C["risque"], ax=-58, ay=26)
+               f"{cuis['valeur'].iloc[-1]:.1f} % — quasi nul", C["risque"],
+               ax=-58, ay=26, row=1, col=1)
+    if len(foret) > 1:
+        annote(fig, int(foret["annee"].iloc[-1]), float(foret["valeur"].iloc[-1]),
+               f"{foret['valeur'].iloc[0]:.1f} % → {foret['valeur'].iloc[-1]:.1f} % "
+               f"du territoire", C["foret"], ax=-96, ay=-20, row=2, col=1)
     st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
 
 encart("constat",
@@ -142,7 +156,7 @@ CARTES = [
      f"{ec['valeur']:.0f} points d'écart ville/campagne. Et le réseau lui-même est fragile : "
      f"{fi['coupures_mois']:.1f} coupures par mois, {fi['part_entreprises']:.0f} % des "
      f"entreprises touchées en {fi['annee']}.", "Voir la page", "views/acces.py"),
-    ("Consommation", C["risque"],
+    ("Cuisson", C["risque"],
      "Le « renouvelable » togolais, c'est du bois de feu",
      f"{R['renouvelable_piege']['part_renouvelable']:.0f} % de l'énergie finale est classée "
      f"renouvelable, mais seulement "

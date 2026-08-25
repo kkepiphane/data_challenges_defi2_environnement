@@ -36,7 +36,7 @@ kpi_row([
      list(D.serie(nat, "cuisson_rural")["valeur"])),
     ("Forêt perdue", f"{fr(dfr['perte_ha_par_an'])} ha/an",
      f"soit {fr(dfr['perte_km2'])} km² disparus entre {dfr['annee_debut']} "
-     f"et {dfr['annee_fin']}", C["foret"], "sans reprise",
+     f"et {dfr['annee_fin']}", C["risque"], "sans reprise",
      list(D.serie(nat, "foret_km2")["valeur"])),
     ("Pollution de l'air", f"× {sa['ratio_oms']:.0f}",
      f"la ligne directrice OMS · {sa['pm25']:.0f} µg/m³ de PM2,5 en "

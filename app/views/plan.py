@@ -212,7 +212,7 @@ kpi_row([
      f"contre {R['cuisson_rurale']['valeur']:.1f} % en "
      f"{R['cuisson_rurale']['annee']}", C["foret"] if cuis_2030 >= 15 else C["risque"]),
     ("Perte forestière en 2030", f"{fr(perte_2030)} ha/an",
-     f"contre {fr(dfr['perte_ha_par_an'])} ha/an aujourd'hui", C["foret"]),
+     f"contre {fr(dfr['perte_ha_par_an'])} ha/an aujourd'hui", C["risque"]),
     ("Forêt préservée", f"{fr(ha_sauves)} ha",
      "cumulés sur cinq ans grâce au levier cuisson", C["foret"]),
 ])

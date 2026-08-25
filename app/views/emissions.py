@@ -46,7 +46,7 @@ with o1:
          "tous secteurs, tous gaz directs, tel que publié dans l'inventaire",
          C["encre_2"]),
         ("Agriculture & forêts", f"{R['ges']['part_afat']:.0f} %",
-         "du total en masse brute — de loin le premier poste", C["foret"]),
+         "du total en masse brute — de loin le premier poste", C["encre_2"]),
         ("Secteur énergie", f"{R['ges']['part_energie']:.0f} %",
          "du total en masse brute — un contributeur apparemment mineur",
          C["energie"]),

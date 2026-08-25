@@ -23,7 +23,7 @@ st.logo(logo_menu(), size="large")
 
 # Un nom nu par entrée : dans un menu on cherche, on ne se laisse pas
 # séduire. Chaque libellé nomme la pièce du dossier — le diagnostic,
-# l'électrification, la consommation, l'inventaire, les forêts, les
+# l'électrification, la cuisson, l'inventaire, les forêts, les
 # recommandations — et c'est le titre de la page qui livre la trouvaille.
 # Ni thème abstrait (« Objectif 2 »), ni format (« Vue d'ensemble »).
 PAGES = [
@@ -31,7 +31,7 @@ PAGES = [
             icon=":material/dashboard:", default=True),
     st.Page("views/acces.py",        title="Électrification",
             icon=":material/bolt:"),
-    st.Page("views/cuisson.py",      title="Consommation",
+    st.Page("views/cuisson.py",      title="Cuisson",
             icon=":material/local_fire_department:"),
     st.Page("views/emissions.py",    title="Inventaire",
             icon=":material/co2:"),
