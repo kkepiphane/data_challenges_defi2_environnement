@@ -150,6 +150,16 @@ div[data-testid="stColumn"]:has(.tuile-kpi) [data-testid="stMarkdown"],
 div[data-testid="stColumn"]:has(.tuile-kpi) [data-testid="stMarkdownContainer"] {{
   height:100%; }}
 
+/* ---- cartes de relais : hauteur commune, jamais figée ----
+   Elles restent dans des colonnes (chacune porte son lien de page) : c'est
+   donc la colonne qui transmet la hauteur, et la carte qui la remplit. */
+div[data-testid="stColumn"]:has(.carte-relais),
+div[data-testid="stColumn"]:has(.carte-relais) [data-testid="stVerticalBlock"] {{
+  height:100%; }}
+div[data-testid="stColumn"]:has(.carte-relais)
+  [data-testid="stElementContainer"]:has(.carte-relais) {{ flex:1 0 auto; }}
+.carte-relais {{ height:100%; box-sizing:border-box; }}
+
 /* ---- rangée de chiffres-clés ----------------------------------------
    Toute la rangée est UNE grille : chaque tuile occupe les mêmes bandes
    (intitulé · nombre · contexte · courbe) grâce à `subgrid`. Les zones
@@ -248,8 +258,7 @@ def banniere(kicker, titre, accroche, reperes=None):
     blocs = ""
     if reperes:
         cellules = "".join(
-            f'<div style="padding:0 0 0 22px;margin-left:22px;'
-            f'border-left:1px solid rgba(255,255,255,.2)">'
+            f'<div style="margin-left:40px">'
             f'<div style="font-size:10px;font-weight:600;letter-spacing:.6px;'
             f'text-transform:uppercase;color:{C["sur_nuit_2"]}">{lab}</div>'
             f'<div style="font-family:{FONT_T};font-size:22px;font-weight:800;'
@@ -268,29 +277,30 @@ def banniere(kicker, titre, accroche, reperes=None):
         f'<div style="font-family:{FONT_T};font-size:28px;font-weight:800;letter-spacing:-.5px;'
         f'color:#fff;line-height:1.14;margin-top:7px">{titre}</div></div>'
         f'{blocs}</div>'
-        f'<div style="height:1px;background:rgba(255,255,255,.18);'
-        f'margin:16px 0 13px"></div>'
         f'<div style="font-size:14px;color:{C["sur_nuit"]};max-width:930px;'
-        f'line-height:1.6">{accroche}</div></div>', unsafe_allow_html=True)
+        f'line-height:1.6;margin-top:16px">{accroche}</div></div>',
+        unsafe_allow_html=True)
 
 
 def section(titre, sous=None):
     st.markdown(
-        f'<div style="margin:24px 0 10px;padding-bottom:7px;'
-        f'border-bottom:1px solid {C["bord_fort"]}">'
+        f'<div style="margin:30px 0 12px">'
         f'<div style="font-family:{FONT_T};font-size:19px;font-weight:800;letter-spacing:-.2px;'
         f'color:{C["encre"]};line-height:1.25">{titre}</div>'
-        + (f'<div style="font-size:13px;color:{C["sourdine"]};margin-top:4px;'
+        + (f'<div style="font-size:13px;color:{C["sourdine"]};margin-top:5px;'
            f'line-height:1.5">{sous}</div>' if sous else '') + '</div>',
         unsafe_allow_html=True)
 
 
 def titre_carte(titre, sous=None, couleur=None):
-    """En-tête de carte. La couleur ne sert qu'au mot, jamais à un liseré."""
+    """En-tête de carte : le mot porte la couleur, rien ne le souligne.
+
+    Aucun filet ne sépare l'en-tête du contenu — c'est le blanc qui groupe.
+    """
     col = couleur or C["encre"]
     st.markdown(
-        f'<div class="carte-tete" style="padding:13px 16px 9px;'
-        f'border-bottom:1px solid {C["bord"]};margin:0 -18px 11px">'
+        f'<div class="carte-tete" style="padding:13px 16px 0;'
+        f'margin:0 -18px 14px">'
         f'<div style="font-size:14.5px;font-weight:700;color:{col};'
         f'line-height:1.3">{titre}</div>'
         + (f'<div style="font-size:12px;color:{C["sourdine"]};margin-top:4px;'
@@ -489,11 +499,14 @@ def legende(*items):
 
 
 def pied(page=None):
-    """Pied de page : armoiries et provenance. Sobre, sans jargon technique."""
+    """Pied de page : armoiries et provenance. Sobre, sans jargon technique.
+
+    Aucun filet ne le sépare de la page : le blanc et la petite graisse
+    suffisent à dire qu'on est sorti du propos.
+    """
     st.markdown(
         f'<div style="display:flex;align-items:flex-start;gap:16px;'
-        f'flex-wrap:wrap;margin-top:36px;padding-top:15px;'
-        f'border-top:1px solid {C["bord_fort"]}">'
+        f'flex-wrap:wrap;margin-top:52px">'
         f'<img src="{armoiries_uri()}" alt="Armoiries de la République togolaise" '
         f'style="height:42px;width:auto;flex:0 0 auto">'
         f'<div style="flex:1 1 430px;min-width:250px">'

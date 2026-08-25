@@ -137,24 +137,24 @@ section("Quatre constats, quatre pages",
         "Chaque constat est démontré, chiffré et sourcé dans la page correspondante.")
 
 CARTES = [
-    ("La fracture électrique", C["energie"],
+    ("Électrification", C["energie"],
      "Le retard rural ne se comble pas assez vite",
      f"{ec['valeur']:.0f} points d'écart ville/campagne. Et le réseau lui-même est fragile : "
      f"{fi['coupures_mois']:.1f} coupures par mois, {fi['part_entreprises']:.0f} % des "
      f"entreprises touchées en {fi['annee']}.", "Voir la page", "views/acces.py"),
-    ("La marmite et la forêt", C["risque"],
+    ("Consommation", C["risque"],
      "Le « renouvelable » togolais, c'est du bois de feu",
      f"{R['renouvelable_piege']['part_renouvelable']:.0f} % de l'énergie finale est classée "
      f"renouvelable, mais seulement "
      f"{R['renouvelable_piege']['part_cuisson_propre']:.0f} % des ménages cuisinent proprement. "
      f"Renouvelable ne veut pas dire propre.", "Voir la page", "views/cuisson.py"),
-    ("Ce que le CO₂ cache", C["urbain"],
+    ("Inventaire", C["urbain"],
      "L'énergie n'est marginale qu'en dioxyde de carbone",
      f"Le secteur énergie ne pèse que {R['ges']['part_energie']:.0f} % des émissions totales, "
      f"mais {R['ges']['energie_dans_n2o']:.0f} % du protoxyde d'azote et "
      f"{R['ges']['energie_dans_ch4']:.0f} % du méthane.", "Voir la page",
      "views/emissions.py"),
-    ("Les forêts à sauver", C["foret"],
+    ("Forêts", C["foret"],
      "Neuf massifs concentrent toute la priorité",
      f"Sur les {R['forets']['nb']} forêts classées, {R['forets']['nb_robustes']} restent dans le "
      f"top 10 quelle que soit la pondération testée. La cible d'investissement est identifiée.",
@@ -164,13 +164,13 @@ cols = st.columns(4, gap="small")
 for col, (objectif, coul, titre, txt, lien, cible) in zip(cols, CARTES):
     with col:
         st.markdown(
-            f'<div style="background:{C["surface"]};border:1px solid {C["bord"]};'
-            f'border-radius:10px;padding:15px 17px 16px;height:186px">'
-            f'<div style="font-size:11px;font-weight:700;color:{coul};'
-            f'padding-bottom:9px;border-bottom:1px solid {C["bord"]}">'
-            f'{objectif}</div>'
+            f'<div class="carte-relais" style="background:{C["surface"]};'
+            f'border:1px solid {C["bord"]};border-radius:10px;'
+            f'padding:15px 17px 16px">'
+            f'<div style="font-size:10.5px;font-weight:700;letter-spacing:.55px;'
+            f'text-transform:uppercase;color:{coul}">{objectif}</div>'
             f'<div style="font-family:{FONT_T};font-size:16.5px;font-weight:600;'
-            f'color:{C["encre"]};margin-top:11px;line-height:1.28">{titre}</div>'
+            f'color:{C["encre"]};margin-top:10px;line-height:1.28">{titre}</div>'
             f'<div style="font-size:12px;color:{C["sourdine"]};margin-top:8px;'
             f'line-height:1.5">{txt}</div></div>', unsafe_allow_html=True)
         st.page_link(cible, label=lien, icon=":material/arrow_forward:")

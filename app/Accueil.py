@@ -21,20 +21,23 @@ inject_css()
 # navigation : les armoiries et l'intitulé y tiennent en une seule image.
 st.logo(logo_menu(), size="large")
 
-# Les intitulés de pages annoncent une trouvaille, pas un thème : un décideur
-# clique sur « La marmite et la forêt », pas sur « Objectif 2 ».
+# Un nom nu par entrée : dans un menu on cherche, on ne se laisse pas
+# séduire. Chaque libellé nomme la pièce du dossier — le diagnostic,
+# l'électrification, la consommation, l'inventaire, les forêts, les
+# recommandations — et c'est le titre de la page qui livre la trouvaille.
+# Ni thème abstrait (« Objectif 2 »), ni format (« Vue d'ensemble »).
 PAGES = [
-    st.Page("views/synthese.py",     title="Vue d'ensemble",
+    st.Page("views/synthese.py",     title="Diagnostic",
             icon=":material/dashboard:", default=True),
-    st.Page("views/acces.py",        title="La fracture électrique",
+    st.Page("views/acces.py",        title="Électrification",
             icon=":material/bolt:"),
-    st.Page("views/cuisson.py",      title="La marmite et la forêt",
+    st.Page("views/cuisson.py",      title="Consommation",
             icon=":material/local_fire_department:"),
-    st.Page("views/emissions.py",    title="Ce que le CO₂ cache",
+    st.Page("views/emissions.py",    title="Inventaire",
             icon=":material/co2:"),
-    st.Page("views/priorisation.py", title="Les forêts à sauver",
+    st.Page("views/priorisation.py", title="Forêts",
             icon=":material/forest:"),
-    st.Page("views/plan.py",         title="Que faire d'ici 2030",
+    st.Page("views/plan.py",         title="Recommandations",
             icon=":material/target:"),
 ]
 nav = st.navigation(PAGES, position="sidebar")

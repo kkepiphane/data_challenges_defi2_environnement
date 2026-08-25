@@ -277,7 +277,7 @@ with o3:
            f"{attribution} % du recul forestier au bois-énergie, le Togo préserverait "
            f"<b>{fr(cumul_2030)} hectares</b> de forêt sur cinq ans — l'équivalent de "
            f"{cumul_2030/R['forets']['surface_totale_ha']*100:.1f} % de la surface totale "
-           f"des forêts classées analysées dans la page « Où agir ». "
+           f"des forêts classées analysées dans la page « Forêts ». "
            f"Et {fr(personnes/1e6, 2)} millions de personnes cesseraient de respirer des "
            f"fumées de combustion domestique, dans un pays où la pollution de l'air est "
            f"associée à {sa['mortalite']:.0f} décès pour 100 000 habitants.")

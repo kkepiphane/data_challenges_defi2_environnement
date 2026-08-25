@@ -87,7 +87,7 @@ LEVIERS = [
                     f"{cb['annees'][1]} — le bois brut a même gagné "
                     f"{cb['bois'][1]-cb['bois'][0]:.1f} points.",
         "ou": "Priorité aux cantons riverains des forêts classées du top 10 "
-              "(voir page « Où agir »), puis aux préfectures rurales des Plateaux "
+              "(voir la page « Forêts »), puis aux préfectures rurales des Plateaux "
               "et de la Centrale, les plus peuplées parmi les zones enclavées.",
         "cible": "Passer de 0,9 % à 15 % d'accès rural à une cuisson propre en 2030.",
         "suivi": "`EG.CFT.ACCS.RU.ZS` (accès rural à une cuisson propre) — "
@@ -148,8 +148,7 @@ for lv in LEVIERS:
     st.markdown(
         f'<div style="background:{C["surface"]};border:1px solid {C["bord"]};'
         f'border-radius:10px;padding:18px 22px 19px;margin-bottom:13px">'
-        f'<div style="display:flex;align-items:baseline;gap:14px;'
-        f'padding-bottom:11px;border-bottom:1px solid {C["bord"]}">'
+        f'<div style="display:flex;align-items:baseline;gap:14px">'
         f'<span style="font-family:{FONT_T};font-size:29px;font-weight:600;'
         f'color:{lv["coul"]};line-height:1">{lv["n"]}</span>'
         f'<span style="font-family:{FONT_T};font-size:21px;font-weight:600;'
