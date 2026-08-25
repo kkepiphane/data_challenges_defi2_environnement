@@ -1,6 +1,12 @@
+# Dépendances d'exécution du tableau de bord (déploiement Streamlit Cloud).
+# Volontairement minimales : les données analytiques sont versionnées dans
+# data/gold/, l'application n'a donc pas besoin de la chaîne géospatiale
+# complète — seulement de shapely pour relire les polygones WKT.
 streamlit>=1.40
 plotly>=5.20
 pandas>=2.2
 numpy>=1.26
-geopandas>=0.14
 shapely>=2.0
+
+# Pour reconstruire data/gold/ depuis data/raw/ (src/build_gold.py),
+# installer en plus : pip install -r requirements-pipeline.txt

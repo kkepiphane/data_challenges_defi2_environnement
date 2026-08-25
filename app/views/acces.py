@@ -35,8 +35,8 @@ kpi_row([
 ])
 
 # =============================================================================
-onglet1, onglet2 = st.tabs(["  📈  La fracture et sa trajectoire  ",
-                            "  🔌  La fiabilité du réseau  "])
+onglet1, onglet2 = st.tabs([" La fracture et sa trajectoire ",
+                            " La fiabilité du réseau "])
 
 # -------------------------------------------------------------- 1. LA FRACTURE
 with onglet1:

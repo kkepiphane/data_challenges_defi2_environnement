@@ -42,9 +42,9 @@ kpi_row([
 ])
 
 # =============================================================================
-o1, o2, o3 = st.tabs(["  🍲  Ce que brûlent les ménages  ",
-                      "  🌿  Le piège du « renouvelable »  ",
-                      "  🌳  Impact sur la forêt & simulateur  "])
+o1, o2, o3 = st.tabs([" Ce que brûlent les ménages ",
+                      " Le piège du « renouvelable » ",
+                      " Impact sur la forêt & simulateur "])
 
 # ------------------------------------------------------- 1. LE MIX DE CUISSON
 with o1:

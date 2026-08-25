@@ -104,37 +104,40 @@ section("Quatre constats, quatre pages",
         "Chaque constat est démontré dans la page correspondante.")
 
 CARTES = [
-    ("⚡", C["energie"], "La fracture ne se referme pas assez vite",
+    ("Objectif 1", C["energie"], "La fracture ne se referme pas assez vite",
      f"{ec['valeur']:.0f} points d'écart ville/campagne. Et le réseau lui-même est fragile : "
      f"{fi['coupures_mois']:.1f} coupures par mois, {fi['part_entreprises']:.0f} % des "
      f"entreprises touchées en {fi['annee']}.", "Accès & fiabilité", "views/acces.py"),
-    ("🔥", C["risque"], "Le « renouvelable » togolais, c'est du bois de feu",
+    ("Objectif 2", C["risque"], "Le « renouvelable » togolais, c'est du bois de feu",
      f"{R['renouvelable_piege']['part_renouvelable']:.0f} % de l'énergie finale est classée "
      f"renouvelable, mais seulement "
      f"{R['renouvelable_piege']['part_cuisson_propre']:.0f} % des ménages cuisinent proprement. "
      f"Renouvelable ne veut pas dire propre.", "Cuisson & forêts", "views/cuisson.py"),
-    ("🌍", C["urbain"], "L'énergie est marginale… seulement en CO₂",
+    ("Objectifs 3 & 4", C["urbain"], "L'énergie est marginale… seulement en CO₂",
      f"Le secteur énergie ne pèse que {R['ges']['part_energie']:.0f} % des émissions totales, "
      f"mais {R['ges']['energie_dans_n2o']:.0f} % du protoxyde d'azote et "
      f"{R['ges']['energie_dans_ch4']:.0f} % du méthane.", "Émissions & climat",
      "views/emissions.py"),
-    ("🗺️", C["foret"], "Neuf forêts concentrent la priorité",
+    ("Objectif 5", C["foret"], "Neuf forêts concentrent la priorité",
      f"Sur les {R['forets']['nb']} forêts classées, {R['forets']['nb_robustes']} restent dans le "
      f"top 10 quelle que soit la pondération testée. La cible d'investissement est identifiée.",
      "Où agir", "views/priorisation.py"),
 ]
 cols = st.columns(4)
-for col, (ico, coul, titre, txt, lien, cible) in zip(cols, CARTES):
+for col, (objectif, coul, titre, txt, lien, cible) in zip(cols, CARTES):
     with col:
         st.markdown(
-            f'<div style="background:#fff;border:1px solid {C["line"]};border-radius:11px;'
-            f'padding:15px 16px;height:172px;box-shadow:0 1px 2px rgba(21,34,56,.05)">'
-            f'<div style="font-size:19px">{ico}</div>'
-            f'<div style="font-size:14.2px;font-weight:700;color:{coul};margin-top:7px;'
-            f'line-height:1.32">{titre}</div>'
+            f'<div style="background:#fff;border:1px solid {C["line"]};'
+            f'border-top:3px solid {coul};border-radius:3px 3px 11px 11px;'
+            f'padding:14px 16px 15px;height:186px;'
+            f'box-shadow:0 1px 2px rgba(21,34,56,.05)">'
+            f'<div style="font-size:10px;font-weight:800;letter-spacing:1.1px;'
+            f'text-transform:uppercase;color:{coul}">{objectif}</div>'
+            f'<div style="font-size:14.2px;font-weight:700;color:{C["ink"]};'
+            f'margin-top:9px;line-height:1.32">{titre}</div>'
             f'<div style="font-size:12.2px;color:{C["muted"]};margin-top:7px;'
             f'line-height:1.5">{txt}</div></div>', unsafe_allow_html=True)
-        st.page_link(cible, label=f"{lien}  →")
+        st.page_link(cible, label=lien, icon=":material/arrow_forward:")
 
 # ------------------------------------------------------------------------ décision
 st.write("")
@@ -149,6 +152,7 @@ encart("action",
        f"identifiées par l'indice de vulnérabilité.")
 st.write("")
 st.page_link("views/plan.py",
-             label="Voir le plan d'action chiffré et le simulateur 2030  →", icon="✅")
+             label="Voir le plan d'action chiffré et le simulateur 2030",
+             icon=":material/checklist:")
 
 pied()

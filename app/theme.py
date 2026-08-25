@@ -8,7 +8,20 @@ Une seule règle de couleur, appliquée partout :
 
 Tout ce qui est visuel passe par ce module : aucune couleur en dur ailleurs.
 """
+import base64
+from pathlib import Path
+
 import streamlit as st
+
+ASSETS = Path(__file__).resolve().parent / "assets"
+ARMOIRIES = ASSETS / "armoiries_togo.svg"
+
+
+@st.cache_data(show_spinner=False)
+def armoiries_uri():
+    """Armoiries du Togo en data-URI : aucun fichier à servir, aucun appel réseau."""
+    return ("data:image/svg+xml;base64,"
+            + base64.b64encode(ARMOIRIES.read_bytes()).decode("ascii"))
 
 # --------------------------------------------------------------------- couleurs
 C = {

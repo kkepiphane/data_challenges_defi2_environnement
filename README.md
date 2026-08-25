@@ -76,6 +76,7 @@ dashboard_defi2_togo/
 │
 ├── src/                          pipeline reproductible
 │   ├── build_gold.py             bronze -> gold, avec journal des traitements
+│   ├── verify.py                 audit : recalcul indépendant depuis data/raw/
 │   ├── make_figures.py           figures SVG du rapport
 │   └── make_report.py            assemblage du rapport final
 │
@@ -98,7 +99,9 @@ dashboard_defi2_togo/
 Les six fichiers du défi sont dans `data/raw/`. Tout se régénère depuis eux :
 
 ```bash
+pip install -r requirements.txt -r requirements-pipeline.txt
 python src/build_gold.py      # données analytiques + journal des traitements
+python src/verify.py          # audit d'intégrité des chiffres
 python src/make_figures.py    # figures SVG du rapport
 python src/make_report.py     # rapport HTML final
 ```
@@ -107,6 +110,27 @@ python src/make_report.py     # rapport HTML final
 correctif appliqué et de chaque chiffre clé recalculé. **Aucun chiffre du rapport
 ou du tableau de bord n'est saisi à la main** — tous sont recalculés à chaque
 exécution.
+
+## Audit d'intégrité des chiffres
+
+```bash
+python src/verify.py
+```
+
+Ce script recalcule 42 chiffres clés **directement depuis `data/raw/`**, avec un
+code écrit indépendamment du pipeline (lecture `csv` standard, aucune fonction
+partagée), et les compare à ce qui est publié. Il sort en erreur au moindre écart.
+Dernier passage : **42/42 conformes**.
+
+Trois éléments seulement ne proviennent pas des six fichiers du défi, et sont
+signalés comme tels dans l'interface et dans `docs/sources.md` :
+
+1. les **coordonnées des 10 stations météo**, absentes de toutes les sources ;
+2. les **facteurs PRG du GIEC** (CH₄ × 28, N₂O × 265), constantes scientifiques
+   utilisées pour la lecture en équivalent CO₂ ;
+3. les **curseurs des simulateurs**, qui sont des hypothèses réglées par
+   l'utilisateur et étiquetées comme telles — elles produisent des projections,
+   jamais des données.
 
 ---
 

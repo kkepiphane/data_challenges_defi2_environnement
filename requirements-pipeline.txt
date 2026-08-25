@@ -1,0 +1,11 @@
+# Dépendances supplémentaires pour reconstruire les données depuis data/raw/.
+# Non nécessaires pour faire tourner le tableau de bord : data/gold/ est versionné.
+#
+#   pip install -r requirements.txt -r requirements-pipeline.txt
+#   python src/build_gold.py
+#
+# geopandas est utilisé pour la reprojection en UTM 31N (EPSG:32631), sans
+# laquelle surfaces et distances des 53 forêts seraient calculées en degrés.
+-r requirements.txt
+geopandas>=0.14
+pyproj>=3.6

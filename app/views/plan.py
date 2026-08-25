@@ -34,25 +34,29 @@ pers_sans_elec = R["ruraux_sans_elec"]["personnes"]
 
 g1, g2 = st.columns([1.25, 1])
 with g1:
+    # Seuls les deux premiers leviers se comptent en personnes : le troisième
+    # n'a pas d'échelle comparable, on ne lui invente donc pas de barre.
     fig = go.Figure(go.Bar(
-        y=["Protection ciblée des forêts",
-           "Électrification rurale décentralisée",
-           "Cuisson propre"],
-        x=[R["forets"]["nb_robustes"] * 0, pers_sans_elec, pers_biomasse],
-        orientation="h",
-        marker_color=[C["foret"], C["energie"], C["risque"]],
-        text=[f"{R['forets']['nb_robustes']} forêts · "
-              f"{fr(R['forets']['surface_totale_ha'])} ha",
-              f"{fr(pers_sans_elec/1e6, 2)} M de personnes",
+        y=["Électrification rurale décentralisée", "Cuisson propre"],
+        x=[pers_sans_elec, pers_biomasse], orientation="h",
+        marker_color=[C["energie"], C["risque"]],
+        text=[f"{fr(pers_sans_elec/1e6, 2)} M de personnes",
               f"{fr(pers_biomasse/1e6, 2)} M de personnes"],
         textposition="outside", textfont=dict(size=12.5),
-        hovertemplate="%{y}<extra></extra>"))
+        hovertemplate="%{y} · %{x:,.0f} personnes<extra></extra>"))
     style_fig(fig, "Population directement concernée par chaque levier", hauteur=280,
               marge_g=0)
-    fig.update_xaxes(range=[0, pers_biomasse * 1.55], title="personnes",
+    fig.add_annotation(
+        x=0, y=-0.62, xanchor="left", showarrow=False,
+        text=f"<b>Protection ciblée des forêts</b> — {R['forets']['nb_robustes']} massifs "
+             f"prioritaires, {fr(R['forets']['surface_totale_ha'])} ha : "
+             "ne se compte pas en personnes",
+        font=dict(size=12, color=C["foret"]), align="left",
+        bgcolor="rgba(27,122,67,.08)", borderpad=8)
+    fig.update_xaxes(range=[0, pers_biomasse * 1.5], title="personnes",
                      tickvals=[0, 2e6, 4e6, 6e6, 8e6],
                      ticktext=["0", "2 M", "4 M", "6 M", "8 M"])
-    fig.update_yaxes(title=None)
+    fig.update_yaxes(title=None, range=[-1.1, 1.6])
     st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
 
 with g2:
@@ -71,7 +75,7 @@ section("Les trois leviers")
 
 LEVIERS = [
     {
-        "n": "1", "ico": "🍲", "coul": C["risque"], "titre": "Cuisson propre",
+        "n": "1", "coul": C["risque"], "titre": "Cuisson propre",
         "quoi": "GPL subventionné en zone périurbaine et foyers améliorés certifiés "
                 "en zone rurale enclavée, distribués via les réseaux existants "
                 "(coopératives, marchés hebdomadaires, centres de santé).",
@@ -88,7 +92,7 @@ LEVIERS = [
                  "quand la situation s'améliorera.",
     },
     {
-        "n": "2", "ico": "☀️", "coul": C["energie"],
+        "n": "2", "coul": C["energie"],
         "titre": "Solaire villageois décentralisé",
         "quoi": "Mini-réseaux solaires avec stockage pour les gros bourgs, kits "
                 "domestiques pour l'habitat dispersé, dimensionnés sur les usages "
@@ -111,7 +115,7 @@ LEVIERS = [
                  "horaire** du service, absent des données actuelles.",
     },
     {
-        "n": "3", "ico": "🌳", "coul": C["foret"],
+        "n": "3", "coul": C["foret"],
         "titre": "Protection ciblée des massifs prioritaires",
         "quoi": "Concentrer surveillance, régénération assistée et plantations "
                 "d'agroforesterie sur un nombre restreint de massifs, plutôt que "
@@ -142,10 +146,10 @@ for lv in LEVIERS:
         f'<div style="background:#fff;border:1px solid {C["line"]};'
         f'border-left:5px solid {lv["coul"]};border-radius:11px;padding:17px 21px;'
         f'margin-bottom:13px;box-shadow:0 1px 2px rgba(21,34,56,.05)">'
-        f'<div style="display:flex;align-items:baseline;gap:11px">'
-        f'<span style="font-size:22px">{lv["ico"]}</span>'
-        f'<span style="font-size:11px;font-weight:800;color:{lv["coul"]};'
-        f'letter-spacing:1.2px">LEVIER {lv["n"]}</span>'
+        f'<div style="display:flex;align-items:baseline;gap:12px">'
+        f'<span style="font-size:10.5px;font-weight:800;color:#fff;'
+        f'background:{lv["coul"]};letter-spacing:1.2px;padding:3px 9px;'
+        f'border-radius:4px;position:relative;top:-2px">LEVIER {lv["n"]}</span>'
         f'<span style="font-size:19px;font-weight:800;color:{C["foret_d"]}">'
         f'{lv["titre"]}</span></div>'
         f'<div style="font-size:14px;color:{C["ink"]};margin-top:9px;line-height:1.6">'

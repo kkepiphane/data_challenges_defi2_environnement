@@ -56,7 +56,7 @@ with p4:
     st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
     if w_enc + w_sur + w_str == 0:      # dégénéré : on revient à la référence
         w_enc, w_sur, w_str = 40, 35, 25
-        st.caption("⚠️ Les trois poids sont nuls : la pondération de référence "
+        st.caption("Les trois poids sont nuls : la pondération de référence "
                    "**40 / 35 / 25** est appliquée.")
     else:
         tot_w = w_enc + w_sur + w_str

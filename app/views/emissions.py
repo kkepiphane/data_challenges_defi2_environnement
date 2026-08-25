@@ -33,7 +33,8 @@ PRG = {"CO2": 1, "CH4": 28, "N2O": 265}       # PRG 100 ans, GIEC AR5
 gaz_df = pd.DataFrame(nat["ges_gaz"])
 sect_df = pd.DataFrame(nat["ges_secteur"])
 
-o1, o2 = st.tabs(["  🏭  Bilan des émissions  ", "  🌡️  Climat et besoins en énergie  "])
+o1, o2 = st.tabs([" Bilan des émissions ",
+                  " Climat et besoins en énergie "])
 
 # ============================================================ 1. LES ÉMISSIONS
 with o1:
