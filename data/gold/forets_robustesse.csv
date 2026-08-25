@@ -1,0 +1,54 @@
+foret,rang_min,rang_max,toujours_top10,jamais_top10
+Forêt classée Assoukoko,1,2,True,False
+Forêt classée de Sadjibou,1,2,True,False
+Forêt classée des Deux Bena,3,4,True,False
+Amakpape,3,5,True,False
+Tetetou Nord,4,6,True,False
+Asrama,6,8,True,False
+Nuatja Sud,7,8,True,False
+Forêt Tiyadja,6,10,True,False
+Forêt classée de Mont Balam,9,10,True,False
+Forêt classée Galaganshi,5,14,False,False
+Forêt classée Aou-mono,11,14,False,True
+Azakpeve,10,13,False,False
+Forêt classée de Natiwah,12,13,False,True
+Forêt Kadjotse de Kpatala,11,14,False,True
+Nanave,15,17,False,True
+Mariatodji,16,19,False,True
+Agueno,17,20,False,True
+Nakpatole,15,22,False,True
+Haho-baloe,15,30,False,True
+Dagbazé,19,21,False,True
+Djemegni,15,30,False,True
+Réserve Forestière de Doumboua,19,25,False,True
+Douli,21,26,False,True
+Forêt classée de Kemeni,23,26,False,True
+Tchorogo,22,29,False,True
+Forêt de Dagbaze,23,28,False,True
+Adidomé,24,29,False,True
+Wahala-agbatitoe,18,31,False,True
+Forêt classée de Kabou,24,32,False,True
+Sove,26,33,False,True
+Yohoeve,30,33,False,True
+Forêt Tchamin,31,35,False,True
+Forêt classée de Wartema,32,38,False,True
+Bape,34,36,False,True
+Forêt classée de Sirika,27,38,False,True
+Forêt classée de Sotouboua,29,40,False,True
+Forêt classée Manda,37,39,False,True
+Forêt classée de Kindja,34,41,False,True
+Forêt classée de You,36,40,False,True
+Kounovi,35,46,False,True
+Wouto,37,45,False,True
+Forêt de Biragou,39,44,False,True
+Forêt classée de Koularo,41,44,False,True
+Golove,41,44,False,True
+Forêt classée Behao,42,46,False,True
+Moumouane Pak,46,47,False,True
+Forêt classée d'assime,45,49,False,True
+Forêt classée de Blakpa,45,48,False,True
+Forêt classée,48,49,False,True
+Missahohe,50,50,False,True
+Forêt de Huime,51,51,False,True
+Forêt Koulope,52,53,False,True
+Forêt classée Kanaville,52,53,False,True

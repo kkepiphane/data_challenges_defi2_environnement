@@ -1,0 +1,18 @@
+[theme]
+# Thème clair forcé : le tableau de bord est conçu sur fond clair
+# (cartes blanches, plotly_white, texte ardoise). Sans ce fichier,
+# Streamlit suit le thème du système et bascule en sombre.
+# Ce fichier est dupliqué dans app/.streamlit/ pour couvrir les deux façons
+# de lancer : `streamlit run app/Accueil.py` ou `cd app && streamlit run Accueil.py`.
+base = "light"
+primaryColor = "#1B7A43"              # vert forêt — couleur d'accent des widgets
+backgroundColor = "#FAFBFC"           # fond de page, les cartes ressortent en blanc
+secondaryBackgroundColor = "#FFFFFF"  # fond des widgets et des blocs
+textColor = "#152238"                 # ardoise
+font = "sans serif"
+
+[browser]
+gatherUsageStats = false
+
+[server]
+runOnSave = true

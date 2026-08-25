@@ -1,0 +1,74 @@
+==============================================================================
+1. INDICATEURS BANQUE MONDIALE
+==============================================================================
+   dédoublonnage (Indicator Code, Year) : 81446 -> 63523 lignes (22 % de doublons stricts supprimés)
+   fiabilité coupures_mois    [(2009, 7.2), (2016, 5.5)]
+   fiabilité part_touchees    [(2009, 80.4), (2016, 93.8)]
+   fiabilité pertes_ca        [(2009, 10.5), (2016, 3.7)]
+   fiabilité delai_raccord    [(2009, 53.9), (2016, 71.9)]
+   fiabilité demarches_jours  [(2009, 89.0), (2010, 89.0), (2011, 89.0), (2012, 89.0), (2013, 89.0), (2014, 89.0), (2015, 66.0), (2016, 66.0), (2017, 66.0), (2018, 66.0), (2019, 66.0)]
+
+==============================================================================
+2. INVENTAIRE GES 2018 (secteur x gaz)
+==============================================================================
+   total national 2018 : 40,843 Gg
+   Agriculture & forêts (AFAT)    35,830.4 Gg  ( 87.7 %)
+   Énergie                         2,517.9 Gg  (  6.2 %)
+   Industrie (PIUP)                2,480.8 Gg  (  6.1 %)
+   Déchets                            14.2 Gg  (  0.0 %)
+
+   Lecture croisée — part de chaque secteur DANS chaque gaz :
+gaz                           CH4   CO2   N2O
+secteur_court                                
+Agriculture & forêts (AFAT)   5.0  92.0  42.8
+Déchets                       0.6   0.0   0.2
+Industrie (PIUP)             71.9   2.8   0.0
+Énergie                      22.6   5.2  57.0
+   -> l'Énergie ne pèse que 6.2 % du total, mais 23 % du méthane et 57 % du N2O (combustion de biomasse domestique).
+
+==============================================================================
+4. TEMPÉRATURES (10 stations, mensuel 2013-2019)
+==============================================================================
+   840 observations ville x mois, 2013-2019, 10 stations
+   pic thermique national : mars (36.1 °C de max moyen) ; creux : août (29.3 °C)
+   amplitude thermique entre stations : 6.4 °C (Kouma konda 29.1 °C -> Mango 35.5 °C)
+   gradient latitudinal Sud->Nord : Lomé 32.3 °C -> Dapaong 34.3 °C
+
+==============================================================================
+6. FORÊTS CLASSÉES — indice de vulnérabilité
+==============================================================================
+   53 polygones valides
+   surfaces incertaines (<10 ha) : 16/53 -> flag + valeur neutre dans l'indice (ni pénalisées, ni survalorisées)
+   année de classement inconnue (Nsp/Nps/Jadis) : 17/53 -> hors score, aucune imputation
+
+   TOP 10 (pondération de référence 0.40 / 0.35 / 0.25) :
+    1. Forêt classée Assoukoko                Centrale      8,402 ha   73.4 km  score 86.5
+    2. Forêt classée de Sadjibou              Kara         18,313 ha   67.3 km  score 85.7
+    3. Forêt classée des Deux Bena            Plateaux      6,285 ha   56.3 km  score 72.0
+    4. Amakpape                               Plateaux      9,144 ha   38.1 km  score 70.5
+    5. Tetetou Nord                           Plateaux      1,822 ha   50.0 km  score 68.2
+    6. Asrama                                 Plateaux      2,272 ha   45.1 km  score 66.6
+    7. Nuatja Sud                             Plateaux      1,244 ha   50.1 km  score 66.1
+    8. Forêt Tiyadja                          Kara              5 ha   57.9 km  score 65.2
+    9. Forêt classée de Mont Balam            Centrale      4,872 ha   37.4 km  score 63.6
+   10. Forêt classée Galaganshi               Savanes       9,199 ha   13.2 km  score 62.9
+
+   robustesse : 9 forêts restent dans le top 10 sur les 5 pondérations testées
+
+==============================================================================
+7. REPÈRES DÉCISIONNELS (calculés, pas saisis)
+==============================================================================
+   Électrification rurale : 25.0 % en 2022 (+0.91 pt/an depuis 1998)
+     -> il faudrait +9.4 pt/an pour 2030 = x10 le rythme actuel
+     -> au rythme observé, l'accès universel rural tomberait en 2104
+   Écart ville/campagne : 72 points (96 % vs 25 %)
+   Ruraux sans électricité : 3.72 million de personnes (4.96 M de ruraux x 75 %)
+   Cuisson propre rurale : 0.9 % en 2022 (+0.04 pt/an — quasi nul)
+   Combustibles ménages 2014 -> 2017 : bois 48.2 -> 51.8 %, charbon 42.1 -> 37.6 %, GPL 6.6 -> 8.8 %
+     -> biomasse totale 90.3 -> 89.4 % : la dépendance ne recule pas
+   « Renouvelable » 75.1 % de l'énergie finale en 2021, mais seulement 11.9 % des ménages cuisinent proprement -> ce renouvelable EST le bois de feu
+   Déforestation 1990-2021 : 13,617 -> 12,063 km² = -1,554 km² (-11.4 %)
+     -> 5,011 hectares perdus par an, en moyenne
+   Fiabilité : 5.5 coupures/mois en 2016 (vs 7.2 en 2009), 93.8 % des entreprises touchées
+   Air : PM2,5 = 51.7 µg/m³ (2020), soit 10 x la ligne directrice OMS (5 µg/m³)
+   Mortalité attribuée à la pollution de l'air : 223 pour 100 000 hab. (2019)

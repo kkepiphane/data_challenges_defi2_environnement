@@ -1,0 +1,805 @@
+<title>Le Bois et la Lumière</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,300;1,6..72,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --ground:#F5F8F6; --surface:#FFFFFF; --sunk:#EDF2EE;
+  --ink:#131E18; --ink2:#38473F; --muted:#65756B; --faint:#8C9A91;
+  --rule:#DBE4DD; --rule-strong:#C2D0C7;
+  --foret:#1B7A43; --foret-d:#0B4A28; --energie:#A8620A; --alerte:#A22C1E;
+  --fig-paper:#FFFFFF; --fig-rule:#E4E9E5;
+  --tg-green:#006A4E; --tg-gold:#FFCE00; --tg-red:#D21034;
+  --measure:68ch;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1411; --surface:#141D18; --sunk:#111A15;
+    --ink:#E7EFE9; --ink2:#BCCBC2; --muted:#8FA096; --faint:#718278;
+    --rule:#243128; --rule-strong:#324237;
+    --foret:#4FB77C; --foret-d:#8AD6A9; --energie:#E2A44A; --alerte:#E88375;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1411; --surface:#141D18; --sunk:#111A15;
+  --ink:#E7EFE9; --ink2:#BCCBC2; --muted:#8FA096; --faint:#718278;
+  --rule:#243128; --rule-strong:#324237;
+  --foret:#4FB77C; --foret-d:#8AD6A9; --energie:#E2A44A; --alerte:#E88375;
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  font-size:16px; line-height:1.68; margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px; margin:0 auto; padding:0 28px 100px;}
+
+/* ---------- grille : colonne de marge pour la numérotation ---------- */
+.sec{display:grid; grid-template-columns:1fr; gap:0 34px; padding:52px 0 0;
+     border-top:1px solid var(--rule); margin-top:52px;}
+.sec > .marge{padding-top:4px;}
+.sec > .corps{min-width:0;}
+@media (min-width:920px){ .sec{grid-template-columns:92px minmax(0,1fr);} }
+
+.num{font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:500;
+     color:var(--foret); letter-spacing:.06em;}
+.marge .tag{display:block; font-size:11px; letter-spacing:.11em; text-transform:uppercase;
+     color:var(--faint); margin-top:8px; line-height:1.5;}
+
+/* ---------- typographie ---------- */
+h1,h2,h3{font-family:"Newsreader",Georgia,serif; text-wrap:balance; margin:0;}
+h1{font-size:clamp(34px,5.6vw,58px); font-weight:600; line-height:1.06;
+   letter-spacing:-.017em; color:var(--ink);}
+h2{font-size:clamp(25px,3.2vw,33px); font-weight:600; line-height:1.16;
+   letter-spacing:-.011em; margin-bottom:16px; color:var(--ink);}
+h3{font-size:20px; font-weight:600; line-height:1.3; margin:34px 0 10px; color:var(--ink);}
+p{margin:0 0 17px; max-width:var(--measure); color:var(--ink2);}
+.corps > ul,.corps > ol{max-width:var(--measure); color:var(--ink2); padding-left:20px;
+   margin:0 0 17px;}
+li{margin-bottom:9px;}
+strong{color:var(--ink); font-weight:600;}
+em{font-style:italic;}
+code,.mono{font-family:"IBM Plex Mono",monospace; font-size:.86em;
+   background:var(--sunk); padding:1px 5px; border-radius:3px; color:var(--ink2);}
+a{color:var(--foret); text-decoration:underline; text-underline-offset:2px;
+  text-decoration-thickness:1px;}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--foret); outline-offset:3px;
+  border-radius:2px;}
+
+/* ---------- couverture ---------- */
+.cover{padding:76px 0 8px;}
+.filet{height:4px; width:132px; border-radius:2px; margin-bottom:30px;
+  background:linear-gradient(to right,var(--tg-green) 0 33.3%,var(--tg-gold) 33.3% 66.6%,
+  var(--tg-red) 66.6% 100%);}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:20px;}
+.chapo{font-family:"Newsreader",Georgia,serif; font-size:clamp(19px,2.3vw,23px);
+  line-height:1.55; font-weight:300; color:var(--ink2); max-width:60ch; margin:26px 0 0;}
+.meta{display:flex; flex-wrap:wrap; gap:8px 30px; margin-top:34px; padding-top:20px;
+  border-top:1px solid var(--rule); font-size:13px; color:var(--muted);}
+.meta b{color:var(--ink2); font-weight:600;}
+
+/* ---------- chiffres clés ---------- */
+.chiffres{display:grid; gap:1px; background:var(--rule); border:1px solid var(--rule);
+  border-radius:10px; overflow:hidden; margin:34px 0 8px;
+  grid-template-columns:repeat(auto-fit,minmax(168px,1fr));}
+.chiffre{background:var(--surface); padding:19px 20px 17px;}
+.chiffre .v{font-family:"Newsreader",Georgia,serif; font-size:36px; font-weight:600;
+  line-height:1; letter-spacing:-.02em; font-variant-numeric:tabular-nums;}
+.chiffre .l{font-size:12.5px; color:var(--muted); margin-top:9px; line-height:1.45;}
+.c-foret .v{color:var(--foret);} .c-energie .v{color:var(--energie);}
+.c-alerte .v{color:var(--alerte);}
+
+/* ---------- résumé exécutif ---------- */
+.resume{background:var(--surface); border:1px solid var(--rule); border-radius:12px;
+  padding:30px 32px; margin:34px 0 0;}
+.resume h2{font-size:22px; margin-bottom:14px;}
+.resume p{max-width:none;}
+.resume p:last-child{margin-bottom:0;}
+
+/* ---------- figures ---------- */
+figure{margin:30px 0; background:var(--fig-paper); border:1px solid var(--fig-rule);
+  border-radius:10px; padding:22px 24px 16px; overflow-x:auto;}
+figure svg{display:block; min-width:520px;}
+figcaption{font-size:12.5px; color:#66766C; margin-top:12px; padding-top:11px;
+  border-top:1px solid var(--fig-rule); line-height:1.5;}
+figcaption b{color:#131E18; font-weight:600;}
+
+/* ---------- encarts ---------- */
+.encart{border-left:3px solid var(--foret); background:var(--surface);
+  padding:17px 21px; border-radius:0 8px 8px 0; margin:24px 0;
+  border-top:1px solid var(--rule); border-right:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);}
+.encart .k{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--foret); display:block; margin-bottom:7px;}
+.encart p{margin:0; max-width:none; font-size:15px;}
+.encart p + p{margin-top:11px;}
+.encart.alerte{border-left-color:var(--alerte);} .encart.alerte .k{color:var(--alerte);}
+.encart.limite{border-left-color:var(--faint); background:var(--sunk);}
+.encart.limite .k{color:var(--muted);}
+
+/* ---------- recommandations ---------- */
+.reco{border:1px solid var(--rule); border-radius:12px; background:var(--surface);
+  padding:26px 28px; margin:22px 0;}
+.reco-tete{display:flex; align-items:baseline; gap:13px; flex-wrap:wrap;
+  margin-bottom:13px;}
+.reco-n{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.12em;
+  color:#fff; background:var(--foret); padding:3px 9px; border-radius:4px;}
+.reco h3{margin:0; font-size:23px;}
+.reco p{max-width:none;}
+.reco-grid{display:grid; gap:18px 26px; margin-top:18px; padding-top:18px;
+  border-top:1px solid var(--rule);
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));}
+.reco-grid .k{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted); display:block; margin-bottom:6px;}
+.reco-grid .t{font-size:14px; color:var(--ink2); line-height:1.55;}
+.r2 .reco-n{background:var(--energie);} .r3 .reco-n{background:var(--foret-d);}
+:root[data-theme="dark"] .reco-n,
+:root:not([data-theme="light"]) .reco-n{color:#0D1411;}
+
+/* ---------- tableaux ---------- */
+.tbl-wrap{overflow-x:auto; margin:24px 0; border:1px solid var(--rule);
+  border-radius:10px;}
+table{border-collapse:collapse; width:100%; font-size:14px; min-width:600px;}
+th{background:var(--sunk); text-align:left; padding:11px 15px; font-weight:600;
+  font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:var(--muted);
+  border-bottom:1px solid var(--rule);}
+td{padding:12px 15px; border-bottom:1px solid var(--rule); color:var(--ink2);
+  vertical-align:top; line-height:1.5;}
+tr:last-child td{border-bottom:none;}
+td strong{color:var(--ink);}
+.num-col{font-variant-numeric:tabular-nums; white-space:nowrap;}
+
+/* ---------- pied ---------- */
+.pied{margin-top:64px; padding-top:26px; border-top:1px solid var(--rule);
+  font-size:13px; color:var(--muted);}
+.pied p{max-width:none; font-size:13px; color:var(--muted);}
+
+@media print{
+  body{background:#fff; font-size:11pt;}
+  .wrap{max-width:none; padding:0;}
+  .sec{break-inside:auto; page-break-inside:auto;}
+  figure,.reco,.encart{break-inside:avoid; page-break-inside:avoid;}
+  h2{break-after:avoid;}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important;}}
+</style>
+
+<div class="wrap">
+
+<header class="cover">
+  <div class="filet"></div>
+  <div class="eyebrow">Défi 2 · Énergie, climat et forêts au Togo</div>
+  <h1>Le bois et la lumière</h1>
+  <p class="chapo">Le Togo veut électrifier tous ses villages d'ici 2030 tout en
+  protégeant ses forêts. Les données montrent que ces deux objectifs se jouent au
+  même endroit — dans la cuisine des ménages — et que la stratégie actuelle ne
+  regarde pas là.</p>
+  <div class="meta">
+    <span><b>6</b> jeux de données analysés</span>
+    <span><b>53</b> forêts classées cartographiées</span>
+    <span><b>10</b> stations météo</span>
+    <span><b>1998–2023</b> période couverte</span>
+  </div>
+</header>
+
+<div class="chiffres">
+  <div class="chiffre c-energie"><div class="v">25 %</div>
+    <div class="l">des ruraux ont accès à l'électricité en 2022, contre 96 % des
+    citadins</div></div>
+  <div class="chiffre c-alerte"><div class="v">89 %</div>
+    <div class="l">des ménages cuisinent au bois ou au charbon — une part inchangée
+    depuis 2014</div></div>
+  <div class="chiffre c-foret"><div class="v">5 011</div>
+    <div class="l">hectares de forêt disparus chaque année depuis 1990</div></div>
+  <div class="chiffre c-alerte"><div class="v">× 10</div>
+    <div class="l">l'accélération requise pour tenir l'objectif d'accès universel
+    en 2030</div></div>
+  <div class="chiffre c-foret"><div class="v">9</div>
+    <div class="l">forêts prioritaires qui ressortent quelle que soit la
+    pondération testée</div></div>
+</div>
+
+<div class="resume">
+  <h2>Ce que disent les données</h2>
+  <p>L'électrification rurale togolaise progresse réellement : de 3,1 % en 1998 à
+  25 % en 2022. Mais elle progresse de <strong>0,91 point par an</strong>, quand
+  l'objectif d'accès universel en 2030 en exigerait 9,4. Au rythme observé, le
+  dernier village togolais serait raccordé vers <strong>2104</strong>. Et le réseau
+  qui arrive n'est pas fiable : 93,8 % des entreprises raccordées subissaient des
+  coupures en 2016, contre 80,4 % en 2009.</p>
+
+  <p>Pendant ces vingt-cinq ans d'électrification, le couvert forestier n'a pas
+  cessé de reculer — 11,4 % perdus entre 1990 et 2021. La raison tient en une
+  statistique : <strong>0,9 % des ruraux ont accès à une cuisson propre</strong>.
+  L'électricité éclaire les foyers ; elle ne remplace pas le bois dans les marmites.
+  Entre les enquêtes ménages de 2014 et 2017, la part du bois de chauffe a même
+  <em>augmenté</em> de 3,6 points.</p>
+
+  <p>Cette dépendance est masquée par un indicateur flatteur. Le Togo affiche
+  <strong>75,1 % d'énergie « renouvelable »</strong> dans sa consommation finale —
+  un taux que peu de pays atteignent. Ce renouvelable est du bois de feu. Le même
+  pays affiche 11,9 % d'accès à une cuisson propre. Les deux chiffres décrivent la
+  même réalité vue de deux côtés.</p>
+
+  <p>Trois recommandations en découlent, dans cet ordre : donner la priorité à la
+  <strong>cuisson propre</strong>, qui touche 8,1 millions de Togolais et agit
+  simultanément sur la forêt, la santé et le climat ; déployer le <strong>solaire
+  décentralisé</strong> plutôt que d'attendre l'extension d'un réseau lui-même
+  instable ; et concentrer la protection forestière sur les <strong>neuf massifs
+  prioritaires</strong> identifiés par un indice de vulnérabilité robuste au
+  changement de pondération.</p>
+</div>
+
+
+<!-- ==================================================================== 1 -->
+<section class="sec">
+  <div class="marge"><span class="num">01</span>
+    <span class="tag">Méthode</span></div>
+  <div class="corps">
+    <h2>Ce qui entre dans l'analyse, et ce qui en a été écarté</h2>
+
+    <p>Les six jeux de données du défi ont été traités par un pipeline unique et
+    reproductible (<code>python src/build_gold.py</code>), qui écrit un journal
+    complet de ses opérations. Aucun chiffre de ce rapport n'a été saisi à la main :
+    tous sont recalculés depuis les fichiers sources à chaque exécution.</p>
+
+    <p>Un seul apport extérieur a été nécessaire : les <strong>coordonnées
+    géographiques des dix stations météo</strong>, absentes de tous les fichiers.
+    Sans elles, aucun croisement n'est possible entre le climat et l'espace
+    forestier, et l'analyse resterait strictement nationale. Elles figurent en clair
+    dans le code.</p>
+
+    <h3>Les problèmes de qualité rencontrés, et leur traitement</h3>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Constat</th><th>Traitement</th><th>Pourquoi pas autrement</th></tr></thead>
+      <tbody>
+        <tr><td><strong>22 % de doublons stricts</strong> dans le fichier Banque
+          Mondiale</td>
+          <td>Déduplication sur <span class="mono">(code indicateur, année)</span></td>
+          <td>Sans elle, moyennes et comptages sont biaisés</td></tr>
+        <tr><td>Précipitations <span class="mono">AG.LND.PRCP.MM</span> : valeur
+          constante répétée sur toutes les années</td>
+          <td>Écartées de toute analyse temporelle</td>
+          <td>Les tracer produirait une fausse tendance plate présentée comme un
+          résultat</td></tr>
+        <tr><td>Températures relevées <strong>au degré entier</strong></td>
+          <td>Gradient spatial exploité ; tendance sur 7 ans écartée</td>
+          <td>L'écart entre stations (6,4 °C) dépasse la précision de mesure ;
+          la dérive annuelle, non</td></tr>
+        <tr><td><strong>16 forêts sur 53</strong> ont un polygone de moins de 10 ha</td>
+          <td>Signalées, neutralisées dans l'indice, filtrables par l'utilisateur</td>
+          <td>Une surface de 5 ha est incompatible avec le statut de forêt classée :
+          c'est une numérisation partielle, pas une petite forêt</td></tr>
+        <tr><td>Année de classement absente pour <strong>17 forêts</strong>
+          (« Nsp », « Jadis »)</td>
+          <td>Variable écartée du score, aucune imputation</td>
+          <td>Imputer une date inventerait de l'information sur un tiers de
+          l'échantillon</td></tr>
+        <tr><td>Surfaces et distances en degrés décimaux</td>
+          <td>Reprojection en UTM 31N (EPSG:32631)</td>
+          <td>Une aire calculée en degrés carrés n'a pas de sens physique</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="encart limite"><span class="k">Périmètre</span>
+    <p>Aucun des six fichiers ne contient de donnée infranationale sur l'énergie.
+    L'électrification, la cuisson et les émissions ne sont disponibles qu'au niveau
+    national. Le seul croisement spatial rigoureux possible est celui construit ici :
+    forêts × stations météo × éloignement urbain. Toutes les recommandations
+    géographiques de ce rapport reposent sur cette construction, et sur rien
+    d'autre.</p></div>
+  </div>
+</section>
+
+
+<!-- ==================================================================== 2 -->
+<section class="sec">
+  <div class="marge"><span class="num">02</span>
+    <span class="tag">Objectif 1<br>Accès &amp; fiabilité</span></div>
+  <div class="corps">
+    <h2>Une fracture qui se comble trop lentement, un réseau qui ne tient pas</h2>
+
+    <p>En 2022, 96,5 % des citadins togolais ont accès à l'électricité contre 25 %
+    des ruraux : <strong>71,5 points d'écart</strong>. Le progrès rural est pourtant
+    réel — l'accès a été multiplié par huit depuis 1998. Le problème n'est pas la
+    direction, c'est la vitesse.</p>
+
+    <p>Sur vingt-quatre ans, l'accès rural a gagné 21,9 points, soit
+    <strong>0,91 point par an</strong>. Atteindre l'accès universel en 2030 demande
+    9,4 points par an. Le rapport est de un à dix. Traduit en personnes : il faudrait
+    raccorder environ <strong>465 000 ruraux par an</strong> jusqu'en 2030, contre
+    quelque 45 000 aujourd'hui. Prolongé tel quel, le rythme actuel place l'accès
+    universel rural aux alentours de <strong>2104</strong>.</p>
+
+    <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 210" width="100%" role="img" aria-label="L'objectif 2030 demande dix fois le rythme actuel"><rect width="760" height="210" fill="none"/><text x="0" y="17" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="15.5" font-weight="700" fill="#0C4F2B">L'objectif 2030 demande dix fois le rythme actuel</text><text x="0" y="35" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" fill="#6B7A8D">Accès rural à l'électricité · au rythme observé, l'accès universel tomberait en 2104</text><rect x="210" y="58" width="38.9" height="26" rx="4" fill="#94A3B8"/><text x="198.0" y="76.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#152238" text-anchor="end">Rythme observé 1998–2022</text><text x="258.9" y="76.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#94A3B8" text-anchor="start">+0,91 point/an</text><rect x="210" y="104" width="400.0" height="26" rx="4" fill="#C0392B"/><text x="198.0" y="122.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#152238" text-anchor="end">Rythme requis pour l'accès universel en 2030</text><text x="620.0" y="122.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#C0392B" text-anchor="start">+9,38 point/an</text><rect x="210" y="164" width="420" height="30" rx="6" fill="#C0392B" opacity=".07"/><text x="224.0" y="184.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="13" font-weight="700" fill="#C0392B" text-anchor="start">soit un effort à multiplier par 10</text><text x="198.0" y="184.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#152238" text-anchor="end">Écart à combler</text></svg><figcaption><b>Figure 2</b> — Rythme d'électrification rurale observé depuis 1998, comparé au rythme qu'exigerait l'accès universel en 2030.</figcaption></figure>
+
+    <p>Une accélération de cet ordre ne s'obtient pas en prolongeant le réseau
+    national. Le coût du raccordement croît avec la distance et la dispersion de
+    l'habitat, et 3,72 millions de ruraux — 75 % de la population rurale — restent à
+    couvrir. Un second constat, moins attendu, renforce cette conclusion.</p>
+
+    <h3>Le réseau existant n'est pas fiable, et il l'est de moins en moins largement</h3>
+
+    <p>Les enquêtes entreprises de la Banque Mondiale fournissent quatre mesures de
+    la fiabilité, sur deux vagues comparables. Leur lecture croisée est
+    contre-intuitive.</p>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Indicateur</th><th class="num-col">2009</th>
+        <th class="num-col">2016</th><th>Lecture</th></tr></thead>
+      <tbody>
+        <tr><td>Coupures par mois</td><td class="num-col">7,2</td>
+          <td class="num-col">5,5</td><td>Amélioration de la fréquence</td></tr>
+        <tr><td>Entreprises subissant des coupures</td><td class="num-col">80,4 %</td>
+          <td class="num-col"><strong>93,8 %</strong></td>
+          <td><strong>Dégradation de la couverture</strong></td></tr>
+        <tr><td>Chiffre d'affaires perdu (entreprises touchées)</td>
+          <td class="num-col">10,5 %</td><td class="num-col">3,7 %</td>
+          <td>Amélioration de l'intensité</td></tr>
+        <tr><td>Délai d'obtention d'un raccordement</td><td class="num-col">53,9 j</td>
+          <td class="num-col">71,9 j</td><td>Dégradation</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="encart alerte"><span class="k">Constat</span>
+    <p>Les coupures se raréfient mais elles se généralisent. La fréquence baisse
+    d'un quart entre 2009 et 2016, tandis que la part d'entreprises qui en subissent
+    passe de 80,4 % à 93,8 %. Le réseau s'est étendu plus vite qu'il ne s'est
+    consolidé : <strong>être raccordé au réseau national ne garantit pas un service
+    continu</strong>.</p></div>
+
+    <p>La conséquence opérationnelle est nette. Pour un village éloigné, la question
+    n'est pas « réseau ou solaire ? » mais « service fiable ou service intermittent ? ».
+    Un mini-réseau solaire avec stockage offre une disponibilité prévisible,
+    immédiate et dimensionnable au besoin réel — là où l'extension du réseau
+    apporterait, plus tard, un courant lui-même instable.</p>
+
+    <div class="encart limite"><span class="k">Limite</span>
+    <p>Ces indicateurs portent sur les <strong>entreprises</strong>, pas sur les
+    ménages : aucune source du défi ne mesure la fiabilité vécue par les foyers
+    ruraux. Ils constituent la meilleure approximation disponible, et plutôt un
+    minorant de ce que subissent les zones rurales. Deux vagues d'enquête ne font
+    par ailleurs pas une tendance : il faut les lire comme un contraste.</p></div>
+  </div>
+</section>
+
+
+<!-- ==================================================================== 3 -->
+<section class="sec">
+  <div class="marge"><span class="num">03</span>
+    <span class="tag">Objectif 2<br>Ménages &amp; forêts</span></div>
+  <div class="corps">
+    <h2>La marmite, pas l'ampoule</h2>
+
+    <p>Voici le résultat central de cette analyse. Sur vingt-cinq ans,
+    l'électrification rurale a été multipliée par huit. Sur la même période, le
+    couvert forestier a reculé chaque année, sans une seule reprise. Ces deux
+    courbes ne se contredisent pas : elles montrent que l'électricité et le bois de
+    feu ne sont pas en concurrence.</p>
+
+    <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" width="100%" role="img" aria-label="L'électrification progresse, la forêt recule sans interruption"><rect width="760" height="330" fill="none"/><text x="0" y="17" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="15.5" font-weight="700" fill="#0C4F2B">L'électrification progresse, la forêt recule sans interruption</text><text x="0" y="35" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" fill="#6B7A8D">Togo, 1998-2022 · Banque Mondiale</text><line x1="52" y1="290.0" x2="704" y2="290.0" stroke="#E4E9EF"/><text x="44.0" y="294.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#6B7A8D" text-anchor="end">0 %</text><line x1="52" y1="233.0" x2="704" y2="233.0" stroke="#E4E9EF"/><text x="44.0" y="237.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#6B7A8D" text-anchor="end">10 %</text><line x1="52" y1="176.0" x2="704" y2="176.0" stroke="#E4E9EF"/><text x="44.0" y="180.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#6B7A8D" text-anchor="end">20 %</text><line x1="52" y1="119.0" x2="704" y2="119.0" stroke="#E4E9EF"/><text x="44.0" y="123.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#6B7A8D" text-anchor="end">30 %</text><line x1="52" y1="62.0" x2="704" y2="62.0" stroke="#E4E9EF"/><text x="44.0" y="66.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#6B7A8D" text-anchor="end">40 %</text><text x="712.0" y="256.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#1B7A43" text-anchor="start">22 %</text><text x="712.0" y="180.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#1B7A43" text-anchor="start">23 %</text><text x="712.0" y="104.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#1B7A43" text-anchor="start">24 %</text><text x="52.0" y="307.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#6B7A8D" text-anchor="middle">1998</text><text x="215.0" y="307.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#6B7A8D" text-anchor="middle">2004</text><text x="378.0" y="307.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#6B7A8D" text-anchor="middle">2010</text><text x="541.0" y="307.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#6B7A8D" text-anchor="middle">2016</text><text x="704.0" y="307.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#6B7A8D" text-anchor="middle">2022</text><polygon points="52.0,290 52.0,125.5 79.2,138.5 106.3,151.6 133.5,155.7 160.7,159.8 187.8,164.0 215.0,168.1 242.2,172.2 269.3,176.4 296.5,180.5 323.7,184.6 350.8,188.8 378.0,192.9 405.2,197.0 432.3,201.2 459.5,205.3 486.7,209.5 513.8,213.6 541.0,217.7 568.2,221.9 595.3,226.0 622.5,230.1 649.7,234.3 676.8,238.4 676.8,290" fill="#1B7A43" opacity=".09"/><polyline points="52.0,125.5 79.2,138.5 106.3,151.6 133.5,155.7 160.7,159.8 187.8,164.0 215.0,168.1 242.2,172.2 269.3,176.4 296.5,180.5 323.7,184.6 350.8,188.8 378.0,192.9 405.2,197.0 432.3,201.2 459.5,205.3 486.7,209.5 513.8,213.6 541.0,217.7 568.2,221.9 595.3,226.0 622.5,230.1 649.7,234.3 676.8,238.4" fill="none" stroke="#1B7A43" stroke-width="2.8" stroke-linejoin="round"/><polyline points="52.0,272.3 79.2,272.1 106.3,253.5 133.5,259.2 160.7,252.9 187.8,246.7 215.0,240.4 242.2,234.1 269.3,247.8 296.5,222.7 323.7,216.5 350.8,210.8 378.0,237.0 405.2,197.1 432.3,199.9 459.5,192.5 486.7,169.7 513.8,177.1 541.0,170.3 568.2,178.9 595.3,140.1 622.5,153.8 649.7,151.5 676.8,149.2 704.0,147.5" fill="none" stroke="#E29014" stroke-width="2.8" stroke-linejoin="round"/><polyline points="106.3,290.0 133.5,289.4 160.7,289.4 187.8,289.4 215.0,288.9 242.2,288.9 269.3,288.3 296.5,288.3 323.7,287.7 350.8,287.7 378.0,287.1 405.2,286.6 432.3,286.6 459.5,286.0 486.7,286.0 513.8,286.0 541.0,285.4 568.2,285.4 595.3,285.4 622.5,284.9 649.7,285.4 676.8,284.9 704.0,284.9" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-dasharray="4 3"/><text x="698.0" y="138.5" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="700" fill="#E29014" text-anchor="end">25 %</text><text x="698.0" y="256.4" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="700" fill="#1B7A43" text-anchor="end">22.2 %</text><text x="541.0" y="301.9" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#C0392B" text-anchor="middle">cuisson propre rurale : 0.9 %</text><line x1="52" y1="318" x2="70" y2="318" stroke="#E29014" stroke-width="2.8"/><text x="76.0" y="322.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.8" font-weight="400" fill="#6B7A8D" text-anchor="start">Accès rural à l'électricité (axe gauche)</text><line x1="284" y1="318" x2="302" y2="318" stroke="#1B7A43" stroke-width="2.8"/><text x="308.0" y="322.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.8" font-weight="400" fill="#6B7A8D" text-anchor="start">Couvert forestier (axe droit)</text><line x1="516" y1="318" x2="534" y2="318" stroke="#C0392B" stroke-width="2.8" stroke-dasharray="4 3"/><text x="540.0" y="322.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.8" font-weight="400" fill="#6B7A8D" text-anchor="start">Cuisson propre rurale</text></svg><figcaption><b>Figure 1</b> — Accès rural à l'électricité, accès rural à une cuisson propre et couvert forestier, 1998-2022. L'accès progresse, la forêt recule, la cuisson ne bouge pas.</figcaption></figure>
+
+    <p>La troisième courbe donne la clé. L'accès rural à une cuisson propre est de
+    <strong>0,9 %</strong> en 2022, et il progresse de 0,04 point par an. Les ménages
+    ruraux togolais ont commencé à recevoir de l'électricité ; ils n'ont pas changé
+    de mode de cuisson. Or c'est la cuisson, pas l'éclairage, qui consomme la
+    ressource forestière.</p>
+
+    <h3>La dépendance ne recule pas — le bois brut progresse</h3>
+
+    <p>Les deux enquêtes ménages disponibles permettent de mesurer le mouvement réel
+    entre 2014 et 2017.</p>
+
+    <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 280" width="100%" role="img" aria-label="Le bois de chauffe progresse entre les deux enquêtes"><rect width="760" height="280" fill="none"/><text x="0" y="17" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="15.5" font-weight="700" fill="#0C4F2B">Le bois de chauffe progresse entre les deux enquêtes</text><text x="0" y="35" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" fill="#6B7A8D">Combustible principal de cuisson, % des ménages · enquêtes 2014 et 2017</text><text x="138.0" y="92.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#152238" text-anchor="end">Bois de chauffe</text><rect x="150" y="66" width="369.5" height="18" rx="3" fill="#94A3B8"/><text x="527.5" y="80.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#94A3B8" text-anchor="start">48,2 %</text><text x="158.0" y="80.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff" text-anchor="start">2014</text><rect x="150" y="88" width="397.1" height="18" rx="3" fill="#C0392B"/><text x="555.1" y="102.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#C0392B" text-anchor="start">51,8 %</text><text x="158.0" y="102.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff" text-anchor="start">2017</text><text x="752.0" y="92.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="700" fill="#C0392B" text-anchor="end">+3,6 pt</text><text x="138.0" y="154.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#152238" text-anchor="end">Charbon de bois</text><rect x="150" y="128" width="322.8" height="18" rx="3" fill="#94A3B8"/><text x="480.8" y="142.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#94A3B8" text-anchor="start">42,1 %</text><text x="158.0" y="142.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff" text-anchor="start">2014</text><rect x="150" y="150" width="288.3" height="18" rx="3" fill="#8C4A2F"/><text x="446.3" y="164.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#8C4A2F" text-anchor="start">37,6 %</text><text x="158.0" y="164.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff" text-anchor="start">2017</text><text x="752.0" y="154.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="700" fill="#6B7A8D" text-anchor="end">−4,5 pt</text><text x="138.0" y="216.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#152238" text-anchor="end">GPL / gaz</text><rect x="150" y="190" width="50.6" height="18" rx="3" fill="#94A3B8"/><text x="208.6" y="204.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#94A3B8" text-anchor="start">6,6 %</text><text x="158.0" y="204.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff" text-anchor="start">2014</text><rect x="150" y="212" width="67.5" height="18" rx="3" fill="#1B7A43"/><text x="225.5" y="226.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#1B7A43" text-anchor="start">8,8 %</text><text x="158.0" y="226.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff" text-anchor="start">2017</text><text x="752.0" y="216.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="700" fill="#1B7A43" text-anchor="end">+2,2 pt</text><rect x="150" y="248" width="590" height="34" rx="6" fill="#C0392B" opacity=".07"/><text x="164.0" y="270.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#C0392B" text-anchor="start">Total biomasse : 90,3 %  →  89,4 %  — la dépendance ne recule pas</text></svg><figcaption><b>Figure 3</b> — Combustible principal de cuisson entre les deux enquêtes ménages disponibles. Le total biomasse ne bouge pas ; sa composition se dégrade.</figcaption></figure>
+
+    <p>Le total biomasse passe de 90,3 % à 89,4 % : à l'échelle de la mesure, il ne
+    bouge pas. Mais sa composition, elle, se dégrade. Le charbon de bois recule de
+    4,5 points, le GPL gagne 2,2 points — et le <strong>bois de chauffe brut gagne
+    3,6 points</strong>. Le mouvement dominant n'est pas une transition vers le gaz :
+    c'est un glissement du charbon vers le bois brut, c'est-à-dire vers le
+    combustible le plus émetteur de particules à l'intérieur des habitations.</p>
+
+    <h3>Un indicateur qui dit l'inverse de ce qu'on croit</h3>
+
+    <p>Le jeu de données « énergies renouvelables, combustibles et déchets » place le
+    Togo à <strong>75,1 % d'énergie renouvelable</strong> dans sa consommation finale
+    en 2021. Peu de pays affichent un tel taux. Au même moment, 11,9 % des ménages
+    seulement ont accès à une cuisson propre.</p>
+
+    <div class="encart alerte"><span class="k">Le piège</span>
+    <p>« Renouvelable » ne veut pas dire « propre ». Ce renouvelable togolais est
+    très majoritairement du bois de feu et du charbon de bois : une biomasse
+    prélevée plus vite qu'elle ne se régénère, brûlée sans évacuation des fumées.</p>
+    <p>La conséquence pour le pilotage public est directe : le taux d'énergie
+    renouvelable est un <strong>mauvais indicateur de suivi</strong> de la transition
+    énergétique togolaise. Il baissera mécaniquement à mesure que les ménages
+    passeront au GPL ou à l'électricité — c'est-à-dire précisément quand la situation
+    s'améliorera. Les indicateurs à suivre sont l'accès à la cuisson propre
+    (<span class="mono">EG.CFT.ACCS.RU.ZS</span>) et la part des ménages sortis de la
+    biomasse.</p></div>
+
+    <h3>Ce que cela coûte</h3>
+
+    <p>Entre 1990 et 2021, le Togo a perdu <strong>1 554 km² de forêt</strong>, soit
+    155 350 hectares, soit 11,4 % de son couvert. Ramené à l'année :
+    <strong>5 011 hectares par an</strong>, en moyenne, sans interruption.</p>
+
+    <p>Le coût humain est du même ordre. L'exposition moyenne aux particules fines
+    atteint 51,7 µg/m³ en 2020, soit <strong>dix fois la ligne directrice de
+    l'OMS</strong> (5 µg/m³). La mortalité attribuée à la pollution de l'air s'élève
+    à 223 décès pour 100 000 habitants en 2019.</p>
+
+    <div class="encart limite"><span class="k">Limite</span>
+    <p>Le lien entre cuisson au bois et déforestation est <strong>corrélatif</strong>
+    dans les données du défi : aucun fichier ne mesure les prélèvements de
+    bois-énergie. C'est pourquoi le tableau de bord rend cette attribution
+    <em>paramétrable</em> par l'utilisateur plutôt que de la fixer arbitrairement.
+    Par ailleurs, l'indicateur PM2,5 mesure une exposition ambiante et non la
+    pollution intérieure des habitations, qui est la voie dominante pour la cuisson
+    au bois : il sous-estime l'exposition réelle des ménages concernés.</p></div>
+  </div>
+</section>
+
+
+<!-- ==================================================================== 4 -->
+<section class="sec">
+  <div class="marge"><span class="num">04</span>
+    <span class="tag">Objectif 3<br>Émissions</span></div>
+  <div class="corps">
+    <h2>Le secteur énergie n'est marginal que si l'on ne regarde que le CO₂</h2>
+
+    <p>L'inventaire national 2018 totalise 40 843 Gg d'émissions directes. La
+    répartition sectorielle publiée est sans appel : l'agriculture, la foresterie et
+    l'usage des terres pèsent <strong>87,7 %</strong>, l'énergie 6,2 %, l'industrie
+    6,1 %, les déchets 0,03 %. Cette prépondérance inclut le changement d'affectation
+    des sols et la déforestation : elle ne contredit pas l'enjeu forestier, elle le
+    confirme.</p>
+
+    <p>Mais un inventaire ne se lit pas seulement en totaux. Gaz par gaz, la
+    hiérarchie se renverse.</p>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Secteur</th><th class="num-col">Part du CO₂</th>
+        <th class="num-col">Part du CH₄</th><th class="num-col">Part du N₂O</th></tr></thead>
+      <tbody>
+        <tr><td>Agriculture &amp; forêts (AFAT)</td><td class="num-col">92,0 %</td>
+          <td class="num-col">5,0 %</td><td class="num-col">42,8 %</td></tr>
+        <tr><td>Industrie (PIUP)</td><td class="num-col">2,8 %</td>
+          <td class="num-col"><strong>71,9 %</strong></td><td class="num-col">0,0 %</td></tr>
+        <tr><td><strong>Énergie</strong></td><td class="num-col">5,2 %</td>
+          <td class="num-col">22,6 %</td>
+          <td class="num-col"><strong>57,0 %</strong></td></tr>
+        <tr><td>Déchets</td><td class="num-col">0,0 %</td><td class="num-col">0,6 %</td>
+          <td class="num-col">0,2 %</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>Le secteur énergie, qui ne représente que 5,2 % du CO₂, concentre
+    <strong>22,6 % du méthane et 57 % du protoxyde d'azote</strong> du pays. Ce sont
+    précisément les deux gaz caractéristiques de la <strong>combustion incomplète de
+    biomasse</strong> — c'est-à-dire des foyers de cuisson au bois.</p>
+
+    <h3>Un point de méthode qui change la conclusion</h3>
+
+    <p>Le total publié par l'inventaire est la <em>somme arithmétique des masses</em>
+    de gaz : une tonne de méthane y pèse autant qu'une tonne de CO₂. Or le méthane
+    réchauffe 28 fois plus, et le protoxyde d'azote 265 fois plus (PRG à 100 ans,
+    GIEC AR5). Recalculée en équivalent CO₂, la répartition change de nature.</p>
+
+    <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 336" width="100%" role="img" aria-label="Le classement des secteurs dépend de l'unité de lecture"><rect width="760" height="336" fill="none"/><text x="0" y="17" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="15.5" font-weight="700" fill="#0C4F2B">Le classement des secteurs dépend de l'unité de lecture</text><text x="0" y="35" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" fill="#6B7A8D">Inventaire GES 2018 · le total publié additionne des masses de gaz à poids égal</text><rect x="210" y="78.0" width="92" height="140.4" fill="#1B7A43" opacity=".92"/><text x="256.0" y="152.2" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#ffffff" text-anchor="middle">88 %</text><rect x="210" y="218.4" width="92" height="9.7" fill="#2E6F9E" opacity=".92"/><text x="256.0" y="227.2" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#ffffff" text-anchor="middle">6 %</text><rect x="210" y="228.1" width="92" height="9.9" fill="#E29014" opacity=".92"/><text x="256.0" y="237.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#ffffff" text-anchor="middle">6 %</text><rect x="210" y="237.9" width="92" height="1.2" fill="#94A3B8" opacity=".92"/><text x="256.0" y="260.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="600" fill="#152238" text-anchor="middle">Masse brute (source)</text><rect x="368" y="78.0" width="92" height="66.8" fill="#1B7A43" opacity=".92"/><text x="414.0" y="115.4" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#ffffff" text-anchor="middle">42 %</text><rect x="368" y="144.8" width="92" height="49.8" fill="#2E6F9E" opacity=".92"/><text x="414.0" y="173.7" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#ffffff" text-anchor="middle">31 %</text><rect x="368" y="194.6" width="92" height="42.9" fill="#E29014" opacity=".92"/><text x="414.0" y="220.1" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#ffffff" text-anchor="middle">27 %</text><rect x="368" y="237.5" width="92" height="1.2" fill="#94A3B8" opacity=".92"/><text x="414.0" y="260.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="600" fill="#152238" text-anchor="middle">Équivalent CO₂ (PRG AR5)</text><rect x="150" y="281" width="11" height="11" rx="2" fill="#1B7A43"/><text x="167.0" y="290.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="400" fill="#6B7A8D" text-anchor="start">Agriculture & forêts (AFAT)</text><rect x="450" y="281" width="11" height="11" rx="2" fill="#2E6F9E"/><text x="467.0" y="290.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="400" fill="#6B7A8D" text-anchor="start">Industrie (PIUP)</text><rect x="150" y="301" width="11" height="11" rx="2" fill="#E29014"/><text x="167.0" y="310.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="400" fill="#6B7A8D" text-anchor="start">Énergie</text><rect x="450" y="301" width="11" height="11" rx="2" fill="#94A3B8"/><text x="467.0" y="310.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="400" fill="#6B7A8D" text-anchor="start">Déchets</text><text x="308.0" y="90.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="20" font-weight="700" fill="#6B7A8D" text-anchor="middle">→</text><text x="752.0" y="260.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="700" fill="#E29014" text-anchor="end">l'énergie passe de 6 % à 27 %</text></svg><figcaption><b>Figure 5</b> — Répartition sectorielle des émissions 2018 selon l'unité de lecture : masse brute telle que publiée, puis équivalent CO₂ (PRG 100 ans, AR5).</figcaption></figure>
+
+    <div class="encart"><span class="k">Ce qu'il faut en retenir</span>
+    <p>L'affirmation « le secteur énergie ne pèse que 6 % des émissions togolaises »
+    est une <strong>lecture comptable, pas une lecture climatique</strong>. Elle
+    dépend entièrement d'une convention de mesure. Le tableau de bord propose les
+    deux lectures côte à côte, précisément pour que le décideur voie de quoi dépend
+    sa conclusion.</p></div>
+
+    <div class="encart limite"><span class="k">Prudence</span>
+    <p>Cette conversion est proposée comme <strong>test de sensibilité</strong>, non
+    comme un inventaire alternatif validé. La valeur de N₂O attribuée au secteur
+    énergie (76 Gg) est anormalement élevée au regard du total du secteur, ce qui
+    suggère une possible hétérogénéité d'unités dans la source. Nous l'affichons avec
+    cet avertissement plutôt que de la corriger silencieusement ou de la masquer.</p></div>
+  </div>
+</section>
+
+
+<!-- ==================================================================== 5 -->
+<section class="sec">
+  <div class="marge"><span class="num">05</span>
+    <span class="tag">Objectif 4<br>Climat</span></div>
+  <div class="corps">
+    <h2>Le gradient thermique plaide pour le solaire</h2>
+
+    <p>Dix stations couvrent le Togo du Sud au Nord, en relevés mensuels de 2013 à
+    2019. L'écart entre la station la plus fraîche — Kouma Konda, sur les hauteurs
+    des Plateaux, 29,1 °C de maximum moyen — et la plus chaude — Mango, dans les
+    Savanes, 35,5 °C — atteint <strong>6,4 °C</strong>. La température maximale
+    augmente d'environ 0,4 °C par degré de latitude vers le Nord.</p>
+
+    <p>La saisonnalité est plus instructive encore que le gradient. Le pic thermique
+    national tombe en <strong>mars</strong> (36,1 °C de maximum moyen), le creux en
+    <strong>août</strong> (29,3 °C) — c'est-à-dire au cœur de la saison des pluies.
+    L'amplitude jour/nuit croît elle aussi vers le Nord, jusqu'à 12,5 °C à Kara
+    contre 7,5 °C à Lomé.</p>
+
+    <div class="encart"><span class="k">Le lien avec l'énergie</span>
+    <p>Le maximum de besoin énergétique — ventilation, conservation des aliments,
+    pompage d'eau, protection des personnes fragiles — tombe en mars, en fin de
+    saison sèche. C'est exactement le moment où l'ensoleillement est maximal et la
+    couverture nuageuse minimale. <strong>La pointe de demande et la pointe de
+    production solaire coïncident</strong>, et cette coïncidence est la plus marquée
+    dans les régions du Nord : celles où l'accès à l'électricité est le plus faible,
+    et où se trouvent les forêts sèches les plus exposées.</p>
+    <p>Ce n'est pas une illustration, c'est un argument de dimensionnement : il
+    justifie de placer le photovoltaïque décentralisé en tête des options techniques
+    pour le Nord du pays.</p></div>
+
+    <div class="encart limite"><span class="k">Limite</span>
+    <p>Les relevés sont <strong>au degré entier</strong>. Le gradient spatial est
+    donc parfaitement exploitable — les écarts entre stations dépassent largement la
+    précision de mesure — mais la tendance sur sept ans ne l'est pas. Elle n'est pas
+    présentée ici comme une preuve de réchauffement, et le tableau de bord ne la
+    trace pas.</p></div>
+  </div>
+</section>
+
+
+<!-- ==================================================================== 6 -->
+<section class="sec">
+  <div class="marge"><span class="num">06</span>
+    <span class="tag">Objectif 5<br>Priorisation</span></div>
+  <div class="corps">
+    <h2>Cinquante-trois forêts, neuf priorités</h2>
+
+    <p>« Protéger les forêts » n'est pas une décision opérationnelle. « Protéger
+    Assoukoko » en est une. Les 53 polygones du fichier des zones protégées ont donc
+    été transformés en un classement actionnable.</p>
+
+    <p>Les géométries WKT sont reprojetées en UTM 31N avant tout calcul métrique,
+    puis trois composantes normalisées entre 0 et 1 sont combinées en un indice
+    sur 100.</p>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Composante</th><th class="num-col">Poids</th>
+        <th>Ce qu'elle mesure</th><th>Pourquoi elle compte</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Enclavement</strong></td><td class="num-col">0,40</td>
+          <td>Distance du centroïde au pôle urbain le plus proche</td>
+          <td>Plus une zone est loin d'une ville raccordée, moins elle a
+          d'alternative à la biomasse</td></tr>
+        <tr><td><strong>Enjeu / surface</strong></td><td class="num-col">0,35</td>
+          <td>Superficie du massif, en échelle logarithmique</td>
+          <td>L'effet d'une protection est proportionnel à ce qu'elle couvre ;
+          l'échelle log évite qu'un seul massif écrase le classement</td></tr>
+        <tr><td><strong>Stress thermique</strong></td><td class="num-col">0,25</td>
+          <td>Température maximale de la station de rattachement</td>
+          <td>Les forêts sèches du Nord sont plus exposées au stress hydrique et
+          au feu</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>Le tableau de bord rend ces trois poids <strong>réglables en direct</strong> :
+    le classement et la carte se recalculent à chaque mouvement de curseur. Le
+    décideur teste sa propre doctrine de priorisation plutôt que d'hériter de celle
+    de l'analyste.</p>
+
+    <h3>Le classement de tête ne dépend pas de la pondération</h3>
+
+    <p>Cinq jeux de poids différents ont été testés systématiquement. <strong>Neuf
+    forêts restent dans le top 10 dans les cinq cas.</strong> La tête du classement
+    est donc un résultat des données, pas un artefact de calibrage — c'est ce qui
+    autorise à en faire une cible budgétaire.</p>
+
+    <p>Les trois premières — <strong>Assoukoko</strong> (Centrale, 8 402 ha, 73 km du
+    pôle urbain le plus proche), <strong>Sadjibou</strong> (Kara, 18 313 ha, 67 km)
+    et les <strong>Deux Bena</strong> (Plateaux, 6 285 ha, 56 km) — partagent le même
+    profil : de grands massifs, très éloignés de toute ville raccordée, dans des
+    zones à stress thermique élevé. Ce sont précisément les endroits où le bois de
+    feu n'a pas d'alternative.</p>
+
+    <div class="encart limite"><span class="k">Limite</span>
+    <p>L'indice mesure une <strong>exposition au risque</strong>, pas un état
+    constaté de dégradation : le champ « état de la zone » du dictionnaire de données
+    n'est pas exporté dans le fichier fourni. Par ailleurs, le rattachement climatique
+    passe par la station météo la plus proche parmi dix, ce qui reste une
+    approximation grossière pour les massifs situés à mi-chemin entre deux
+    stations.</p></div>
+  </div>
+</section>
+
+
+<!-- ==================================================================== 7 -->
+<section class="sec">
+  <div class="marge"><span class="num">07</span>
+    <span class="tag">Objectif 6<br>Recommandations</span></div>
+  <div class="corps">
+    <h2>Trois leviers, dans cet ordre</h2>
+
+    <p>L'ordre n'est pas une préférence : il découle de la portée mesurée de chaque
+    levier.</p>
+
+    <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 240" width="100%" role="img" aria-label="Ce que chaque levier touche réellement"><rect width="760" height="240" fill="none"/><text x="0" y="17" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="15.5" font-weight="700" fill="#0C4F2B">Ce que chaque levier touche réellement</text><text x="0" y="35" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" fill="#6B7A8D">Population directement concernée · population totale 9,1 M</text><rect x="236" y="62" width="366.7" height="30" rx="4" fill="#C0392B"/><text x="224.0" y="82.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#152238" text-anchor="end">Cuisson propre</text><text x="612.7" y="82.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="700" fill="#C0392B" text-anchor="start">8,1 millions de personnes</text><rect x="236" y="114" width="168.6" height="30" rx="4" fill="#E29014"/><text x="224.0" y="134.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#152238" text-anchor="end">Électrification rurale décentralisée</text><text x="414.6" y="134.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="700" fill="#E29014" text-anchor="start">3,7 millions de personnes</text><rect x="236" y="170" width="494" height="30" rx="4" fill="#1B7A43" opacity=".10"/><text x="224.0" y="190.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#152238" text-anchor="end">Protection ciblée des forêts</text><text x="248.0" y="190.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="600" fill="#0C4F2B" text-anchor="start">9 massifs prioritaires · 91 468 ha — ne se compte pas en personnes</text><text x="224.0" y="228.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="400" fill="#6B7A8D" text-anchor="end">La cuisson propre concerne 2.2 fois plus de Togolais que l'électrification — et agit aussi sur la forêt, la santé et le climat.</text></svg><figcaption><b>Figure 4</b> — Population directement concernée par chacun des trois leviers. L'ordre de priorité des recommandations découle de cette mesure.</figcaption></figure>
+
+    <div class="reco r1">
+      <div class="reco-tete"><span class="reco-n">LEVIER 1</span>
+        <h3>Cuisson propre</h3></div>
+      <p>GPL subventionné en zone périurbaine et foyers améliorés certifiés en zone
+      rurale enclavée, distribués via les réseaux existants — coopératives, marchés
+      hebdomadaires, centres de santé.</p>
+      <div class="reco-grid">
+        <div><span class="k">Ce qui le justifie</span><div class="t">89,4 % des
+          ménages dépendent de la biomasse, et cette part n'a pas bougé entre 2014
+          et 2017 ; le bois brut a même gagné 3,6 points.</div></div>
+        <div><span class="k">Où agir</span><div class="t">Cantons riverains des
+          massifs du top 10, puis préfectures rurales des Plateaux et de la
+          Centrale.</div></div>
+        <div><span class="k">Cible 2030</span><div class="t">Passer de 0,9 % à 15 %
+          d'accès rural à une cuisson propre.</div></div>
+        <div><span class="k">Indicateur de suivi</span><div class="t"><span
+          class="mono">EG.CFT.ACCS.RU.ZS</span> — et surtout pas le taux d'énergie
+          renouvelable.</div></div>
+      </div>
+    </div>
+
+    <div class="reco r2">
+      <div class="reco-tete"><span class="reco-n">LEVIER 2</span>
+        <h3>Solaire villageois décentralisé</h3></div>
+      <p>Mini-réseaux solaires avec stockage pour les gros bourgs, kits domestiques
+      pour l'habitat dispersé, dimensionnés sur les usages productifs — mouture,
+      froid, pompage — et non sur le seul éclairage.</p>
+      <div class="reco-grid">
+        <div><span class="k">Ce qui le justifie</span><div class="t">Un facteur dix
+          de rythme à trouver, et un réseau national qui laisse 93,8 % des
+          entreprises raccordées subir des coupures.</div></div>
+        <div><span class="k">Où agir</span><div class="t">Zones à plus de 40 km d'un
+          pôle raccordé, priorité au Nord où le pic thermique de mars coïncide avec
+          le maximum d'ensoleillement.</div></div>
+        <div><span class="k">Cible 2030</span><div class="t">Environ 465 000 ruraux
+          raccordés par an jusqu'en 2030.</div></div>
+        <div><span class="k">Indicateur de suivi</span><div class="t"><span
+          class="mono">EG.ELC.ACCS.RU.ZS</span>, complété d'un indicateur de
+          disponibilité horaire qui n'existe pas encore.</div></div>
+      </div>
+    </div>
+
+    <div class="reco r3">
+      <div class="reco-tete"><span class="reco-n">LEVIER 3</span>
+        <h3>Protection ciblée des massifs prioritaires</h3></div>
+      <p>Concentrer surveillance, régénération assistée et agroforesterie sur un
+      nombre restreint de massifs, plutôt que de saupoudrer sur les 53 forêts
+      classées.</p>
+      <div class="reco-grid">
+        <div><span class="k">Ce qui le justifie</span><div class="t">11,4 % de
+          couvert perdu en 31 ans, sans une seule année de reprise.</div></div>
+        <div><span class="k">Où agir</span><div class="t">Les 9 massifs qui restent
+          dans le top 10 quelle que soit la pondération testée.</div></div>
+        <div><span class="k">Cible 2030</span><div class="t">Perte nette nulle sur
+          les massifs prioritaires.</div></div>
+        <div><span class="k">Indicateur de suivi</span><div class="t"><span
+          class="mono">AG.LND.FRST.K2</span> et un suivi surfacique par massif,
+          à créer.</div></div>
+      </div>
+    </div>
+
+    <h3>Une quatrième recommandation, de pilotage</h3>
+
+    <p>Abandonner <span class="mono">EG.FEC.RNEW.ZS</span> — le taux d'énergie
+    renouvelable — comme indicateur de progrès de la transition énergétique. Il
+    décrira une dégradation apparente au moment même où les ménages sortiront du bois
+    de feu. Le remplacer par la part des ménages sortis de la biomasse.</p>
+  </div>
+</section>
+
+
+<!-- ==================================================================== 8 -->
+<section class="sec">
+  <div class="marge"><span class="num">08</span>
+    <span class="tag">Portée</span></div>
+  <div class="corps">
+    <h2>Ce que ces données ne permettent pas de dire</h2>
+
+    <p>Le périmètre des recommandations s'arrête là où s'arrêtent les preuves.</p>
+
+    <ul>
+      <li><strong>Aucun coût, aucun budget.</strong> Les six jeux de données ne
+      contiennent ni prix des équipements, ni coût de raccordement, ni enveloppe
+      publique. Ce rapport décrit un ordre de priorité et des cibles physiques, pas
+      un plan de financement. Toute affirmation chiffrée sur le coût aurait été
+      inventée.</li>
+      <li><strong>Aucune maille infranationale pour l'énergie.</strong> Les
+      recommandations géographiques reposent sur le croisement forêts × stations ×
+      éloignement urbain construit ici, et non sur des taux d'accès locaux qui
+      n'existent pas.</li>
+      <li><strong>Le lien cuisson → déforestation est corrélatif</strong>, pas
+      mesuré. Le simulateur du tableau de bord rend l'attribution paramétrable pour
+      cette raison.</li>
+      <li><strong>La fiabilité est mesurée sur les entreprises</strong>, pas sur les
+      ménages, et sur deux vagues d'enquête seulement.</li>
+      <li><strong>Les températures sont au degré entier</strong>, sur sept ans : le
+      gradient spatial est exploitable, la tendance temporelle ne l'est pas.</li>
+    </ul>
+
+    <h3>Trois indicateurs manquent pour piloter cette politique</h3>
+
+    <ol>
+      <li>Une mesure de la <strong>disponibilité horaire</strong> du service
+      électrique, côté ménages — sans elle, « être raccordé » reste une donnée
+      binaire qui ne dit rien du service reçu.</li>
+      <li>Un <strong>suivi surfacique par massif forestier</strong> — le suivi
+      national actuel ne permet pas de vérifier si une politique ciblée fonctionne
+      là où elle est déployée.</li>
+      <li>Une <strong>enquête ménages sur les combustibles</strong> plus fréquente
+      que tous les trois ans, avec un découpage régional.</li>
+    </ol>
+  </div>
+</section>
+
+
+<!-- ================================================================ annexe -->
+<section class="sec">
+  <div class="marge"><span class="num">A</span>
+    <span class="tag">Annexe</span></div>
+  <div class="corps">
+    <h2>Le tableau de bord</h2>
+
+    <p>Ce rapport accompagne un tableau de bord interactif en six pages, construit
+    avec Python et Streamlit. Chaque analyse présentée ici y est explorable, et
+    chaque hypothèse y est réglable.</p>
+
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Page</th><th>Objectif du défi</th><th>Interactions</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Synthèse</strong></td><td>Vue décisionnelle</td>
+          <td>Filtre de période global</td></tr>
+        <tr><td><strong>Accès &amp; fiabilité</strong></td><td>Objectif 1</td>
+          <td>Cible d'accès 2030 réglable, projection tendancielle, effort recalculé
+          en personnes</td></tr>
+        <tr><td><strong>Cuisson &amp; forêts</strong></td><td>Objectif 2</td>
+          <td>Simulateur de sortie de la biomasse, attribution du recul forestier
+          paramétrable, unité du couvert au choix</td></tr>
+        <tr><td><strong>Émissions &amp; climat</strong></td><td>Objectifs 3 et 4</td>
+          <td>Sélecteur de gaz, bascule masse brute / équivalent CO₂, choix des
+          stations et de la mesure</td></tr>
+        <tr><td><strong>Où agir</strong></td><td>Objectif 5</td>
+          <td>Trois curseurs de pondération recalculant carte et classement en
+          direct, filtres région et qualité de surface</td></tr>
+        <tr><td><strong>Plan d'action</strong></td><td>Objectif 6</td>
+          <td>Simulateur de trajectoire 2030 à trois leviers</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>Reconstruction complète depuis les fichiers bruts :
+    <code>python src/build_gold.py</code> puis <code>python src/make_figures.py</code>.
+    Lancement : <code>streamlit run app/Accueil.py</code>.</p>
+  </div>
+</section>
+
+<footer class="pied">
+  <div class="filet" style="width:88px;height:3px;margin-bottom:18px"></div>
+  <p><strong>Sources.</strong> Les six jeux de données du Défi 2, portail
+  datalab.gouv.tg : indicateurs Banque Mondiale (Togo), inventaire national des GES
+  2018, CO₂ du secteur énergie, part des renouvelables dans l'énergie totale, relevés
+  de dix stations météorologiques 2013-2019, zones protégées et forêts classées.
+  Seul apport externe : les coordonnées géographiques des dix stations, ajoutées
+  depuis des sources géographiques publiques et documentées dans le code.</p>
+  <p>Méthodologie détaillée : <code>docs/sources.md</code>. Journal complet des
+  traitements : <code>data/gold/journal_construction.txt</code>.</p>
+</footer>
+
+</div>

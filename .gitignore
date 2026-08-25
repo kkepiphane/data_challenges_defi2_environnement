@@ -1,0 +1,42 @@
+# ---- Environnements virtuels ----
+venv/
+.venv/
+env/
+ENV/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# ---- Streamlit ----
+# config.toml est versionné (thème clair du dashboard), pas les secrets
+.streamlit/secrets.toml
+app/.streamlit/secrets.toml
+
+# ---- Éditeurs / OS ----
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# ---- Divers ----
+.env
+.env.*
+*.log
+tmp/
+.cache/
