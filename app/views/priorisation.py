@@ -1,11 +1,11 @@
-"""Objectif 5 — cartographier les 53 forêts classées et désigner les priorités."""
+"""Cartographie des 53 forêts classées et désignation des priorités."""
 import numpy as np
 import streamlit as st
 import plotly.graph_objects as go
 
 import data as D
-from theme import (C, banniere, section, kpi_row, kpi, encart, style_fig,
-                   barres_donnees, legende, pied, fr, titre_carte)
+from theme import (C, banniere, section, kpi_row, encart, style_fig,
+                   barres_donnees, legende, pied, fr, titre_carte, rgba, RAMPE)
 
 nat = D.national()
 R = nat["reperes"]
@@ -13,7 +13,7 @@ forets = D.forets()
 robust = D.robustesse()
 villes = D.villes()
 
-banniere("Objectif 5 · Cartographie des aires protégées",
+banniere("Les 53 forêts classées du territoire",
      "Cinquante-trois forêts classées, neuf priorités qui ne bougent pas",
      "Protéger « les forêts » n'est pas une décision opérationnelle : protéger "
      "Assoukoko l'est. Cette page construit un indice de vulnérabilité à trois "
@@ -117,10 +117,10 @@ with gauche:
 
     fig = go.Figure(go.Choroplethmap(
         geojson=gj_vue, locations=vue["FID"].astype(str), z=vue["score_live"],
-        colorscale=[[0, "#E3F1E8"], [.45, "#7FC095"], [.75, "#1B7A43"], [1, "#0C4F2B"]],
+        colorscale=[[0, RAMPE[0]], [.4, RAMPE[2]], [.72, RAMPE[4]], [1, RAMPE[5]]],
         zmin=float(d["score_live"].min()),
         zmax=float(max(d["score_live"].max(), d["score_live"].min() + 1e-6)),
-        marker=dict(line=dict(color="#0C4F2B", width=.7), opacity=.88),
+        marker=dict(line=dict(color=C["foret_d"], width=.7), opacity=.9),
         colorbar=dict(title=dict(text="Indice", side="right", font=dict(size=11)),
                       thickness=11, len=.62, x=.99, tickfont=dict(size=10)),
         customdata=np.stack([vue["etab_nom"], vue["region_nom_bdd"], vue["surface_ha"],
@@ -145,7 +145,7 @@ with gauche:
     st.plotly_chart(fig, width="stretch", config={"displayModeBar": False,
                                                   "scrollZoom": True})
     legende((C["foret_d"], "vert foncé = plus vulnérable"),
-            ("#E3F1E8", "vert clair = moins vulnérable"),
+            (RAMPE[0], "vert clair = moins vulnérable"),
             (C["energie"], "stations de rattachement"))
 
 with droite:

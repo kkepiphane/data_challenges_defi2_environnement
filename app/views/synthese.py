@@ -1,11 +1,11 @@
-"""Synthèse — la page que lit un décideur pressé : diagnostic, preuve, décision."""
+"""Vue d'ensemble — ce que lit un décideur pressé : diagnostic, preuve, décision."""
 import streamlit as st
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 import data as D
 from theme import (C, banniere, section, kpi_row, encart, style_fig, annote,
-                   titre_carte, pied, fr)
+                   titre_carte, pied, fr, rgba, FONT_T)
 
 nat = D.national()
 R = nat["reperes"]
@@ -16,7 +16,7 @@ er, ec, rs = R["elec_rural"], R["ecart_urbain_rural"], R["ruraux_sans_elec"]
 cb, df_, fi = R["combustibles"], R["deforestation"], R["fiabilite"]
 
 banniere(
-    "Synthèse décisionnelle",
+    "Diagnostic national · vue d'ensemble",
     "Électrifier les campagnes sans brûler les forêts",
     "Le Togo vise l'accès universel à l'électricité en 2030. Les données du défi montrent "
     "que l'objectif ne se joue pas seulement sur le réseau : il se joue sur la cuisson des "
@@ -26,30 +26,47 @@ banniere(
              ("Forêt / an", f"−{fr(df_['perte_ha_par_an'])} ha")])
 
 # ------------------------------------------------------------------ chiffres clés
-s_elec = list(D.serie(nat, "elec_rural")["valeur"])
-s_foret = list(D.serie(nat, "foret_pct")["valeur"])
-s_cuis = list(D.serie(nat, "cuisson_rural")["valeur"])
-s_pop = list(D.serie(nat, "pop_rurale")["valeur"])
+# Chaque micro-courbe doit tracer LA grandeur de sa tuile, pas une grandeur
+# voisine : une courbe qui ne correspond pas à son chiffre induit en erreur.
+_elec = D.serie(nat, "elec_rural")
+_pop_r = D.serie(nat, "pop_rurale").set_index("annee")["valeur"]
+_foret_km2 = D.serie(nat, "foret_km2")
+
+# ruraux privés d'électricité, année par année
+_prives = [(a, _pop_r[a] * (1 - v / 100))
+           for a, v in zip(_elec["annee"], _elec["valeur"]) if a in _pop_r.index]
+# perte forestière annuelle : dérivée du stock de couvert, en hectares
+_perte = [(int(_foret_km2["annee"].iloc[i]),
+           (_foret_km2["valeur"].iloc[i - 1] - _foret_km2["valeur"].iloc[i]) * 100)
+          for i in range(1, len(_foret_km2))]
+
+
+def _bornes(paires):
+    return (str(paires[0][0]), str(paires[-1][0]))
+
 
 kpi_row([
     ("Accès rural à l'électricité", f"{er['valeur']:.0f} %",
      f"contre {ec['urbain']:.0f} % en ville en {ec['annee']} — un écart de "
      f"{ec['valeur']:.0f} points", C["energie"],
-     f"+{er['rythme_observe']:.1f} pt/an", s_elec),
-    ("Ruraux sans électricité", f"{rs['personnes']/1e6:.1f} M",
+     f"+{fr(er['rythme_observe'], 1)} pt/an", list(_elec["valeur"]),
+     (str(er["annee_depart"]), str(er["annee"]))),
+    ("Ruraux sans électricité", f"{fr(rs['personnes']/1e6, 1)} M",
      f"personnes, soit {100-er['valeur']:.0f} % de la population rurale "
-     f"({er['annee']})", C["risque"], None, s_pop),
+     f"en {er['annee']}", C["risque"], None,
+     [v for _, v in _prives], _bornes(_prives)),
     ("Ménages au bois ou au charbon", f"{cb['biomasse'][1]:.0f} %",
      f"en {cb['annees'][1]} — la dépendance n'a pas reculé depuis "
-     f"{cb['annees'][0]} ({cb['biomasse'][0]:.0f} %)", C["risque"], "stable",
-     cb["biomasse"]),
+     f"{cb['annees'][0]}, où elle était de {cb['biomasse'][0]:.0f} %",
+     C["risque"], "stable"),
     ("Forêt perdue chaque année", f"{fr(df_['perte_ha_par_an'])} ha",
-     f"soit −{df_['perte_pct_relative']:.0f} % du couvert entre "
-     f"{df_['annee_debut']} et {df_['annee_fin']}", C["foret"], None, s_foret),
+     f"en moyenne, soit −{df_['perte_pct_relative']:.0f} % du couvert entre "
+     f"{df_['annee_debut']} et {df_['annee_fin']}", C["foret"], None,
+     [v for _, v in _perte], _bornes(_perte)),
     ("Accélération requise", f"× {er['facteur_acceleration']:.0f}",
-     f"pour l'accès universel rural en 2030 : +{er['rythme_requis_2030']:.1f} pt/an "
-     f"au lieu de +{er['rythme_observe']:.1f}", C["risque"], "hors trajectoire",
-     s_cuis),
+     f"pour l'accès universel rural en 2030 : il faudrait "
+     f"+{fr(er['rythme_requis_2030'], 1)} pt/an au lieu de "
+     f"+{fr(er['rythme_observe'], 1)}", C["risque"], "hors trajectoire"),
 ])
 
 st.write("")
@@ -89,7 +106,7 @@ with st.container(border=True):
     fig.add_trace(go.Scatter(
         x=foret["annee"], y=foret["valeur"], name="Couvert forestier (% du territoire)",
         line=dict(color=C["foret"], width=3.4), mode="lines", fill="tozeroy",
-        fillcolor="rgba(15,122,74,.10)",
+        fillcolor=rgba("foret", .10),
         hovertemplate="%{x} · %{y:.1f} %<extra>Couvert forestier</extra>"),
         secondary_y=True)
 
@@ -120,37 +137,40 @@ section("Quatre constats, quatre pages",
         "Chaque constat est démontré, chiffré et sourcé dans la page correspondante.")
 
 CARTES = [
-    ("Objectif 1", C["energie"], "La fracture ne se referme pas assez vite",
+    ("La fracture électrique", C["energie"],
+     "Le retard rural ne se comble pas assez vite",
      f"{ec['valeur']:.0f} points d'écart ville/campagne. Et le réseau lui-même est fragile : "
      f"{fi['coupures_mois']:.1f} coupures par mois, {fi['part_entreprises']:.0f} % des "
-     f"entreprises touchées en {fi['annee']}.", "Accès & fiabilité", "views/acces.py"),
-    ("Objectif 2", C["risque"], "Le « renouvelable » togolais, c'est du bois de feu",
+     f"entreprises touchées en {fi['annee']}.", "Voir la page", "views/acces.py"),
+    ("La marmite et la forêt", C["risque"],
+     "Le « renouvelable » togolais, c'est du bois de feu",
      f"{R['renouvelable_piege']['part_renouvelable']:.0f} % de l'énergie finale est classée "
      f"renouvelable, mais seulement "
      f"{R['renouvelable_piege']['part_cuisson_propre']:.0f} % des ménages cuisinent proprement. "
-     f"Renouvelable ne veut pas dire propre.", "Cuisson & forêts", "views/cuisson.py"),
-    ("Objectifs 3 & 4", C["urbain"], "L'énergie est marginale… seulement en CO₂",
+     f"Renouvelable ne veut pas dire propre.", "Voir la page", "views/cuisson.py"),
+    ("Ce que le CO₂ cache", C["urbain"],
+     "L'énergie n'est marginale qu'en dioxyde de carbone",
      f"Le secteur énergie ne pèse que {R['ges']['part_energie']:.0f} % des émissions totales, "
      f"mais {R['ges']['energie_dans_n2o']:.0f} % du protoxyde d'azote et "
-     f"{R['ges']['energie_dans_ch4']:.0f} % du méthane.", "Émissions & climat",
+     f"{R['ges']['energie_dans_ch4']:.0f} % du méthane.", "Voir la page",
      "views/emissions.py"),
-    ("Objectif 5", C["foret"], "Neuf forêts concentrent la priorité",
+    ("Les forêts à sauver", C["foret"],
+     "Neuf massifs concentrent toute la priorité",
      f"Sur les {R['forets']['nb']} forêts classées, {R['forets']['nb_robustes']} restent dans le "
      f"top 10 quelle que soit la pondération testée. La cible d'investissement est identifiée.",
-     "Où agir", "views/priorisation.py"),
+     "Voir la page", "views/priorisation.py"),
 ]
 cols = st.columns(4, gap="small")
 for col, (objectif, coul, titre, txt, lien, cible) in zip(cols, CARTES):
     with col:
         st.markdown(
             f'<div style="background:{C["surface"]};border:1px solid {C["bord"]};'
-            f'border-top:3px solid {coul};border-radius:4px 4px 12px 12px;'
-            f'padding:14px 16px 15px;height:184px;'
-            f'box-shadow:0 1px 2px rgba(7,42,32,.05)">'
-            f'<div style="font-size:9.5px;font-weight:900;letter-spacing:1.2px;'
-            f'text-transform:uppercase;color:{coul}">{objectif}</div>'
-            f'<div style="font-size:14.4px;font-weight:800;color:{C["encre"]};'
-            f'margin-top:9px;line-height:1.3;letter-spacing:-.2px">{titre}</div>'
+            f'border-radius:10px;padding:15px 17px 16px;height:186px">'
+            f'<div style="font-size:11px;font-weight:700;color:{coul};'
+            f'padding-bottom:9px;border-bottom:1px solid {C["bord"]}">'
+            f'{objectif}</div>'
+            f'<div style="font-family:{FONT_T};font-size:16.5px;font-weight:600;'
+            f'color:{C["encre"]};margin-top:11px;line-height:1.28">{titre}</div>'
             f'<div style="font-size:12px;color:{C["sourdine"]};margin-top:8px;'
             f'line-height:1.5">{txt}</div></div>', unsafe_allow_html=True)
         st.page_link(cible, label=lien, icon=":material/arrow_forward:")

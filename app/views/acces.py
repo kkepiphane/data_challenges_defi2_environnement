@@ -1,11 +1,11 @@
-"""Objectif 1 — accès à l'électricité (ville/campagne) et fiabilité du réseau."""
+"""Accès à l'électricité (ville / campagne) et fiabilité du réseau."""
 import numpy as np
 import streamlit as st
 import plotly.graph_objects as go
 
 import data as D
-from theme import (C, banniere, section, kpi_row, kpi, encart, style_fig, annote,
-                   pied, fr, titre_carte)
+from theme import (C, banniere, section, kpi_row, encart, style_fig, annote,
+                   pied, fr, titre_carte, rgba)
 
 nat = D.national()
 R = nat["reperes"]
@@ -14,7 +14,7 @@ an_max = st.session_state.get("an_max", 2023)
 
 er, ec, rs, fi = R["elec_rural"], R["ecart_urbain_rural"], R["ruraux_sans_elec"], R["fiabilite"]
 
-banniere("Objectif 1 · Accès à l'électricité",
+banniere("Accès à l'électricité et qualité du réseau",
      "Le réseau progresse, mais ni assez vite ni assez sûrement",
      "Deux questions commandent la stratégie d'électrification : à quelle vitesse l'écart "
      "ville / campagne se referme-t-il, et le courant, une fois arrivé, est-il fiable ? "
@@ -30,7 +30,7 @@ _ecart = list((_u.set_index("annee")["valeur"] - _r.set_index("annee")["valeur"]
 kpi_row([
     ("Accès rural", f"{er['valeur']:.0f} %",
      f"de la population rurale en {er['annee']}, contre "
-     f"{er['valeur_depart']:.1f} % en {er['annee_depart']}", C["energie"],
+     f"{fr(er['valeur_depart'], 1)} % en {er['annee_depart']}", C["energie"],
      f"× {er['valeur']/er['valeur_depart']:.0f} en {er['annee']-er['annee_depart']} ans",
      list(_r["valeur"])),
     ("Accès urbain", f"{ec['urbain']:.0f} %",
@@ -39,7 +39,7 @@ kpi_row([
     ("Écart ville / campagne", f"{ec['valeur']:.0f} pts",
      "l'ampleur de la fracture à combler d'ici 2030", C["risque"],
      "au plus haut", _ecart),
-    ("Coupures subies", f"{fi['coupures_mois']:.1f} /mois",
+    ("Coupures subies", f"{fr(fi['coupures_mois'], 1)} /mois",
      f"par les entreprises raccordées en {fi['annee']} "
      f"(enquête Banque Mondiale)", C["risque"],
      f"{fi['part_entreprises']:.0f} % touchées",
@@ -80,7 +80,7 @@ with onglet1:
                              hovertemplate="%{x} · %{y:.1f} %<extra>Urbain</extra>"))
     fig.add_trace(go.Scatter(x=rural["annee"], y=rural["valeur"], name="Rural",
                              line=dict(color=C["energie"], width=3), mode="lines",
-                             fill="tonexty", fillcolor="rgba(192,57,43,.10)",
+                             fill="tonexty", fillcolor=rgba("risque", .10),
                              hovertemplate="%{x} · %{y:.1f} %<extra>Rural</extra>"))
     fig.add_trace(go.Scatter(x=total["annee"], y=total["valeur"], name="Ensemble du pays",
                              line=dict(color=C["sourdine"], width=1.8, dash="dot"), mode="lines",
@@ -117,25 +117,19 @@ with onglet1:
     pers_tend_an = pop_rur * er["rythme_observe"] / 100
 
     st.write("")
-    c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        st.markdown(kpi("Rythme requis", f"+{pts_requis:.1f} pt/an",
-                        f"pour atteindre {cible} % en 2030", C["foret"]),
-                    unsafe_allow_html=True)
-    with c2:
-        st.markdown(kpi("Rythme observé", f"+{er['rythme_observe']:.2f} pt/an",
-                        f"moyenne {er['annee_depart']}–{er['annee']}", C["risque"],
-                        note=f"× {pts_requis/er['rythme_observe']:.0f} à trouver"),
-                    unsafe_allow_html=True)
-    with c3:
-        st.markdown(kpi("Personnes à raccorder", f"{fr(pers_an/1000)} k/an",
-                        f"soit {fr(pers_total/1e6, 1)} millions de ruraux d'ici 2030",
-                        C["energie"]), unsafe_allow_html=True)
-    with c4:
-        st.markdown(kpi("Au rythme actuel", f"{fr(pers_tend_an/1000)} k/an",
-                        f"l'accès universel rural serait atteint vers "
-                        f"{er['annee_atteinte_tendanciel']:.0f}", C["neutre"]),
-                    unsafe_allow_html=True)
+    kpi_row([
+        ("Rythme requis", f"+{fr(pts_requis, 1)} pt/an",
+         f"pour atteindre {cible} % en 2030", C["foret"]),
+        ("Rythme observé", f"+{fr(er['rythme_observe'], 2)} pt/an",
+         f"moyenne {er['annee_depart']}–{er['annee']}", C["risque"],
+         f"× {pts_requis/er['rythme_observe']:.0f} à trouver"),
+        ("Personnes à raccorder", f"{fr(pers_an/1000)} k/an",
+         f"soit {fr(pers_total/1e6, 1)} millions de ruraux d'ici 2030",
+         C["energie"]),
+        ("Au rythme actuel", f"{fr(pers_tend_an/1000)} k/an",
+         f"l'accès universel rural serait atteint vers "
+         f"{er['annee_atteinte_tendanciel']:.0f}", C["neutre"]),
+    ])
 
     st.write("")
     encart("constat",
@@ -166,9 +160,8 @@ with onglet2:
         ("pertes_ca",       "Chiffre d'affaires perdu",       "{:.1f} %", "moins de pertes"),
         ("delai_raccord",   "Délai de raccordement",          "{:.0f} j", "délai plus court"),
     ]
-    cols = st.columns(4)
-    lignes_pente = []
-    for col, (cle, label, fmt, mieux) in zip(cols, CARTES):
+    tuiles, lignes_pente = [], []
+    for cle, label, fmt, mieux in CARTES:
         df, lib, unite, code = D.fiab(nat, cle)
         df = df.drop_duplicates(subset="annee")
         if len(df) < 2:
@@ -178,12 +171,12 @@ with onglet2:
         ameliore = v1_ < v0_
         coul = C["foret"] if ameliore else C["risque"]
         fleche = "▼" if ameliore else "▲"
-        with col:
-            st.markdown(kpi(label, fmt.format(v1_),
-                            f"en {a1_} · était de {fmt.format(v0_)} en {a0_}",
-                            coul, note=f"{fleche} {abs(v1_-v0_):.1f}"),
-                        unsafe_allow_html=True)
+        tuiles.append((label, fmt.format(v1_),
+                       f"en {a1_} · était de {fmt.format(v0_)} en {a0_}",
+                       coul, f"{fleche} {abs(v1_-v0_):.1f}"))
         lignes_pente.append((label, a0_, v0_, a1_, v1_, coul, unite))
+    if tuiles:
+        kpi_row(tuiles)
 
     st.write("")
     g1, g2 = st.columns([1.15, 1])
@@ -218,7 +211,7 @@ with onglet2:
             x=dj["annee"], y=dj["valeur"], mode="lines+markers",
             line=dict(color=C["energie"], width=3, shape="hv"),
             marker=dict(size=7, color=C["energie"]), fill="tozeroy",
-            fillcolor="rgba(226,144,20,.10)",
+            fillcolor=rgba("energie", .10),
             hovertemplate="%{x} · %{y:.0f} jours<extra></extra>"))
         style_fig(fig3, hauteur=344)
         fig3.update_yaxes(title="jours", range=[0, 100])

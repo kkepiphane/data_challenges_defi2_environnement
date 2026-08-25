@@ -1,12 +1,12 @@
-"""Objectif 2 — consommation d'énergie des ménages, dépendance à la biomasse
-et impact sur le recul des forêts."""
+"""Consommation d'énergie des ménages, dépendance à la biomasse et impact
+sur le recul des forêts."""
 import numpy as np
 import streamlit as st
 import plotly.graph_objects as go
 
 import data as D
-from theme import (C, banniere, section, kpi_row, kpi, encart, style_fig, annote,
-                   pied, fr, titre_carte)
+from theme import (C, banniere, section, kpi_row, encart, style_fig, annote,
+                   pied, fr, titre_carte, rgba)
 
 nat = D.national()
 R = nat["reperes"]
@@ -16,21 +16,21 @@ an_max = st.session_state.get("an_max", 2023)
 cb, rp, dfr, sa = (R["combustibles"], R["renouvelable_piege"],
                    R["deforestation"], R["sante"])
 
-banniere("Objectif 2 · Consommation des ménages",
+banniere("Consommation des ménages et couvert forestier",
      "Le bois de feu n'est pas une énergie du passé : sa part augmente",
      "Neuf ménages togolais sur dix cuisinent au bois ou au charbon. Cette page montre "
      "que la dépendance ne recule pas, qu'elle est masquée par une statistique "
      "flatteuse — le « taux d'énergie renouvelable » — et qu'elle se paie en hectares "
      "de forêt et en vies humaines.",
      reperes=[("Ménages au bois", f"{cb['biomasse'][1]:.0f} %"),
-              ("Cuisson propre rurale", f"{R['cuisson_rurale']['valeur']:.1f} %"),
+              ("Cuisson propre rurale", f"{fr(R['cuisson_rurale']['valeur'], 1)} %"),
               ("Forêt / an", f"−{fr(dfr['perte_ha_par_an'])} ha")])
 
 kpi_row([
     ("Bois + charbon de bois", f"{cb['biomasse'][1]:.0f} %",
      f"des ménages en {cb['annees'][1]}, contre {cb['biomasse'][0]:.0f} % en "
      f"{cb['annees'][0]}", C["risque"], "aucun recul", cb["biomasse"]),
-    ("Cuisson propre en milieu rural", f"{R['cuisson_rurale']['valeur']:.1f} %",
+    ("Cuisson propre en milieu rural", f"{fr(R['cuisson_rurale']['valeur'], 1)} %",
      f"en {R['cuisson_rurale']['annee']} — progression de "
      f"+{R['cuisson_rurale']['rythme_observe']:.2f} pt/an", C["risque"], None,
      list(D.serie(nat, "cuisson_rural")["valeur"])),
@@ -76,7 +76,7 @@ with o1:
                              hovertemplate="%{y} · %{x:.1f} %<extra>"
                                            f"{cb['annees'][0]}</extra>"))
         fig.add_trace(go.Bar(y=labels, x=v1, name=str(cb["annees"][1]), orientation="h",
-                             marker_color=[C["risque"], "#8C4A2F", C["foret"], C["energie"]],
+                             marker_color=[C["risque"], C["charbon"], C["foret"], C["energie"]],
                              text=[f"{v:.1f} %" for v in v1], textposition="outside",
                              textfont=dict(size=11.5, color=C["encre"]),
                              hovertemplate="%{y} · %{x:.1f} %<extra>"
@@ -101,7 +101,7 @@ with o1:
                                   hovertemplate="%{x} · %{y:.1f} %<extra>Urbain</extra>"))
         fig2.add_trace(go.Scatter(x=cr["annee"], y=cr["valeur"], name="Rural",
                                   line=dict(color=C["risque"], width=3), mode="lines",
-                                  fill="tozeroy", fillcolor="rgba(192,57,43,.10)",
+                                  fill="tozeroy", fillcolor=rgba("risque", .10),
                                   hovertemplate="%{x} · %{y:.1f} %<extra>Rural</extra>"))
         style_fig(fig2, hauteur=360)
         fig2.update_yaxes(ticksuffix=" %", range=[0, 32], title=None)
@@ -144,7 +144,7 @@ with o2:
     fig3.add_trace(go.Scatter(x=ct["annee"], y=ct["valeur"],
                               name="Ménages ayant accès à une cuisson propre",
                               line=dict(color=C["risque"], width=3.2), mode="lines",
-                              fill="tonexty", fillcolor="rgba(192,57,43,.09)",
+                              fill="tonexty", fillcolor=rgba("risque", .09),
                               hovertemplate="%{x} · %{y:.1f} %<extra>Cuisson propre</extra>"))
     style_fig(fig3, hauteur=384)
     fig3.update_yaxes(ticksuffix=" %", range=[0, 92], title=None)
@@ -198,7 +198,7 @@ with o3:
     fig4 = go.Figure(go.Scatter(
         x=fo["annee"], y=fo["valeur"], mode="lines",
         line=dict(color=C["foret"], width=3.4), fill="tozeroy",
-        fillcolor="rgba(27,122,67,.10)",
+        fillcolor=rgba("foret", .10),
         hovertemplate="%{x} · %{y:,.0f}" + suffixe + "<extra></extra>"))
     style_fig(fig4, f"Couvert forestier ({unite})", hauteur=360)
     fig4.update_xaxes(title=None)
@@ -245,24 +245,18 @@ with o3:
     perte_apres = dfr["perte_ha_par_an"] - evite
     cumul_2030 = evite * 5     # 2026 -> 2030
 
-    r1, r2, r3, r4 = st.columns(4)
-    with r1:
-        st.markdown(kpi("Personnes concernées", f"{fr(personnes/1e6, 2)} M",
-                        f"{bascule} % de la population ({fr(pop/1e6, 1)} M en {an_pop})",
-                        C["energie"]), unsafe_allow_html=True)
-    with r2:
-        st.markdown(kpi("Perte forestière évitée", f"{fr(evite)} ha/an",
-                        f"sur les {fr(perte_bois)} ha/an imputés au bois-énergie",
-                        C["foret"]), unsafe_allow_html=True)
-    with r3:
-        st.markdown(kpi("Perte annuelle résiduelle", f"{fr(perte_apres)} ha/an",
-                        f"contre {fr(dfr['perte_ha_par_an'])} ha/an aujourd'hui",
-                        C["risque"] if perte_apres > 3000 else C["energie"]),
-                    unsafe_allow_html=True)
-    with r4:
-        st.markdown(kpi("Cumul 2026-2030", f"{fr(cumul_2030)} ha",
-                        "de forêt préservée sur cinq ans", C["foret"]),
-                    unsafe_allow_html=True)
+    kpi_row([
+        ("Personnes concernées", f"{fr(personnes/1e6, 2)} M",
+         f"{bascule} % de la population ({fr(pop/1e6, 1)} M en {an_pop})",
+         C["energie"]),
+        ("Perte forestière évitée", f"{fr(evite)} ha/an",
+         f"sur les {fr(perte_bois)} ha/an imputés au bois-énergie", C["foret"]),
+        ("Perte annuelle résiduelle", f"{fr(perte_apres)} ha/an",
+         f"contre {fr(dfr['perte_ha_par_an'])} ha/an aujourd'hui",
+         C["risque"] if perte_apres > 3000 else C["energie"]),
+        ("Cumul 2026-2030", f"{fr(cumul_2030)} ha",
+         "de forêt préservée sur cinq ans", C["foret"]),
+    ])
 
     # visualisation de l'effet
     fig5 = go.Figure()

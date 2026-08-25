@@ -1,20 +1,20 @@
-"""Objectifs 3 & 4 — bilan des émissions par secteur et par gaz,
-et variations du climat du Sud au Nord."""
+"""Bilan des émissions par secteur et par gaz, et variations du climat
+du Sud au Nord."""
 import numpy as np
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
 
 import data as D
-from theme import (C, MOIS, RAMPE_T, banniere, section, kpi_row, kpi, encart,
-                   style_fig, annote, pied, fr, titre_carte)
+from theme import (C, MOIS, RAMPE_T, banniere, section, kpi_row, encart,
+                   style_fig, annote, pied, fr, titre_carte, rgba)
 
 nat = D.national()
 R = nat["reperes"]
 an_min = st.session_state.get("an_min", 1998)
 an_max = st.session_state.get("an_max", 2023)
 
-banniere("Objectifs 3 & 4 · Émissions et climat",
+banniere("Inventaire des émissions et climat observé",
      "Le secteur énergie n'est marginal que si l'on ne regarde que le CO₂",
      "Le bilan 2018 place l'agriculture et l'usage des terres très loin devant. "
      "Mais un inventaire ne se lit pas seulement en totaux : gaz par gaz, et surtout "
@@ -30,7 +30,7 @@ COUL_SECT = {
     "Industrie (PIUP)": C["urbain"],
     "Déchets": C["neutre"],
 }
-COUL_GAZ = {"CO2": "#4A5568", "CH4": C["energie"], "N2O": C["risque"]}
+COUL_GAZ = {"CO2": C["ardoise"], "CH4": C["energie"], "N2O": C["risque"]}
 PRG = {"CO2": 1, "CH4": 28, "N2O": 265}       # PRG 100 ans, GIEC AR5
 
 gaz_df = pd.DataFrame(nat["ges_gaz"])
@@ -152,7 +152,7 @@ with o1:
     fig3 = go.Figure(go.Scatter(
         x=co2["annee"], y=co2["valeur"], mode="lines",
         line=dict(color=C["energie"], width=3), fill="tozeroy",
-        fillcolor="rgba(226,144,20,.10)",
+        fillcolor=rgba("energie", .10),
         hovertemplate="%{x} · %{y:.3f} Mt CO₂e<extra></extra>"))
     style_fig(fig3, "Émissions de CO₂ du secteur énergie (Mt CO₂e)", hauteur=300)
     fig3.update_yaxes(title="Mt CO₂e")
@@ -175,14 +175,14 @@ with o2:
     cl = R["climat"]
 
     kpi_row([
-        ("Amplitude entre stations", f"{cl['gradient']:.1f} °C",
+        ("Amplitude entre stations", f"{fr(cl['gradient'], 1)} °C",
          f"de {cl['ville_froide']} ({cl['t_froide']:.1f} °C) à "
          f"{cl['ville_chaude']} ({cl['t_chaude']:.1f} °C)", C["risque"]),
-        ("Pic thermique national", f"{cl['t_mois_chaud']:.1f} °C",
+        ("Pic thermique national", f"{fr(cl['t_mois_chaud'], 1)} °C",
          f"en {cl['mois_chaud_nom']}, en pleine saison sèche", C["risque"]),
-        ("Creux thermique", f"{cl['t_mois_froid']:.1f} °C",
+        ("Creux thermique", f"{fr(cl['t_mois_froid'], 1)} °C",
          f"en {cl['mois_froid_nom']}, au cœur de la saison des pluies", C["urbain"]),
-        ("Amplitude jour / nuit maximale", f"{cl['amplitude_max']:.1f} °C",
+        ("Amplitude jour / nuit maximale", f"{fr(cl['amplitude_max'], 1)} °C",
          f"à {cl['amplitude_max_ville']} — le contraste croît vers le Nord",
          C["energie"]),
     ])
@@ -243,7 +243,7 @@ with o2:
             mode="markers+text", text=vv["ville"], textposition="top center",
             textfont=dict(size=10, color=C["sourdine"]),
             marker=dict(size=13, color=vv[col_mes if col_mes in vv.columns else "t_max"],
-                        colorscale=[[0, "#2E6F9E"], [.5, C["energie"]], [1, C["risque"]]],
+                        colorscale=[[0, C["urbain"]], [.5, C["energie"]], [1, C["risque"]]],
                         line=dict(color="white", width=1.5)),
             hovertemplate="%{text}<br>latitude %{x:.2f}° · %{y:.1f} °C<extra></extra>"))
         if len(vv) > 2:

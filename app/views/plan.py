@@ -1,12 +1,12 @@
-"""Objectif 6 — recommandations pratiques et simulateur de trajectoire 2030."""
+"""Recommandations pratiques et simulateur de trajectoire 2030."""
 import numpy as np
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
 
 import data as D
-from theme import (C, banniere, section, kpi_row, kpi, encart, style_fig,
-                   legende, pied, fr, titre_carte)
+from theme import (C, banniere, section, kpi_row, encart, style_fig,
+                   legende, pied, fr, titre_carte, rgba, FONT_T)
 
 nat = D.national()
 R = nat["reperes"]
@@ -18,7 +18,7 @@ er, cb, dfr, sa, fi = (R["elec_rural"], R["combustibles"], R["deforestation"],
 pop = D.serie(nat, "pop_totale")["valeur"].iloc[-1]
 an_pop = int(D.serie(nat, "pop_totale")["annee"].iloc[-1])
 
-banniere("Objectif 6 · Recommandations",
+banniere("Recommandations et trajectoire 2030",
      "Trois leviers, dans cet ordre, et une manière de vérifier qu'ils marchent",
      "Les cinq pages précédentes convergent vers une hiérarchie que les données "
      "imposent : la cuisson propre avant le raccordement, le solaire décentralisé "
@@ -55,7 +55,7 @@ with g1:
              f"prioritaires, {fr(R['forets']['surface_totale_ha'])} ha : "
              "ne se compte pas en personnes",
         font=dict(size=12, color=C["foret"]), align="left",
-        bgcolor="rgba(27,122,67,.08)", borderpad=8)
+        bgcolor=rgba("foret", .08), borderpad=8)
     fig.update_xaxes(range=[0, pers_biomasse * 1.5], title="personnes",
                      tickvals=[0, 2e6, 4e6, 6e6, 8e6],
                      ticktext=["0", "2 M", "4 M", "6 M", "8 M"])
@@ -146,17 +146,16 @@ LEVIERS[2]["ou"] = (
 
 for lv in LEVIERS:
     st.markdown(
-        f'<div style="background:#fff;border:1px solid {C["bord"]};'
-        f'border-left:5px solid {lv["coul"]};border-radius:11px;padding:17px 21px;'
-        f'margin-bottom:13px;box-shadow:0 1px 2px rgba(21,34,56,.05)">'
-        f'<div style="display:flex;align-items:baseline;gap:12px">'
-        f'<span style="font-size:10.5px;font-weight:800;color:#fff;'
-        f'background:{lv["coul"]};letter-spacing:1.2px;padding:3px 9px;'
-        f'border-radius:4px;position:relative;top:-2px">LEVIER {lv["n"]}</span>'
-        f'<span style="font-size:19px;font-weight:800;color:{C["foret_d"]}">'
-        f'{lv["titre"]}</span></div>'
-        f'<div style="font-size:14px;color:{C["encre"]};margin-top:9px;line-height:1.6">'
-        f'{lv["quoi"]}</div></div>', unsafe_allow_html=True)
+        f'<div style="background:{C["surface"]};border:1px solid {C["bord"]};'
+        f'border-radius:10px;padding:18px 22px 19px;margin-bottom:13px">'
+        f'<div style="display:flex;align-items:baseline;gap:14px;'
+        f'padding-bottom:11px;border-bottom:1px solid {C["bord"]}">'
+        f'<span style="font-family:{FONT_T};font-size:29px;font-weight:600;'
+        f'color:{lv["coul"]};line-height:1">{lv["n"]}</span>'
+        f'<span style="font-family:{FONT_T};font-size:21px;font-weight:600;'
+        f'color:{C["encre"]}">{lv["titre"]}</span></div>'
+        f'<div style="font-size:14px;color:{C["encre_2"]};margin-top:12px;'
+        f'line-height:1.65">{lv["quoi"]}</div></div>', unsafe_allow_html=True)
     c1, c2, c3, c4 = st.columns(4)
     for col, (etiq, txt) in zip(
             [c1, c2, c3, c4],
@@ -164,8 +163,9 @@ for lv in LEVIERS:
              ("Cible 2030", lv["cible"]), ("Indicateur de suivi", lv["suivi"])]):
         with col:
             st.markdown(
-                f'<div style="font-size:10px;font-weight:800;letter-spacing:.9px;'
-                f'text-transform:uppercase;color:{lv["coul"]};margin-bottom:4px">'
+                f'<div style="font-size:10.5px;font-weight:600;letter-spacing:.4px;'
+                f'text-transform:uppercase;color:{C["sourdine"]};'
+                f'margin-bottom:5px">'
                 f'{etiq}</div>', unsafe_allow_html=True)
             st.markdown(f'<div style="font-size:12.5px;color:{C["sourdine"]};'
                         f'line-height:1.55">{txt}</div>', unsafe_allow_html=True)
@@ -209,7 +209,7 @@ kpi_row([
     ("Ruraux raccordés", f"{fr(raccordes/1e6, 2)} M",
      f"sur {fr(pers_sans_elec/1e6, 2)} M actuellement privés d'électricité",
      C["energie"]),
-    ("Cuisson propre rurale", f"{cuis_2030:.1f} %",
+    ("Cuisson propre rurale", f"{fr(cuis_2030, 1)} %",
      f"contre {R['cuisson_rurale']['valeur']:.1f} % en "
      f"{R['cuisson_rurale']['annee']}", C["foret"] if cuis_2030 >= 15 else C["risque"]),
     ("Perte forestière en 2030", f"{fr(perte_2030)} ha/an",
