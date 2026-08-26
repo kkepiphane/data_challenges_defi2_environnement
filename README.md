@@ -29,12 +29,12 @@ Six pages, une par objectif du défi, toutes construites sur le même principe :
 
 | Page | Objectif du défi | Interactions |
 |---|---|---|
-| 🧭 **Synthèse** | Vue décisionnelle | Filtre de période global |
-| ⚡ **Accès & fiabilité** | 1 — accès et coupures | Cible d'accès 2030 réglable, projection tendancielle, effort recalculé en personnes |
-| 🔥 **Cuisson & forêts** | 2 — ménages et biomasse | Simulateur de sortie de la biomasse, attribution du recul forestier paramétrable |
-| 🌍 **Émissions & climat** | 3 et 4 — GES et températures | Sélecteur de gaz, bascule masse brute / équivalent CO₂, choix des stations |
-| 🗺️ **Où agir** | 5 — cartographie | Trois curseurs de pondération recalculant carte et classement en direct |
-| ✅ **Plan d'action** | 6 — recommandations | Simulateur de trajectoire 2030 à trois leviers |
+| 🧭 **Diagnostic** | Vue décisionnelle | Filtre de période global |
+| ⚡ **Électrification** | 1 — accès et coupures | Cible d'accès 2030 réglable, projection tendancielle, effort recalculé en personnes |
+| 🔥 **Cuisson** | 2 — ménages et biomasse | Simulateur de sortie de la biomasse, attribution du recul forestier paramétrable |
+| 🌍 **Inventaire** | 3 et 4 — GES et températures | Sélecteur de gaz, bascule masse brute / équivalent CO₂, choix des stations |
+| 🗺️ **Forêts** | 5 — cartographie | Trois curseurs de pondération recalculant carte et classement en direct |
+| ✅ **Recommandations** | 6 — recommandations | Simulateur de trajectoire 2030 à trois leviers |
 
 ---
 
@@ -64,8 +64,10 @@ Six pages, une par objectif du défi, toutes construites sur le même principe :
 dashboard_defi2_togo/
 ├── app/                          tableau de bord Streamlit
 │   ├── Accueil.py                point d'entrée : navigation + filtres globaux
-│   ├── theme.py                  palette, composants, gabarit Plotly
+│   ├── theme.py                  composants, feuille de style, gabarit Plotly
+│   ├── palette.py                couleurs et fontes — source unique
 │   ├── data.py                   chargeurs mis en cache
+│   ├── assets/                   armoiries de la République togolaise
 │   └── views/                    une page par objectif du défi
 │       ├── synthese.py           vue décisionnelle
 │       ├── acces.py              objectif 1 — accès et fiabilité
