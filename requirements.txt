@@ -3,16 +3,19 @@
 # data/gold/, l'application n'a donc pas besoin de la chaîne géospatiale
 # complète — seulement de shapely pour relire les polygones WKT.
 #
-# Versions figées, et non « >= » : la mise en forme du tableau de bord vise
-# des identifiants du DOM de Streamlit (logo du volet, icône d'aide), qui
-# changent d'une version à l'autre. Avec une borne ouverte, le déploiement
-# installe la dernière version publiée et une partie de la feuille de style
-# ne s'applique plus — le rendu en ligne diverge alors de celui testé.
-streamlit==1.61.1
-plotly==6.9.0
-pandas==2.3.3
-numpy==2.2.6
-shapely==2.1.2
+# Bornes basses, jamais de version figée : la plateforme de déploiement
+# choisit son interpréteur (Python 3.14 au moment du rendu) et n'a de roues
+# que pour les versions récentes. Épingler des versions testées sur un autre
+# interpréteur empêche l'installation.
+#
+# La mise en forme ne dépend donc d'aucune version : les sélecteurs de la
+# feuille de style visent des identifiants par motif (« *Logo », « *Tooltip »)
+# plutôt qu'un nom exact, qui change d'une version de Streamlit à l'autre.
+streamlit>=1.40
+plotly>=5.20
+pandas>=2.2
+numpy>=1.26
+shapely>=2.0
 
 # Pour reconstruire data/gold/ depuis data/raw/ (src/build_gold.py),
 # installer en plus : pip install -r requirements-pipeline.txt
