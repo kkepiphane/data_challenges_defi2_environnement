@@ -8,6 +8,7 @@ La palette est celle du tableau de bord.
     python src/make_figures.py   ->  report/figures/*.svg
 """
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -15,10 +16,15 @@ GOLD = ROOT / "data" / "gold"
 OUT = ROOT / "report" / "figures"
 OUT.mkdir(parents=True, exist_ok=True)
 
-C = {"energie": "#E29014", "foret": "#1B7A43", "foret_d": "#0C4F2B",
-     "risque": "#C0392B", "urbain": "#2E6F9E", "neutre": "#94A3B8",
-     "ink": "#152238", "muted": "#6B7A8D", "line": "#E4E9EF"}
-FONT = "Inter,'Segoe UI',system-ui,sans-serif"
+# La palette du tableau de bord, et elle seule : le rapport et l'écran
+# doivent montrer les mêmes teintes. Les noms locaux sont conservés pour ne
+# pas réécrire les figures.
+sys.path.insert(0, str(ROOT / "app"))
+from palette import C as _P, FONT   # noqa: E402
+
+C = {"energie": _P["energie"], "foret": _P["foret"], "foret_d": _P["foret_d"],
+     "risque": _P["risque"], "urbain": _P["urbain"], "neutre": _P["neutre"],
+     "ink": _P["encre"], "muted": _P["sourdine"], "line": _P["bord"]}
 
 nat = json.load(open(GOLD / "diagnostic_national.json", encoding="utf-8"))
 R = nat["reperes"]

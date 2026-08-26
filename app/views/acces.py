@@ -21,7 +21,7 @@ banniere("Accès à l'électricité et qualité du réseau",
      "Les deux réponses pointent vers la même solution.",
      reperes=[("Accès rural", f"{er['valeur']:.0f} %"),
               ("Écart ville/campagne", f"{ec['valeur']:.0f} pts"),
-              ("Coupures/mois", f"{fi['coupures_mois']:.1f}")])
+              ("Coupures/mois", f"{fr(fi['coupures_mois'], 1)}")])
 
 # séries complètes pour les micro-courbes des tuiles
 _r = D.serie(nat, "elec_rural"); _u = D.serie(nat, "elec_urbain")
@@ -173,7 +173,7 @@ with onglet2:
         fleche = "▼" if ameliore else "▲"
         tuiles.append((label, fmt.format(v1_),
                        f"en {a1_} · était de {fmt.format(v0_)} en {a0_}",
-                       coul, f"{fleche} {abs(v1_-v0_):.1f}"))
+                       coul, f"{fleche} {fr(abs(v1_-v0_), 1)}"))
         lignes_pente.append((label, a0_, v0_, a1_, v1_, coul, unite))
     if tuiles:
         kpi_row(tuiles)
@@ -192,10 +192,10 @@ with onglet2:
             fig2.add_trace(go.Scatter(
                 x=[a0_, a1_], y=[n0, n1], mode="lines+markers+text",
                 line=dict(color=coul, width=2.6), marker=dict(size=9, color=coul),
-                text=[f"{v0_:.1f}", f"{v1_:.1f}"],
+                text=[f"{fr(v0_, 1)}", f"{fr(v1_, 1)}"],
                 textposition=["middle left", "middle right"],
                 textfont=dict(size=11.5, color=coul), name=label,
-                hovertemplate=f"{label}<br>%{{x}} : %{{customdata:.1f}} {unite}<extra></extra>",
+                hovertemplate=f"{label}<br>%{{x}} : %{{fr(customdata, 1)}} {unite}<extra></extra>",
                 customdata=[v0_, v1_], showlegend=True))
         style_fig(fig2, hauteur=344)
         fig2.update_xaxes(tickvals=[2009, 2016], range=[2006, 2019], title=None)
@@ -224,7 +224,7 @@ with onglet2:
     encart("alerte",
            f"<b>Les coupures se raréfient, mais elles se généralisent.</b> Entre "
            f"{fi['annee_ref']} et {fi['annee']}, la fréquence baisse "
-           f"({fi['coupures_mois_ref']:.1f} → {fi['coupures_mois']:.1f} coupures par mois), "
+           f"({fr(fi['coupures_mois_ref'], 1)} → {fr(fi['coupures_mois'], 1)} coupures par mois), "
            f"mais la part d'entreprises qui en subissent <b>augmente de "
            f"{fi['part_entreprises_ref']:.0f} % à {fi['part_entreprises']:.0f} %</b>. "
            f"Autrement dit : le réseau s'est étendu plus vite qu'il ne s'est consolidé. "
