@@ -183,7 +183,11 @@ section[data-testid="stSidebar"] a.stLogoLink {{
    clair : son intitulé, blanc, y devient invisible. On l'y masque — le
    chevron de dépliage suffit à revenir au menu. Streamlit distingue les deux
    emplacements par leur identifiant : `stSidebarLogo` et `stHeaderLogo`. */
-img[data-testid="stHeaderLogo"] {{ display:none !important; }}
+img[data-testid="stHeaderLogo"],
+[data-testid="stHeader"] img.stLogo,
+[data-testid="stToolbar"] img.stLogo,
+[data-testid="stSidebarCollapsedControl"] img.stLogo {{
+  display:none !important; }}
 /* L'en-tête du volet monte au ras de la fenêtre dès que la barre supérieure
    est masquée : on lui rend une respiration, l'emblème ne doit pas toucher
    le bord de l'écran. */
@@ -192,7 +196,8 @@ section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {{
 /* Le point d'interrogation d'aide est tracé par Streamlit en bleu nuit
    opaque à 60 % — invisible sur l'à-plat vert. Il est dessiné au trait, donc
    c'est `stroke` qu'il faut éclaircir, pas `color`. */
-section[data-testid="stSidebar"] [data-testid="stTooltipIcon"] svg {{
+section[data-testid="stSidebar"] [data-testid="stTooltipIcon"] svg,
+section[data-testid="stSidebar"] [data-testid="stTooltipHoverTarget"] svg {{
   stroke:{C['sur_nuit_2']} !important; }}
 section[data-testid="stSidebar"] [data-testid="stTooltipIcon"]:hover svg {{
   stroke:{C['sur_nuit']} !important; }}
