@@ -1,7 +1,7 @@
 """
 Archive de rendu du tableau de bord — le projet, et rien d'autre.
 
-    python src/make_zip.py   ->  Defi2_Togo_dashboard.zip
+    python src/make_zip.py   ->  Defi2_Togo_Energie_Climat_Forets.zip
 
 Ce que le jury reçoit : de quoi relancer le tableau de bord chez lui, et de
 quoi vérifier d'où viennent les chiffres. Rien d'autre.
@@ -21,11 +21,12 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-NOM = "Defi2_Togo_dashboard"
+NOM = "Defi2_Togo_Energie_Climat_Forets"
 ARCHIVE = ROOT / f"{NOM}.zip"
 LIMITE_MO = 20
 
 CONTENU = [
+    ".streamlit",                 # theme clair, lu depuis la racine
     "app",                        # le tableau de bord
     "data",                       # données brutes et données gold
     "docs",                       # provenance et définitions des indicateurs
