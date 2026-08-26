@@ -23,10 +23,7 @@ banniere("Recommandations et trajectoire 2030",
      "Les cinq pages précédentes convergent vers une hiérarchie que les données "
      "imposent : la cuisson propre avant le raccordement, le solaire décentralisé "
      "avant l'extension du réseau, et une protection ciblée plutôt qu'un discours "
-     "général sur la forêt.",
-     reperes=[("Levier n°1", "Cuisson propre"),
-              ("Population visée", f"{fr(pop*cb['biomasse'][1]/100/1e6, 1)} M"),
-              ("Massifs prioritaires", f"{R['forets']['nb_robustes']}")])
+     "général sur la forêt.")
 
 # ================================================== la portée comparée des leviers
 section("Pourquoi cet ordre : la portée comparée des trois leviers",
@@ -66,7 +63,7 @@ with g2:
     st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
     encart("constat",
            f"La cuisson propre concerne <b>{fr(pers_biomasse/1e6, 1)} millions</b> de "
-           f"Togolais, soit {pers_biomasse/pers_sans_elec:.1f} fois plus que "
+           f"Togolais, soit {fr(pers_biomasse/pers_sans_elec, 1)} fois plus que "
            f"l'électrification rurale ({fr(pers_sans_elec/1e6, 1)} M). C'est aussi le "
            f"seul levier qui agisse simultanément sur la <b>forêt</b> "
            f"({fr(dfr['perte_ha_par_an'])} ha/an), sur la <b>santé</b> "
@@ -85,7 +82,7 @@ LEVIERS = [
         "pourquoi": f"{cb['biomasse'][1]:.0f} % des ménages dépendent du bois ou du "
                     f"charbon, et cette part n'a pas bougé entre {cb['annees'][0]} et "
                     f"{cb['annees'][1]} — le bois brut a même gagné "
-                    f"{cb['bois'][1]-cb['bois'][0]:.1f} points.",
+                    f"{fr(cb['bois'][1]-cb['bois'][0], 1)} points.",
         "ou": "Priorité aux cantons riverains des forêts classées du top 10 "
               "(voir la page « Forêts »), puis aux préfectures rurales des Plateaux "
               "et de la Centrale, les plus peuplées parmi les zones enclavées.",
@@ -102,8 +99,8 @@ LEVIERS = [
                 "productifs (mouture, froid, pompage) et non sur le seul éclairage.",
         "pourquoi": f"Atteindre l'accès universel rural en 2030 exige de multiplier par "
                     f"{er['facteur_acceleration']:.0f} le rythme actuel "
-                    f"(+{er['rythme_observe']:.2f} pt/an). Et le réseau lui-même reste "
-                    f"instable : {fi['coupures_mois']:.1f} coupures par mois, "
+                    f"(+{fr(er['rythme_observe'], 2)} pt/an). Et le réseau lui-même reste "
+                    f"instable : {fr(fi['coupures_mois'], 1)} coupures par mois, "
                     f"{fi['part_entreprises']:.0f} % des entreprises touchées.",
         "ou": "Zones à plus de 40 km d'un pôle urbain raccordé — celles-là mêmes qui "
               "ressortent en tête de l'indice d'enclavement. Priorité au Nord, où le "
@@ -180,9 +177,9 @@ with s1:
     v_elec = st.slider("Rythme d'électrification rurale (points/an)",
                        0.5, 12.0, float(round(er["rythme_observe"], 1)), 0.5,
                        help=f"Rythme observé {er['annee_depart']}–{er['annee']} : "
-                            f"+{er['rythme_observe']:.2f} pt/an. "
+                            f"+{fr(er['rythme_observe'], 2)} pt/an. "
                             f"Rythme requis pour 2030 : "
-                            f"+{er['rythme_requis_2030']:.1f} pt/an.")
+                            f"+{fr(er['rythme_requis_2030'], 1)} pt/an.")
 with s2:
     v_cuis = st.slider("Population sortie de la biomasse d'ici 2030 (%)",
                        0, 60, 25, 5)
@@ -209,7 +206,7 @@ kpi_row([
      f"sur {fr(pers_sans_elec/1e6, 2)} M actuellement privés d'électricité",
      C["energie"]),
     ("Cuisson propre rurale", f"{fr(cuis_2030, 1)} %",
-     f"contre {R['cuisson_rurale']['valeur']:.1f} % en "
+     f"contre {fr(R['cuisson_rurale']['valeur'], 1)} % en "
      f"{R['cuisson_rurale']['annee']}", C["foret"] if cuis_2030 >= 15 else C["risque"]),
     ("Perte forestière en 2030", f"{fr(perte_2030)} ha/an",
      f"contre {fr(dfr['perte_ha_par_an'])} ha/an aujourd'hui", C["risque"]),
@@ -255,7 +252,7 @@ st.plotly_chart(fig2, width="stretch", config={"displayModeBar": False})
 if acces_2030 >= 99.5 and cuis_2030 >= 15:
     encart("action",
            f"Avec ces réglages, les deux cibles majeures sont tenues. Le prix à payer est "
-           f"explicite : un rythme d'électrification de +{v_elec:.1f} points par an, soit "
+           f"explicite : un rythme d'électrification de +{fr(v_elec, 1)} points par an, soit "
            f"{v_elec/er['rythme_observe']:.0f} fois le rythme historique, et une politique "
            f"de cuisson propre touchant {v_cuis} % de la population. "
            f"C'est un choix d'investissement, pas une projection.")
@@ -264,10 +261,10 @@ else:
     if acces_2030 < 99.5:
         manque.append(f"il manque {100-acces_2030:.0f} points d'accès rural")
     if cuis_2030 < 15:
-        manque.append(f"la cuisson propre rurale reste à {cuis_2030:.1f} %")
+        manque.append(f"la cuisson propre rurale reste à {fr(cuis_2030, 1)} %")
     encart("alerte",
            f"Avec ces réglages, l'objectif 2030 n'est pas tenu : {' et '.join(manque)}. "
-           f"Faites glisser les curseurs vers +{er['rythme_requis_2030']:.1f} pt/an "
+           f"Faites glisser les curseurs vers +{fr(er['rythme_requis_2030'], 1)} pt/an "
            f"d'électrification pour voir l'effort réellement nécessaire.")
 
 # ============================================================ tableau récapitulatif
@@ -279,7 +276,7 @@ recap = pd.DataFrame([
      "Où": "Cantons riverains du top 10, Plateaux et Centrale",
      "Cible 2030": "15 % d'accès rural à la cuisson propre",
      "Donnée qui la justifie": f"{cb['biomasse'][1]:.0f} % des ménages sur biomasse ; "
-                              f"bois +{cb['bois'][1]-cb['bois'][0]:.1f} pt en 3 ans",
+                              f"bois +{fr(cb['bois'][1]-cb['bois'][0], 1)} pt en 3 ans",
      "Indicateur de suivi": "EG.CFT.ACCS.RU.ZS"},
     {"Priorité": "2", "Action": "Mini-réseaux solaires + kits domestiques",
      "Où": "Zones à plus de 40 km d'un pôle raccordé, priorité Nord",

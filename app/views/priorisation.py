@@ -18,10 +18,7 @@ banniere("Les 53 forêts classées du territoire",
      "Protéger « les forêts » n'est pas une décision opérationnelle : protéger "
      "Assoukoko l'est. Cette page construit un indice de vulnérabilité à trois "
      "composantes, le rend entièrement réglable, et vérifie quelles priorités "
-     "résistent au changement de pondération.",
-     reperes=[("Forêts classées", f"{R['forets']['nb']}"),
-              ("Priorités robustes", f"{R['forets']['nb_robustes']}"),
-              ("Éloignement médian", f"{R['forets']['dist_mediane']:.0f} km")])
+     "résistent au changement de pondération.")
 
 kpi_row([
     ("Forêts classées analysées", f"{R['forets']['nb']}",

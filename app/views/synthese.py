@@ -20,10 +20,7 @@ banniere(
     "Électrifier les campagnes sans brûler les forêts",
     "Le Togo vise l'accès universel à l'électricité en 2030. Les données du défi montrent "
     "que l'objectif ne se joue pas seulement sur le réseau : il se joue sur la cuisson des "
-    "ménages, qui consomme la forêt. Diagnostic en cinq chiffres, preuve, et lieu d'action.",
-    reperes=[("Accès rural", f"{er['valeur']:.0f} %"),
-             ("Ménages au bois", f"{cb['biomasse'][1]:.0f} %"),
-             ("Forêt / an", f"−{fr(df_['perte_ha_par_an'])} ha")])
+    "ménages, qui consomme la forêt. Diagnostic en cinq chiffres, preuve, et lieu d'action.")
 
 # ------------------------------------------------------------------ chiffres clés
 # Chaque micro-courbe doit tracer LA grandeur de sa tuile, pas une grandeur
@@ -73,8 +70,8 @@ st.write("")
 encart("alerte",
        f"<b>Le rythme actuel ne mène pas à 2030, il mène à "
        f"{er['annee_atteinte_tendanciel']:.0f}.</b> L'électrification rurale progresse de "
-       f"+{er['rythme_observe']:.2f} point par an depuis {er['annee_depart']}. Pour atteindre "
-       f"100 % en 2030, il faudrait +{er['rythme_requis_2030']:.1f} points par an, soit "
+       f"+{fr(er['rythme_observe'], 2)} point par an depuis {er['annee_depart']}. Pour atteindre "
+       f"100 % en 2030, il faudrait +{fr(er['rythme_requis_2030'], 1)} points par an, soit "
        f"{er['facteur_acceleration']:.0f} fois plus vite. L'extension du réseau seule ne peut "
        f"pas produire cette accélération : c'est l'argument central en faveur du "
        f"<b>solaire décentralisé</b>.",
@@ -118,10 +115,10 @@ with st.container(border=True):
         row=2, col=1)
 
     style_fig(fig, hauteur=440)
-    fig.update_yaxes(title="Accès (% de la population rurale)", ticksuffix=" %",
-                     range=[0, 40], row=1, col=1)
-    fig.update_yaxes(title="Couvert forestier (% du territoire)", ticksuffix=" %",
-                     row=2, col=1)
+    # Pas de titre d'axe : la légende nomme déjà chaque série avec son unité,
+    # et deux titres verticaux sur deux panneaux se chevauchaient.
+    fig.update_yaxes(title=None, ticksuffix=" %", range=[0, 40], row=1, col=1)
+    fig.update_yaxes(title=None, ticksuffix=" %", row=2, col=1)
     fig.update_xaxes(title=None)
     if len(elec):
         annote(fig, int(elec["annee"].iloc[-1]), float(elec["valeur"].iloc[-1]),
@@ -129,11 +126,11 @@ with st.container(border=True):
                row=1, col=1)
     if len(cuis):
         annote(fig, int(cuis["annee"].iloc[-1]), float(cuis["valeur"].iloc[-1]),
-               f"{cuis['valeur'].iloc[-1]:.1f} % — quasi nul", C["risque"],
+               f"{fr(cuis['valeur'].iloc[-1], 1)} % — quasi nul", C["risque"],
                ax=-58, ay=26, row=1, col=1)
     if len(foret) > 1:
         annote(fig, int(foret["annee"].iloc[-1]), float(foret["valeur"].iloc[-1]),
-               f"{foret['valeur'].iloc[0]:.1f} % → {foret['valeur'].iloc[-1]:.1f} % "
+               f"{fr(foret['valeur'].iloc[0], 1)} % → {fr(foret['valeur'].iloc[-1], 1)} % "
                f"du territoire", C["foret"], ax=-96, ay=-20, row=2, col=1)
     st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
 
@@ -142,7 +139,7 @@ encart("constat",
        f"rural à l'électricité a été multiplié par "
        f"{er['valeur']/er['valeur_depart']:.0f}. Le couvert forestier, lui, n'a jamais cessé de "
        f"reculer. La raison tient dans la troisième courbe : la <b>cuisson</b> propre rurale "
-       f"reste à {R['cuisson_rurale']['valeur']:.1f} %. L'électricité éclaire les foyers, elle "
+       f"reste à {fr(R['cuisson_rurale']['valeur'], 1)} %. L'électricité éclaire les foyers, elle "
        f"ne remplace pas le bois dans les marmites — et c'est la marmite, pas l'ampoule, qui "
        f"consomme la forêt.")
 
@@ -154,7 +151,7 @@ CARTES = [
     ("Électrification", C["energie"],
      "Le retard rural ne se comble pas assez vite",
      f"{ec['valeur']:.0f} points d'écart ville/campagne. Et le réseau lui-même est fragile : "
-     f"{fi['coupures_mois']:.1f} coupures par mois, {fi['part_entreprises']:.0f} % des "
+     f"{fr(fi['coupures_mois'], 1)} coupures par mois, {fi['part_entreprises']:.0f} % des "
      f"entreprises touchées en {fi['annee']}.", "Voir la page", "views/acces.py"),
     ("Cuisson", C["risque"],
      "Le « renouvelable » togolais, c'est du bois de feu",

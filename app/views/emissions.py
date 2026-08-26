@@ -19,10 +19,7 @@ banniere("Inventaire des émissions et climat observé",
      "Le bilan 2018 place l'agriculture et l'usage des terres très loin devant. "
      "Mais un inventaire ne se lit pas seulement en totaux : gaz par gaz, et surtout "
      "en équivalent CO₂, la hiérarchie des secteurs change complètement. "
-     "La seconde partie relie le climat observé aux besoins énergétiques.",
-     reperes=[("Total GES 2018", f"{fr(R['ges']['total_gg'])} Gg"),
-              ("Part énergie", f"{R['ges']['part_energie']:.0f} %"),
-              ("Énergie dans le N₂O", f"{R['ges']['energie_dans_n2o']:.0f} %")])
+     "La seconde partie relie le climat observé aux besoins énergétiques.")
 
 COUL_SECT = {
     "Agriculture & forêts (AFAT)": C["foret"],
@@ -91,7 +88,7 @@ with o1:
         fig = go.Figure(go.Bar(
             y=agg["secteur_court"], x=agg["val"], orientation="h",
             marker_color=[COUL_SECT.get(s, C["neutre"]) for s in agg["secteur_court"]],
-            text=[f"{p:.1f} %" for p in agg["part"]], textposition="outside",
+            text=[f"{fr(p, 1)} %" for p in agg["part"]], textposition="outside",
             textfont=dict(size=12.5),
             hovertemplate="%{y}<br>%{x:,.0f} " + unite + " · %{text}<extra></extra>"))
         style_fig(fig, hauteur=326, marge_g=0)
@@ -176,8 +173,8 @@ with o2:
 
     kpi_row([
         ("Amplitude entre stations", f"{fr(cl['gradient'], 1)} °C",
-         f"de {cl['ville_froide']} ({cl['t_froide']:.1f} °C) à "
-         f"{cl['ville_chaude']} ({cl['t_chaude']:.1f} °C)", C["risque"]),
+         f"de {cl['ville_froide']} ({fr(cl['t_froide'], 1)} °C) à "
+         f"{cl['ville_chaude']} ({fr(cl['t_chaude'], 1)} °C)", C["risque"]),
         ("Pic thermique national", f"{fr(cl['t_mois_chaud'], 1)} °C",
          f"en {cl['mois_chaud_nom']}, en pleine saison sèche", C["risque"]),
         ("Creux thermique", f"{fr(cl['t_mois_froid'], 1)} °C",
@@ -222,7 +219,7 @@ with o2:
             fig4.add_trace(go.Scatter(
                 x=[MOIS[m - 1] for m in sub["mois"]], y=sub[col_mes], name=v,
                 mode="lines", line=dict(color=coul, width=2.4),
-                hovertemplate=f"{v} · %{{x}} : %{{y:.1f}} °C<extra></extra>"))
+                hovertemplate=f"{v} · %{{x}} : %{{fr(y, 1)}} °C<extra></extra>"))
         style_fig(fig4, hauteur=384)
         fig4.update_yaxes(title="°C")
         fig4.update_xaxes(title=None)
@@ -255,7 +252,7 @@ with o2:
                                       hoverinfo="skip"))
             r = np.corrcoef(vv["lat"], yv)[0, 1]
             annote(fig5, float(xs[len(xs)//2]), float(a * xs[len(xs)//2] + b),
-                   f"+{a:.2f} °C par degré<br>de latitude (r = {r:.2f})",
+                   f"+{fr(a, 2)} °C par degré<br>de latitude (r = {fr(r, 2)})",
                    C["sourdine"], ax=0, ay=-46)
         style_fig(fig5, f"{mesure} selon la latitude", hauteur=400)
         fig5.update_xaxes(title="latitude Nord (°)")
@@ -264,13 +261,13 @@ with o2:
 
     encart("constat",
            f"Le Togo s'étire sur près de 700 km du Sud au Nord et cela se lit dans les "
-           f"températures : {cl['gradient']:.1f} °C séparent la station la plus fraîche "
+           f"températures : {fr(cl['gradient'], 1)} °C séparent la station la plus fraîche "
            f"({cl['ville_froide']}, sur les hauteurs des Plateaux) de la plus chaude "
            f"({cl['ville_chaude']}, dans les Savanes). Le pic national tombe en "
-           f"<b>{cl['mois_chaud_nom']}</b> ({cl['t_mois_chaud']:.1f} °C de maximum moyen) — "
+           f"<b>{cl['mois_chaud_nom']}</b> ({fr(cl['t_mois_chaud'], 1)} °C de maximum moyen) — "
            f"c'est-à-dire en fin de saison sèche, avant les pluies. "
            f"L'amplitude jour/nuit croît elle aussi vers le Nord, jusqu'à "
-           f"{cl['amplitude_max']:.1f} °C à {cl['amplitude_max_ville']}.")
+           f"{fr(cl['amplitude_max'], 1)} °C à {cl['amplitude_max_ville']}.")
     encart("action",
            f"<b>Le lien avec l'énergie est un argument, pas une illustration.</b> "
            f"Le maximum de besoin — ventilation, conservation des aliments, pompage d'eau, "

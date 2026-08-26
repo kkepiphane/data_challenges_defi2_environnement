@@ -62,54 +62,14 @@ def logo_menu():
         f'fill="#93BFA6">datalab.gouv.tg</text></svg>')
 
 
+
+
 # ============================================================== palette
-C = {
-    # chrome
-    "nuit":      "#0A3325",
-    "nuit_2":    "#124A34",
-    "sur_nuit":  "#E9F2EC",
-    "sur_nuit_2": "#93BFA6",
-
-    # surfaces
-    "canvas":    "#EFF2F0",
-    "surface":   "#FFFFFF",
-    "sunk":      "#F5F7F6",
-    "bord":      "#D5DED8",
-    "bord_fort": "#B6C4BC",
-
-    # familles sémantiques — une teinte, une signification
-    "foret":     "#0F7A4A",   # forêt · propre · solution
-    "foret_l":   "#E7F2EB",
-    "foret_d":   "#0A5533",
-    "energie":   "#B87407",   # énergie · électricité
-    "energie_l": "#FBF0DC",
-    "risque":    "#B32418",   # biomasse · risque · émissions
-    "risque_l":  "#FBE7E4",
-    "urbain":    "#125E6B",   # urbain · contexte
-    "urbain_l":  "#E2EEF0",
-    "charbon":   "#7C441F",   # charbon de bois
-    "ardoise":   "#4E5F67",   # CO2 — gaz de référence, neutre
-    "neutre":    "#85938B",   # incertain · absent
-    "neutre_l":  "#ECEFED",
-
-    # texte
-    "encre":     "#0C1A14",
-    "encre_2":   "#324239",
-    "sourdine":  "#5D6E64",
-}
-RAMPE = ["#E7F2EB", "#B3D9C3", "#79BE99", "#3AA06D", "#0F7A4A", "#0A5533"]
-RAMPE_T = ["#125E6B", "#5E8F93", "#C4A45E", "#B87407", "#B32418"]
-DRAPEAU = ("#006A4E", "#FFCE00", "#D21034")
-
-
-def rgba(cle, alpha):
-    """Couleur de la palette en rgba() — pour les aplats de Plotly."""
-    h = C[cle].lstrip("#")
-    r, v, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
-    return f"rgba({r},{v},{b},{alpha})"
-
-
-FONT = "Inter,'Segoe UI',system-ui,sans-serif"
+# Les couleurs vivent dans `palette.py`, que le rapport et le PowerPoint
+# lisent aussi : une teinte se change à un seul endroit, pour les trois
+# livrables à la fois. On les ré-exporte ici pour que les vues continuent de
+# n'importer que `theme`.
+from palette import (C, RAMPE, RAMPE_T, DRAPEAU, FONT, rgba)   # noqa: E402,F401
 # Les titres et les chiffres partagent la même famille : c'est la graisse et
 # le corps qui font la hiérarchie, pas un changement de police.
 FONT_T = FONT
@@ -212,19 +172,30 @@ section[data-testid="stSidebar"] * {{ color:{C['sur_nuit']} !important; }}
 /* `st.logo(size="large")` plafonne la hauteur au jeton twoXL (~28 px), ce qui
    écrase l'intitulé. On laisse donc la largeur commander et on lève le
    plafond : le SVG garde alors son rapport et son texte reste lisible. */
-section[data-testid="stSidebar"] [data-testid="stLogo"],
-section[data-testid="stSidebar"] img.stLogo {{
+img[data-testid="stSidebarLogo"] {{
   height:auto !important; max-height:none !important;
   width:100% !important; max-width:212px !important;
   margin:18px 0 14px; }}
 section[data-testid="stSidebar"] [data-testid="stLogoLink"],
 section[data-testid="stSidebar"] a.stLogoLink {{
   display:block !important; width:100% !important; }}
+/* Volet replié, Streamlit déplace le logo dans la barre d'outils, sur fond
+   clair : son intitulé, blanc, y devient invisible. On l'y masque — le
+   chevron de dépliage suffit à revenir au menu. Streamlit distingue les deux
+   emplacements par leur identifiant : `stSidebarLogo` et `stHeaderLogo`. */
+img[data-testid="stHeaderLogo"] {{ display:none !important; }}
 /* L'en-tête du volet monte au ras de la fenêtre dès que la barre supérieure
    est masquée : on lui rend une respiration, l'emblème ne doit pas toucher
    le bord de l'écran. */
 section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {{
   padding-top:10px; padding-bottom:4px; }}
+/* Le point d'interrogation d'aide est tracé par Streamlit en bleu nuit
+   opaque à 60 % — invisible sur l'à-plat vert. Il est dessiné au trait, donc
+   c'est `stroke` qu'il faut éclaircir, pas `color`. */
+section[data-testid="stSidebar"] [data-testid="stTooltipIcon"] svg {{
+  stroke:{C['sur_nuit_2']} !important; }}
+section[data-testid="stSidebar"] [data-testid="stTooltipIcon"]:hover svg {{
+  stroke:{C['sur_nuit']} !important; }}
 section[data-testid="stSidebar"] .stSlider label {{ font-size:12.5px; font-weight:600; }}
 section[data-testid="stSidebar"] a[data-testid="stSidebarNavLink"] {{
   border-radius:8px; padding-top:7px; padding-bottom:7px; font-size:14px; }}
@@ -252,38 +223,23 @@ hr {{ margin:.9rem 0; border-color:{C['bord']}; }}
 
 
 # =========================================================== composants
-def banniere(kicker, titre, accroche, reperes=None):
-    """Manchette de page : le sujet, la conclusion en titre, les ordres de grandeur.
+def banniere(kicker, titre, accroche):
+    """Manchette de page : le sujet, la conclusion en titre, l'accroche.
 
-    Un à-plat sombre, rien d'autre. `reperes` place les chiffres directeurs à
-    droite : ils se lisent avant le corps de la page. Rien d'autre ne monte
-    à hauteur du titre — un chiffre composé en grand à côté de lui entre en
-    concurrence avec la phrase, et c'est la phrase qui doit gagner.
+    Un à-plat sombre, rien d'autre. Aucun chiffre n'y monte : les chiffres
+    directeurs sont dans les tuiles, juste en dessous, et les répéter dans
+    la manchette faisait lire deux fois la même chose avant d'entrer dans
+    la page.
     """
-    blocs = ""
-    if reperes:
-        cellules = "".join(
-            f'<div style="margin-left:40px">'
-            f'<div style="font-size:10px;font-weight:600;letter-spacing:.6px;'
-            f'text-transform:uppercase;color:{C["sur_nuit_2"]}">{lab}</div>'
-            f'<div style="font-family:{FONT_T};font-size:22px;font-weight:800;'
-            f'color:#fff;margin-top:2px;line-height:1.1">{val}</div></div>'
-            for lab, val in reperes)
-        blocs = (f'<div style="display:flex;align-items:flex-end;flex-wrap:wrap;'
-                 f'gap:12px 0;margin-left:auto">{cellules}</div>')
-
     st.markdown(
         f'<div style="background:{C["nuit"]};border-radius:12px;'
         f'padding:21px 26px 22px;margin-bottom:16px">'
-        f'<div style="display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap">'
-        f'<div style="flex:1 1 380px;min-width:290px">'
         f'<div style="font-size:11px;font-weight:600;letter-spacing:.9px;'
         f'text-transform:uppercase;color:{C["sur_nuit_2"]}">{kicker}</div>'
         f'<div style="font-family:{FONT_T};font-size:28px;font-weight:800;letter-spacing:-.5px;'
-        f'color:#fff;line-height:1.14;margin-top:7px">{titre}</div></div>'
-        f'{blocs}</div>'
+        f'color:#fff;line-height:1.14;margin-top:7px;max-width:1000px">{titre}</div>'
         f'<div style="font-size:14px;color:{C["sur_nuit"]};max-width:930px;'
-        f'line-height:1.6;margin-top:16px">{accroche}</div></div>',
+        f'line-height:1.6;margin-top:14px">{accroche}</div></div>',
         unsafe_allow_html=True)
 
 
@@ -516,7 +472,7 @@ def pied(page=None):
         f'style="height:42px;width:auto;flex:0 0 auto">'
         f'<div style="flex:1 1 430px;min-width:250px">'
         f'<div style="font-size:12.5px;font-weight:700;color:{C["encre"]}">'
-        f'République togolaise — Énergie, Climat &amp; Forêts</div>'
+        f'République Togolaise — Énergie, Climat &amp; Forêts</div>'
         f'<div style="font-size:11px;color:{C["sourdine"]};margin-top:4px;'
         f'line-height:1.55;max-width:760px">{SOURCES}</div></div></div>',
         unsafe_allow_html=True)
@@ -532,6 +488,10 @@ def style_fig(fig, titre=None, hauteur=None, legende_h=True, marge_g=8):
             x=0, xanchor="left", y=.98, yanchor="top"))
     fig.update_layout(
         template="plotly_white",
+        # Décimale virgule, milliers espace : les gabarits d'infobulle et les
+        # graduations sont formatés par Plotly, pas par `fr()`, et doivent
+        # eux aussi parler français.
+        separators=", ",
         font=dict(family=FONT, size=12.5, color=C["encre_2"]),
         margin=dict(l=marge_g, r=14, t=48 if titre else 14, b=8),
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",

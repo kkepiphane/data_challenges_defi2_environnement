@@ -21,10 +21,7 @@ banniere("Consommation des ménages et couvert forestier",
      "Neuf ménages togolais sur dix cuisinent au bois ou au charbon. Cette page montre "
      "que la dépendance ne recule pas, qu'elle est masquée par une statistique "
      "flatteuse — le « taux d'énergie renouvelable » — et qu'elle se paie en hectares "
-     "de forêt et en vies humaines.",
-     reperes=[("Ménages au bois", f"{cb['biomasse'][1]:.0f} %"),
-              ("Cuisson propre rurale", f"{fr(R['cuisson_rurale']['valeur'], 1)} %"),
-              ("Forêt / an", f"−{fr(dfr['perte_ha_par_an'])} ha")])
+     "de forêt et en vies humaines.")
 
 kpi_row([
     ("Bois + charbon de bois", f"{cb['biomasse'][1]:.0f} %",
@@ -32,7 +29,7 @@ kpi_row([
      f"{cb['annees'][0]}", C["risque"], "aucun recul", cb["biomasse"]),
     ("Cuisson propre en milieu rural", f"{fr(R['cuisson_rurale']['valeur'], 1)} %",
      f"en {R['cuisson_rurale']['annee']} — progression de "
-     f"+{R['cuisson_rurale']['rythme_observe']:.2f} pt/an", C["risque"], None,
+     f"+{fr(R['cuisson_rurale']['rythme_observe'], 2)} pt/an", C["risque"], None,
      list(D.serie(nat, "cuisson_rural")["valeur"])),
     ("Forêt perdue", f"{fr(dfr['perte_ha_par_an'])} ha/an",
      f"soit {fr(dfr['perte_km2'])} km² disparus entre {dfr['annee_debut']} "
@@ -71,13 +68,13 @@ with o1:
         fig = go.Figure()
         fig.add_trace(go.Bar(y=labels, x=v0, name=str(cb["annees"][0]), orientation="h",
                              marker_color=C["neutre"],
-                             text=[f"{v:.1f} %" for v in v0], textposition="outside",
+                             text=[f"{fr(v, 1)} %" for v in v0], textposition="outside",
                              textfont=dict(size=11.5),
                              hovertemplate="%{y} · %{x:.1f} %<extra>"
                                            f"{cb['annees'][0]}</extra>"))
         fig.add_trace(go.Bar(y=labels, x=v1, name=str(cb["annees"][1]), orientation="h",
                              marker_color=[C["risque"], C["charbon"], C["foret"], C["energie"]],
-                             text=[f"{v:.1f} %" for v in v1], textposition="outside",
+                             text=[f"{fr(v, 1)} %" for v in v1], textposition="outside",
                              textfont=dict(size=11.5, color=C["encre"]),
                              hovertemplate="%{y} · %{x:.1f} %<extra>"
                                            f"{cb['annees'][1]}</extra>"))
@@ -86,7 +83,7 @@ with o1:
         fig.update_yaxes(title=None, autorange="reversed")
         fig.update_layout(barmode="group", bargap=.28, bargroupgap=.06)
         annote(fig, cb["bois"][1], "Bois de chauffe",
-               f"+{cb['bois'][1]-cb['bois'][0]:.1f} pt", C["risque"], ax=46, ay=-22)
+               f"+{fr(cb['bois'][1]-cb['bois'][0], 1)} pt", C["risque"], ax=46, ay=-22)
         st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
 
     with g2:
@@ -108,17 +105,17 @@ with o1:
         fig2.update_xaxes(title=None)
         if len(cr):
             annote(fig2, int(cr["annee"].iloc[-1]), float(cr["valeur"].iloc[-1]),
-                   f"{cr['valeur'].iloc[-1]:.1f} % en zone rurale", C["risque"],
+                   f"{fr(cr['valeur'].iloc[-1], 1)} % en zone rurale", C["risque"],
                    ax=-70, ay=-30)
         st.plotly_chart(fig2, width="stretch", config={"displayModeBar": False})
 
     encart("alerte",
            f"<b>La transition n'a pas commencé, elle a reculé.</b> Entre "
            f"{cb['annees'][0]} et {cb['annees'][1]}, le bois de chauffe gagne "
-           f"{cb['bois'][1]-cb['bois'][0]:.1f} points ({cb['bois'][0]:.1f} % → "
-           f"{cb['bois'][1]:.1f} %). Le charbon recule de "
-           f"{cb['charbon'][0]-cb['charbon'][1]:.1f} points et le GPL progresse de "
-           f"{cb['gpl'][1]-cb['gpl'][0]:.1f} points, mais le total biomasse reste à "
+           f"{fr(cb['bois'][1]-cb['bois'][0], 1)} points ({fr(cb['bois'][0], 1)} % → "
+           f"{fr(cb['bois'][1], 1)} %). Le charbon recule de "
+           f"{fr(cb['charbon'][0]-cb['charbon'][1], 1)} points et le GPL progresse de "
+           f"{fr(cb['gpl'][1]-cb['gpl'][0], 1)} points, mais le total biomasse reste à "
            f"<b>{cb['biomasse'][1]:.0f} %</b>. Le mouvement observé est un glissement "
            f"du charbon vers le bois brut — soit l'inverse de la transition recherchée, "
            f"puisque le bois brut est le combustible le plus émetteur de particules à "
@@ -160,9 +157,9 @@ with o2:
 
     encart("constat",
            f"<b>« Renouvelable » ne veut pas dire « propre ».</b> En {rp['annee']}, "
-           f"{rp['part_renouvelable']:.1f} % de l'énergie finale consommée au Togo est "
+           f"{fr(rp['part_renouvelable'], 1)} % de l'énergie finale consommée au Togo est "
            f"comptabilisée comme renouvelable — un taux que peu de pays affichent. "
-           f"Au même moment, seuls {rp['part_cuisson_propre']:.1f} % des ménages ont accès "
+           f"Au même moment, seuls {fr(rp['part_cuisson_propre'], 1)} % des ménages ont accès "
            f"à une cuisson propre. Les deux chiffres décrivent la même réalité vue de deux "
            f"côtés : ce « renouvelable » est très majoritairement du <b>bois de feu et du "
            f"charbon de bois</b>, une biomasse prélevée plus vite qu'elle ne se régénère, "
@@ -276,7 +273,7 @@ with o3:
            f"Avec {bascule} % de la population sortie de la biomasse et une attribution de "
            f"{attribution} % du recul forestier au bois-énergie, le Togo préserverait "
            f"<b>{fr(cumul_2030)} hectares</b> de forêt sur cinq ans — l'équivalent de "
-           f"{cumul_2030/R['forets']['surface_totale_ha']*100:.1f} % de la surface totale "
+           f"{fr(cumul_2030/R['forets']['surface_totale_ha']*100, 1)} % de la surface totale "
            f"des forêts classées analysées dans la page « Forêts ». "
            f"Et {fr(personnes/1e6, 2)} millions de personnes cesseraient de respirer des "
            f"fumées de combustion domestique, dans un pays où la pollution de l'air est "
