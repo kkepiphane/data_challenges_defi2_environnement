@@ -19,10 +19,7 @@ banniere("Inventaire des émissions et climat observé",
      "Le bilan 2018 place l'agriculture et l'usage des terres très loin devant. "
      "Mais un inventaire ne se lit pas seulement en totaux : gaz par gaz, et surtout "
      "en équivalent CO₂, la hiérarchie des secteurs change complètement. "
-     "La seconde partie relie le climat observé aux besoins énergétiques.",
-     reperes=[("Total GES 2018", f"{fr(R['ges']['total_gg'])} Gg"),
-              ("Part énergie", f"{R['ges']['part_energie']:.0f} %"),
-              ("Énergie dans le N₂O", f"{R['ges']['energie_dans_n2o']:.0f} %")])
+     "La seconde partie relie le climat observé aux besoins énergétiques.")
 
 COUL_SECT = {
     "Agriculture & forêts (AFAT)": C["foret"],

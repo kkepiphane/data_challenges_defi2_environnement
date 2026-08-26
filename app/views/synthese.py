@@ -20,10 +20,7 @@ banniere(
     "Électrifier les campagnes sans brûler les forêts",
     "Le Togo vise l'accès universel à l'électricité en 2030. Les données du défi montrent "
     "que l'objectif ne se joue pas seulement sur le réseau : il se joue sur la cuisson des "
-    "ménages, qui consomme la forêt. Diagnostic en cinq chiffres, preuve, et lieu d'action.",
-    reperes=[("Accès rural", f"{er['valeur']:.0f} %"),
-             ("Ménages au bois", f"{cb['biomasse'][1]:.0f} %"),
-             ("Forêt / an", f"−{fr(df_['perte_ha_par_an'])} ha")])
+    "ménages, qui consomme la forêt. Diagnostic en cinq chiffres, preuve, et lieu d'action.")
 
 # ------------------------------------------------------------------ chiffres clés
 # Chaque micro-courbe doit tracer LA grandeur de sa tuile, pas une grandeur
@@ -118,10 +115,10 @@ with st.container(border=True):
         row=2, col=1)
 
     style_fig(fig, hauteur=440)
-    fig.update_yaxes(title="Accès (% de la population rurale)", ticksuffix=" %",
-                     range=[0, 40], row=1, col=1)
-    fig.update_yaxes(title="Couvert forestier (% du territoire)", ticksuffix=" %",
-                     row=2, col=1)
+    # Pas de titre d'axe : la légende nomme déjà chaque série avec son unité,
+    # et deux titres verticaux sur deux panneaux se chevauchaient.
+    fig.update_yaxes(title=None, ticksuffix=" %", range=[0, 40], row=1, col=1)
+    fig.update_yaxes(title=None, ticksuffix=" %", row=2, col=1)
     fig.update_xaxes(title=None)
     if len(elec):
         annote(fig, int(elec["annee"].iloc[-1]), float(elec["valeur"].iloc[-1]),

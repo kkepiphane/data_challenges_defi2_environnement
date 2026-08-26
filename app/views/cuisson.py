@@ -21,10 +21,7 @@ banniere("Consommation des ménages et couvert forestier",
      "Neuf ménages togolais sur dix cuisinent au bois ou au charbon. Cette page montre "
      "que la dépendance ne recule pas, qu'elle est masquée par une statistique "
      "flatteuse — le « taux d'énergie renouvelable » — et qu'elle se paie en hectares "
-     "de forêt et en vies humaines.",
-     reperes=[("Ménages au bois", f"{cb['biomasse'][1]:.0f} %"),
-              ("Cuisson propre rurale", f"{fr(R['cuisson_rurale']['valeur'], 1)} %"),
-              ("Forêt / an", f"−{fr(dfr['perte_ha_par_an'])} ha")])
+     "de forêt et en vies humaines.")
 
 kpi_row([
     ("Bois + charbon de bois", f"{cb['biomasse'][1]:.0f} %",

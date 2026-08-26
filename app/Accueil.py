@@ -19,6 +19,9 @@ from theme import inject_css, logo_menu   # noqa: E402
 inject_css()
 # `st.logo` est le seul emplacement qui se rend au-dessus des liens de
 # navigation : les armoiries et l'intitulé y tiennent en une seule image.
+# Pas d'`icon_image` : Streamlit l'affiche aussi dans le volet déplié, où
+# l'emblème seul, mis à la largeur du menu, écrase la navigation. Le cas du
+# volet replié est traité dans la feuille de style.
 st.logo(logo_menu(), size="large")
 
 # Un nom nu par entrée : dans un menu on cherche, on ne se laisse pas

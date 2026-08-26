@@ -23,10 +23,7 @@ banniere("Recommandations et trajectoire 2030",
      "Les cinq pages précédentes convergent vers une hiérarchie que les données "
      "imposent : la cuisson propre avant le raccordement, le solaire décentralisé "
      "avant l'extension du réseau, et une protection ciblée plutôt qu'un discours "
-     "général sur la forêt.",
-     reperes=[("Levier n°1", "Cuisson propre"),
-              ("Population visée", f"{fr(pop*cb['biomasse'][1]/100/1e6, 1)} M"),
-              ("Massifs prioritaires", f"{R['forets']['nb_robustes']}")])
+     "général sur la forêt.")
 
 # ================================================== la portée comparée des leviers
 section("Pourquoi cet ordre : la portée comparée des trois leviers",

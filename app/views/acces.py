@@ -18,10 +18,7 @@ banniere("Accès à l'électricité et qualité du réseau",
      "Le réseau progresse, mais ni assez vite ni assez sûrement",
      "Deux questions commandent la stratégie d'électrification : à quelle vitesse l'écart "
      "ville / campagne se referme-t-il, et le courant, une fois arrivé, est-il fiable ? "
-     "Les deux réponses pointent vers la même solution.",
-     reperes=[("Accès rural", f"{er['valeur']:.0f} %"),
-              ("Écart ville/campagne", f"{ec['valeur']:.0f} pts"),
-              ("Coupures/mois", f"{fr(fi['coupures_mois'], 1)}")])
+     "Les deux réponses pointent vers la même solution.")
 
 # séries complètes pour les micro-courbes des tuiles
 _r = D.serie(nat, "elec_rural"); _u = D.serie(nat, "elec_urbain")
