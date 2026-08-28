@@ -19,6 +19,7 @@ logiciel. Ce que cela implique, concrètement :
 Aucune couleur en dur ailleurs que dans ce fichier.
 """
 import base64
+from contextlib import contextmanager
 from pathlib import Path
 
 import streamlit as st
@@ -224,7 +225,88 @@ label[data-testid="stWidgetLabel"] p {{ font-size:12.5px; font-weight:600;
   color:{C['encre_2']}; }}
 div[data-testid="stDataFrame"] {{ border-radius:10px; }}
 hr {{ margin:.9rem 0; border-color:{C['bord']}; }}
+
+/* ---- bandeau de réglages ------------------------------------------------
+   Tous les contrôles d'une page tiennent dans un seul bloc, au même endroit
+   d'une page à l'autre. Un fond enfoncé le distingue des blocs de contenu :
+   on voit d'un coup d'œil ce qui se règle et ce qui se lit. */
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.barre-reglages) {{
+  background:{C['sunk']}; }}
+.barre-reglages {{ display:flex; align-items:baseline; gap:10px;
+  flex-wrap:wrap; margin:4px 2px 2px; }}
+.barre-reglages .titre {{ font-size:11px; font-weight:700; letter-spacing:.55px;
+  text-transform:uppercase; color:{C['encre']}; }}
+.barre-reglages .aide {{ font-size:11.5px; color:{C['sourdine']}; }}
+
+/* ---- jetons de rappel : ce qui est actif, en un coup d'œil ---- */
+.jetons {{ display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 4px; }}
+.jeton {{ font-size:11px; font-weight:600; color:{C['encre_2']};
+  background:{C['surface']}; border:1px solid {C['bord_fort']};
+  border-radius:20px; padding:3px 11px; white-space:nowrap; }}
+.jeton b {{ color:{C['encre']}; font-weight:700; }}
+
+/* ---- boutons de téléchargement : discrets, jamais concurrents du contenu ---- */
+div[data-testid="stDownloadButton"] button {{
+  background:transparent; border:1px solid {C['bord']}; color:{C['sourdine']};
+  font-size:11.5px; font-weight:600; padding:2px 11px; min-height:0;
+  border-radius:6px; }}
+div[data-testid="stDownloadButton"] button:hover {{
+  border-color:{C['foret']}; color:{C['foret']}; background:{C['foret_l']}; }}
+div[data-testid="stDownloadButton"] button p {{ font-size:11.5px; }}
+
+/* ---- bouton de réinitialisation, dans le volet ---- */
+section[data-testid="stSidebar"] div[data-testid="stButton"] button {{
+  background:rgba(255,255,255,.08); border:1px solid {C['sur_nuit_2']}55;
+  color:{C['sur_nuit']}; font-size:12px; font-weight:600; border-radius:8px; }}
+section[data-testid="stSidebar"] div[data-testid="stButton"] button:hover {{
+  background:rgba(255,255,255,.16); border-color:{C['sur_nuit_2']}; }}
+
+/* ---- repère de position dans le volet ---- */
+.repere-volet {{ font-size:10.5px; font-weight:600; letter-spacing:.5px;
+  text-transform:uppercase; color:{C['sur_nuit_2']}; margin:2px 0 6px; }}
 </style>""", unsafe_allow_html=True)
+
+
+# ====================================================== réglages & interactions
+@contextmanager
+def reglages(titre="Réglages de la page", aide=None):
+    """Bandeau de contrôles — un seul bloc, toujours au même endroit.
+
+    Avant, les filtres d'une page étaient répartis entre le haut de page, un
+    onglet et le voisinage d'un graphique : on ne savait pas ce qui agissait
+    sur quoi. Ils tiennent désormais dans un bloc unique, identifiable à son
+    fond enfoncé, placé juste sous le titre de section qu'il commande.
+    """
+    with st.container(border=True):
+        st.markdown(
+            f'<div class="barre-reglages"><span class="titre">{titre}</span>'
+            + (f'<span class="aide">{aide}</span>' if aide else '')
+            + '</div>', unsafe_allow_html=True)
+        yield
+
+
+def jetons(*paires):
+    """Rappel de l'état des réglages : « Cible · 100 % », « Région · Kara ».
+
+    Un curseur réglé plus haut dans la page sort du champ de vision dès qu'on
+    fait défiler. Les jetons redisent l'hypothèse au moment où on lit son
+    résultat — c'est ce qui évite de prendre une projection pour une donnée.
+    """
+    items = "".join(f'<span class="jeton">{k} · <b>{v}</b></span>'
+                    for k, v in paires if v is not None)
+    st.markdown(f'<div class="jetons">{items}</div>', unsafe_allow_html=True)
+
+
+def telecharger(df, nom, libelle="Données de ce graphique (CSV)"):
+    """Export des données exactes qui viennent d'être tracées.
+
+    Ce n'est pas un ornement : un décideur qui veut vérifier un chiffre doit
+    pouvoir l'extraire sans relancer le pipeline, et les données exportées
+    sont celles de l'écran — filtres et curseurs compris.
+    """
+    st.download_button(libelle, df.to_csv(index=False).encode("utf-8-sig"),
+                       file_name=f"{nom}.csv", mime="text/csv",
+                       key=f"dl_{nom}", width="content")
 
 
 # =========================================================== composants
@@ -313,8 +395,9 @@ def sparkline(valeurs, couleur, periode=None, largeur=150, hauteur=30):
             f'{bornes}</svg>')
 
 
-_UNITES = ("%", "M", "ha/an", "ha", "km²", "km", "°C", "pts", "pt/an",
-           "Gg", "j", "/mois", "forêts", "massifs", "Mt", "k/an")
+_UNITES = ("%", "M", "ha/an", "ha", "km²/an", "km²", "km", "°C", "pts", "pt/an",
+           "Gg", "j", "/mois", "/an", "forêts", "massifs", "Mt", "k/an", "k",
+           "t/ha", "mesures", "régimes", "ans", "fois", "M/an", "séries")
 
 
 def _scinde(valeur):

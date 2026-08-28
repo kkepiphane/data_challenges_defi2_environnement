@@ -53,7 +53,8 @@ RETRAITS = [
      "`report/rapport.html`\n(document autonome, imprimable en PDF).\n\n", ""),
     ("│   ├── verify.py                 audit : recalcul indépendant depuis data/raw/\n"
      "│   ├── make_figures.py           figures SVG du rapport\n"
-     "│   └── make_report.py            assemblage du rapport final\n",
+     "│   ├── make_report.py            assemblage du rapport + contrôle de cohérence\n"
+     "│   └── make_pptx.py              présentation 11 diapositives\n",
      "│   └── verify.py                 audit : recalcul indépendant depuis data/raw/\n"),
     ("├── report/\n"
      "│   ├── rapport.html              rapport autonome, imprimable\n"
@@ -65,6 +66,14 @@ RETRAITS = [
     ("dashboard_defi2_togo/\n", f"{NOM}/\n"),
     ("**Aucun chiffre du rapport\nou du tableau de bord n'est saisi à la main**",
      "**Aucun chiffre du tableau de bord\nn'est saisi à la main**"),
+    # Le second garde-fou porte sur le rapport, absent de l'archive : on ne
+    # garde que celui qui concerne les fichiers livrés ici.
+    ("Deux garde-fous complètent cet audit :\n", "Un garde-fou le complète :\n"),
+    ("  change la lecture, et le tableau de bord en tient compte explicitement ;\n"
+     "- `src/make_report.py` **refuse de produire le rapport** si l'un des 34 chiffres\n"
+     "  directeurs qu'il contient ne correspond plus au fichier gold : le texte rédigé\n"
+     "  à la main ne peut donc pas dériver silencieusement des données.\n",
+     "  change la lecture, et le tableau de bord en tient compte explicitement.\n"),
 ]
 # Aucun de ces mots ne doit subsister dans le README livré.
 INTERDITS = ("report/", "make_figures", "make_report", "make_pptx", ".pptx",
