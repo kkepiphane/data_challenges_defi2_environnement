@@ -103,7 +103,7 @@ dashboard_defi2_togo/
 │   ├── verify.py                 audit : recalcul indépendant depuis data/raw/
 │   ├── make_figures.py           figures SVG du rapport
 │   ├── make_report.py            assemblage du rapport + contrôle de cohérence
-│   └── make_pptx.py              présentation 11 diapositives
+│   └── make_pptx.py              présentation 10 diapositives
 │
 ├── data/
 │   ├── raw/                      les 6 jeux de données du défi, intacts

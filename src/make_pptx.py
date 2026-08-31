@@ -141,7 +141,7 @@ def rectangle(slide, x, y, w, h, fond=None, bord=None, arrondi=True):
 
 
 # --------------------------------------------------------------- gabarit
-TOTAL_DIAPOS = 11
+TOTAL_DIAPOS = 10
 _rang = [1]          # la couverture est déjà posée quand `diapo` est appelée
 
 
@@ -404,20 +404,23 @@ def construire():
     larg_t = (LARG - Inches(.36)) / 5
     for i_t, (lab, val, unite, sous, coul) in enumerate(CHIFFRES):
         tuile(s, MARGE + i_t * (larg_t + Inches(.09)), y, larg_t,
-              lab, val, unite, sous, coul, h=Inches(1.52))
+              lab, val, unite, sous, coul, h=Inches(1.62))
 
-    encart(s, MARGE, y + Inches(1.68), LARG, Inches(1.16), "alerte",
+    encart(s, MARGE, y + Inches(1.76), LARG, Inches(1.2), "alerte",
            f"Le taux d'accès rural a été multiplié par "
-           f"{er['valeur']/er['valeur_depart']:.0f} depuis {tr['annee_debut']}. "
-           f"Le nombre de ruraux privés d'électricité a augmenté de "
+           f"{er['valeur']/er['valeur_depart']:.0f} depuis {tr['annee_debut']} ; "
+           f"le nombre de ruraux privés d'électricité a augmenté de "
            f"{tr['variation_pct']:.0f} % sur la même période, parce que la "
-           f"population rurale a crû plus vite que le réseau. Piloter sur le "
+           f"population rurale croît plus vite que le réseau. Piloter sur le "
            f"taux, c'est piloter sur l'indicateur qui progresse pendant que le "
-           f"problème grandit — au rythme observé, l'accès universel rural "
-           f"tomberait en {er['annee_atteinte_tendanciel']:.0f}.",
+           f"problème grandit. Au rythme observé "
+           f"(+{fr(er['rythme_observe'], 2)} pt/an), l'accès universel rural "
+           f"tombe en {er['annee_atteinte_tendanciel']:.0f} : tenir 2030 "
+           f"demanderait +{fr(er['rythme_requis_2030'], 1)} pt/an, soit "
+           f"{er['facteur_acceleration']:.0f} fois plus vite.",
            titre="Le résultat qui commande tout le reste")
 
-    y2 = y + Inches(3.05)
+    y2 = y + Inches(3.14)
     texte(s, MARGE, y2, LARG, Inches(.2),
           "Quatre leviers, dans cet ordre de priorité", taille=11, gras=True,
           couleur="encre", majuscules=True, espacement=.6)
@@ -476,22 +479,9 @@ def construire():
            "reste un curseur explicite dans le tableau de bord.",
            titre="Ce que ces données ne permettent pas de dire")
 
-    # ------------------------------------------ 3. diagnostic en 5 chiffres
-    s = diapo(prs, "Diagnostic", "Cinq chiffres qui commandent tout le reste", 3)
-    larg_t = (LARG - Inches(.48)) / 5
-    for i_t, (lab, val, unite, sous, coul) in enumerate(CHIFFRES):
-        tuile(s, MARGE + i_t * (larg_t + Inches(.12)), HAUT, larg_t,
-              lab, val, unite, sous, coul, h=Inches(1.75))
-
-    encart(s, MARGE, Inches(3.75), LARG, Inches(1.5), "alerte",
-           f"Le rythme actuel ne mène pas à 2030, il mène à "
-           f"{er['annee_atteinte_tendanciel']:.0f}. L'électrification rurale "
-           f"progresse de +{fr(er['rythme_observe'], 2)} point par an depuis "
-           f"{er['annee_depart']} ; atteindre 100 % en 2030 en demanderait "
-           f"+{fr(er['rythme_requis_2030'], 1)}, soit "
-           f"{er['facteur_acceleration']:.0f} fois plus vite. L'extension du "
-           f"réseau seule ne produit pas une telle accélération.",
-           titre="Le constat qui commande tout le reste")
+    # Pas de diapositive « Diagnostic » séparée : elle reprendrait les cinq
+    # mêmes tuiles que « L'essentiel ». Les chiffres se lisent une fois, à
+    # l'endroit où ils servent à décider.
 
     # -------------------------------------------------------- 4. la preuve
     s = diapo(prs, "La preuve", "L'accès progresse, la forêt recule, "
@@ -670,36 +660,32 @@ def construire():
            "dont l'intervalle de rang est large méritent une instruction "
            "complémentaire avant tout engagement.")
 
-    # ------------------------------------------------ 11. recommandations
+    # ------------------------------------------------ 10. recommandations
     s = diapo(prs, "Recommandations", "Quatre leviers, dans cet ordre")
     y = HAUT
+    # Quatre cartes pleine largeur : le pas est calé pour que la dernière
+    # s'arrête au-dessus du pied de page. Pas de renvoi sous les cartes —
+    # la réserve « aucun coût, aucun budget » est déjà posée en Méthode, et
+    # la répéter ici mordrait sur le pied.
     for num, coul, titre_l, quoi, portee, cible, suivi in LEVIERS:
-        h = Inches(1.17)
+        h = Inches(1.20)
         rectangle(s, MARGE, y, LARG, h, fond="surface", bord="bord")
-        texte(s, MARGE + Inches(.2), y + Inches(.24), Inches(.45), Inches(.42),
+        texte(s, MARGE + Inches(.2), y + Inches(.26), Inches(.45), Inches(.42),
               num, taille=24, gras=True, couleur=coul, interligne=1)
-        texte(s, MARGE + Inches(.66), y + Inches(.15), Inches(3.3), Inches(.28),
+        texte(s, MARGE + Inches(.66), y + Inches(.16), Inches(3.3), Inches(.28),
               titre_l, taille=12.5, gras=True, couleur="encre")
-        texte(s, MARGE + Inches(.66), y + Inches(.46), Inches(3.4), Inches(.64),
+        texte(s, MARGE + Inches(.66), y + Inches(.48), Inches(3.4), Inches(.64),
               quoi, taille=8.5, couleur="sourdine", interligne=1.25)
         for i, (etiq, val) in enumerate(
                 [("Portée directe", portee), ("Cible 2030", cible),
                  ("Indicateur de suivi", suivi)]):
             x = MARGE + Inches(4.4) + i * Inches(2.6)
-            texte(s, x, y + Inches(.16), Inches(2.4), Inches(.16), etiq,
+            texte(s, x, y + Inches(.17), Inches(2.4), Inches(.16), etiq,
                   taille=7.5, gras=True, couleur="sourdine", majuscules=True,
                   espacement=.5)
-            texte(s, x, y + Inches(.37), Inches(2.42), Inches(.74), val,
+            texte(s, x, y + Inches(.38), Inches(2.42), Inches(.76), val,
                   taille=8.5, couleur="encre", interligne=1.25)
-        y += Inches(1.26)
-
-    texte(s, MARGE, y + Inches(.06), LARG, Inches(.44),
-          "Aucun coût ni budget dans les six jeux de données : ces quatre "
-          "leviers fixent un ordre de priorité et des cibles physiques, pas un "
-          "plan de financement. Le quatrième relève de la politique agricole, "
-          "hors du périmètre énergie du défi — mais le défrichement de terres "
-          "cultivables avance plus vite que la forêt ne recule.",
-          taille=9, couleur="sourdine", interligne=1.3)
+        y += Inches(1.30)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     prs.save(OUT)

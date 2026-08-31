@@ -54,7 +54,7 @@ RETRAITS = [
     ("│   ├── verify.py                 audit : recalcul indépendant depuis data/raw/\n"
      "│   ├── make_figures.py           figures SVG du rapport\n"
      "│   ├── make_report.py            assemblage du rapport + contrôle de cohérence\n"
-     "│   └── make_pptx.py              présentation 11 diapositives\n",
+     "│   └── make_pptx.py              présentation 10 diapositives\n",
      "│   └── verify.py                 audit : recalcul indépendant depuis data/raw/\n"),
     ("├── report/\n"
      "│   ├── rapport.html              rapport autonome, imprimable\n"
