@@ -34,21 +34,32 @@ def fr(x, d=0):
     return f"{x:,.{d}f}".replace(",", " ").replace(".", ",")
 
 
+def esc(s):
+    """Echappe le texte destine a un noeud SVG.
+
+    Un SVG est du XML : une esperluette nue (« Agriculture & forets ») suffit a
+    rendre le fichier invalide. Le navigateur, qui parse le SVG inline avec son
+    parseur HTML, le tolere ; un visualiseur SVG ou un convertisseur PDF, non.
+    """
+    return (str(s).replace("&", "&amp;").replace("<", "&lt;")
+            .replace(">", "&gt;"))
+
+
 def svg(w, h, body, titre, sous=None):
     t = (f'<text x="0" y="17" font-family="{FONT}" font-size="15.5" font-weight="700" '
-         f'fill="{C["foret_d"]}">{titre}</text>')
+         f'fill="{C["foret_d"]}">{esc(titre)}</text>')
     if sous:
         t += (f'<text x="0" y="35" font-family="{FONT}" font-size="12" '
-              f'fill="{C["muted"]}">{sous}</text>')
+              f'fill="{C["muted"]}">{esc(sous)}</text>')
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" '
-            f'width="100%" role="img" aria-label="{titre}">'
+            f'width="100%" role="img" aria-label="{esc(titre)}">'
             f'<rect width="{w}" height="{h}" fill="none"/>{t}{body}</svg>')
 
 
 def txt(x, y, s, size=11.5, fill=None, anchor="start", weight="400"):
     return (f'<text x="{x:.1f}" y="{y:.1f}" font-family="{FONT}" font-size="{size}" '
             f'font-weight="{weight}" fill="{fill or C["muted"]}" '
-            f'text-anchor="{anchor}">{s}</text>')
+            f'text-anchor="{anchor}">{esc(s)}</text>')
 
 
 def serie(cle):
@@ -197,7 +208,7 @@ def fig_combustibles():
 
 
 # =============================================================================
-# Figure 4 — la portée comparée des trois leviers
+# Figure 4 — la portée comparée des leviers énergétiques
 # =============================================================================
 def fig_leviers():
     W, H = 760, 240
@@ -219,7 +230,7 @@ def fig_leviers():
         b += f'<rect x="{L}" y="{y}" width="{w:.1f}" height="30" rx="4" fill="{col}"/>'
         b += txt(L - 12, y + 20, lab, 12, C["ink"], "end", "600")
         b += txt(L + w + 10, y + 20, note, 12, col, "start", "700")
-    # le 3e levier ne se compte pas en personnes : pas de barre, pas de fausse échelle
+    # les leviers fonciers ne se comptent pas en personnes : pas de barre, pas de fausse échelle
     y = T + 2 * 52 + 4
     b += (f'<rect x="{L}" y="{y}" width="{barw+120}" height="30" rx="4" '
           f'fill="{C["foret"]}" opacity=".10"/>')
@@ -288,9 +299,140 @@ def fig_ges():
                "à poids égal")
 
 
+# =============================================================================
+# Figure 6 — le tapis roulant démographique
+# =============================================================================
+def fig_tapis():
+    """Cascade : d'où vient la hausse du nombre de ruraux sans électricité.
+
+    Une cascade plutôt que deux courbes : c'est la *décomposition* qui est le
+    résultat, et elle se lit d'un seul coup d'œil sous cette forme. Les deux
+    effets sont de signes opposés et leur somme reconstitue exactement l'écart
+    observé — c'est une identité comptable, pas un modèle.
+    """
+    W, H = 760, 330
+    tr = R["tapis_roulant"]
+    L, T, B = 62, 76, 74
+    barw, gap = 118, 40
+    hmax = H - T - B
+    vmax = (tr["sans_elec_debut"] + tr["effet_demographie"]) * 1.06
+
+    def hy(v):
+        return v / vmax * hmax
+
+    etapes = [
+        (str(tr["annee_debut"]), 0, tr["sans_elec_debut"], C["neutre"],
+         f"{fr(tr['sans_elec_debut']/1e6, 2)} M"),
+        ("Croissance de la<br>population rurale", tr["sans_elec_debut"],
+         tr["effet_demographie"], C["risque"],
+         f"+{fr(tr['effet_demographie']/1e6, 2)} M"),
+        ("Effet de<br>l'électrification",
+         tr["sans_elec_debut"] + tr["effet_demographie"], tr["effet_acces"],
+         C["foret"], f"−{fr(abs(tr['effet_acces'])/1e6, 2)} M"),
+        (str(tr["annee_fin"]), 0, tr["sans_elec_fin"], C["ink"],
+         f"{fr(tr['sans_elec_fin']/1e6, 2)} M"),
+    ]
+    b = ""
+    for g in range(0, 6):
+        y = H - B - hy(g * 1e6)
+        b += (f'<line x1="{L}" y1="{y:.1f}" x2="{W-20}" y2="{y:.1f}" '
+              f'stroke="{C["line"]}"/>')
+        b += txt(L - 8, y + 4, f"{g} M", 10.5, anchor="end")
+
+    prev_x2 = prev_y = None
+    for i, (lab, base, val, col, note) in enumerate(etapes):
+        x = L + 18 + i * (barw + gap)
+        bas = base + min(val, 0)
+        haut = base + max(val, 0)
+        y = H - B - hy(haut)
+        h = max(2.0, hy(haut - bas))
+        b += (f'<rect x="{x:.1f}" y="{y:.1f}" width="{barw}" height="{h:.1f}" '
+              f'rx="3" fill="{col}"/>')
+        b += txt(x + barw / 2, y - 9, note, 12.5, col, "middle", "700")
+        for k, ligne in enumerate(lab.split("<br>")):
+            b += txt(x + barw / 2, H - B + 20 + k * 14, ligne, 11, C["ink"],
+                     "middle", "600")
+        # trait de liaison : la cascade doit se lire comme un enchaînement
+        if prev_x2 is not None:
+            b += (f'<line x1="{prev_x2:.1f}" y1="{prev_y:.1f}" x2="{x:.1f}" '
+                  f'y2="{prev_y:.1f}" stroke="{C["muted"]}" stroke-width="1" '
+                  f'stroke-dasharray="3 3"/>')
+        prev_x2 = x + barw
+        prev_y = H - B - hy(base + val if i != 3 else val)
+
+    b += txt(L, H - 12,
+             f"Le taux d'accès rural passe pourtant de "
+             f"{fr(R['elec_rural']['valeur_depart'], 1)} % à "
+             f"{R['elec_rural']['valeur']:.0f} % sur la même période. "
+             f"L'électrification n'annule que {tr['taux_compensation']:.0f} % de la "
+             f"poussée démographique.", 11.5, C["muted"])
+    return svg(W, H, b,
+               f"Le taux monte, le nombre de personnes privées d'électricité aussi",
+               f"Ruraux sans électricité, {tr['annee_debut']}–{tr['annee_fin']} · "
+               f"décomposition exacte, sans hypothèse")
+
+
+# =============================================================================
+# Figure 7 — ce qui prend la place de la forêt
+# =============================================================================
+def fig_sols():
+    """Expansion agricole contre recul forestier, sur la même fenêtre.
+
+    Deux barres de sens opposé sur une échelle commune : c'est le rapport des
+    deux grandeurs qui est le résultat, et il ne se voit que si elles partagent
+    l'axe.
+    """
+    W, H = 760, 300
+    us = R["usage_sols"]
+    L, T = 250, 74
+    axe = W - L - 120
+    vmax = max(abs(us["delta_agri_km2"]), abs(us["delta_foret_km2"])) * 1.12
+    b = ""
+    lignes = [
+        (f"Surface agricole gagnée", us["delta_agri_km2"], C["energie"]),
+        (f"Couvert forestier perdu", us["delta_foret_km2"], C["foret"]),
+    ]
+    for i, (lab, v, col) in enumerate(lignes):
+        y = T + i * 54
+        w = max(3, abs(v) / vmax * axe)
+        b += (f'<rect x="{L}" y="{y}" width="{w:.1f}" height="32" rx="4" '
+              f'fill="{col}"/>')
+        b += txt(L - 12, y + 22, lab, 12.5, C["ink"], "end", "600")
+        b += txt(L + w + 10, y + 22,
+                 f"{'+' if v > 0 else '−'}{fr(abs(v))} km²", 13, col,
+                 "start", "700")
+    y = T + 2 * 54 + 10
+    b += (f'<rect x="{L}" y="{y}" width="{axe + 110}" height="34" rx="6" '
+          f'fill="{C["energie"]}" opacity=".08"/>')
+    b += txt(L + 14, y + 22,
+             f"l'agricole gagne {us['ratio_agri_foret']:.1f} fois ce que la forêt "
+             f"perd — la forêt ne peut fournir que "
+             f"{us['part_foret_dans_expansion']:.0f} % de cette expansion",
+             12.5, C["energie"], "start", "700")
+    b += txt(L - 12, y + 22, "Rapport des deux", 12.5, C["ink"], "end", "600")
+
+    y2 = y + 56
+    b += txt(L - 12, y2, "Chaque année", 12.5, C["ink"], "end", "600")
+    b += txt(L, y2,
+             f"{fr(us['expansion_cerealiere_ha_an'])} ha de terres nouvelles mises "
+             f"en culture, contre {fr(R['deforestation']['perte_actuelle_ha_an'])} ha "
+             f"de forêt perdus", 12.5, C["risque"], "start", "700")
+    b += txt(L, y2 + 20,
+             f"soit un rapport de {us['ratio_defrichement_deforestation']:.1f} pour 1 · "
+             f"rendement céréalier {fr(us['rendement_fin'], 2)} t/ha, "
+             f"{us['part_surface_dans_production']:.0f} % de la hausse de production "
+             f"venant de la surface", 11.5, C["muted"], "start")
+    return svg(W, H, b, "Ce qui prend la place de la forêt se mesure, et ce n'est "
+                        "pas le bois de feu",
+               f"Togo, {us['annee_debut']}–{us['annee_fin']} · comparaison arrêtée à "
+               f"{us['annee_fin']}, la surface agricole étant gelée depuis "
+               f"{us['agri_derniere_maj']}")
+
+
 FIGS = {"fig1_preuve.svg": fig_preuve, "fig2_rythme.svg": fig_rythme,
         "fig3_combustibles.svg": fig_combustibles, "fig4_leviers.svg": fig_leviers,
-        "fig5_ges.svg": fig_ges}
+        "fig5_ges.svg": fig_ges, "fig6_tapis.svg": fig_tapis,
+        "fig7_sols.svg": fig_sols}
 
 if __name__ == "__main__":
     for nom, fn in FIGS.items():

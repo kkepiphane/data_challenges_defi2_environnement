@@ -1,0 +1,442 @@
+{
+  "date": "28/08/2026",
+  "n_controles": 62,
+  "n_conformes": 62,
+  "n_ecarts": 0,
+  "controles": [
+    {
+      "libelle": "Accès rural à l'électricité (dernier point)",
+      "conforme": true,
+      "valeur_brute": 25.0,
+      "valeur_publiee": 25.0,
+      "unite": "%"
+    },
+    {
+      "libelle": "Accès urbain à l'électricité",
+      "conforme": true,
+      "valeur_brute": 96.5,
+      "valeur_publiee": 96.5,
+      "unite": "%"
+    },
+    {
+      "libelle": "Écart ville / campagne",
+      "conforme": true,
+      "valeur_brute": 71.5,
+      "valeur_publiee": 71.5,
+      "unite": "points"
+    },
+    {
+      "libelle": "Accès rural au point de départ",
+      "conforme": true,
+      "valeur_brute": 3.10279958670469,
+      "valeur_publiee": 3.10279958670469,
+      "unite": "%"
+    },
+    {
+      "libelle": "Rythme observé d'électrification rurale",
+      "conforme": true,
+      "valeur_brute": 0.9123833505539712,
+      "valeur_publiee": 0.9123833505539712,
+      "unite": "pt/an"
+    },
+    {
+      "libelle": "Rythme requis pour 2030",
+      "conforme": true,
+      "valeur_brute": 9.375,
+      "valeur_publiee": 9.375,
+      "unite": "pt/an"
+    },
+    {
+      "libelle": "Facteur d'accélération",
+      "conforme": true,
+      "valeur_brute": 10.275286144039988,
+      "valeur_publiee": 10.275286144039988,
+      "unite": "×"
+    },
+    {
+      "libelle": "Population rurale",
+      "conforme": true,
+      "valeur_brute": 4962262.0,
+      "valeur_publiee": 4962262.0,
+      "unite": "hab."
+    },
+    {
+      "libelle": "Ruraux sans électricité",
+      "conforme": true,
+      "valeur_brute": 3721696.5,
+      "valeur_publiee": 3721696.5,
+      "unite": "pers."
+    },
+    {
+      "libelle": "Combustible « bois » en 2014",
+      "conforme": true,
+      "valeur_brute": 48.2,
+      "valeur_publiee": 48.2,
+      "unite": "%"
+    },
+    {
+      "libelle": "Combustible « bois » en 2017",
+      "conforme": true,
+      "valeur_brute": 51.8,
+      "valeur_publiee": 51.8,
+      "unite": "%"
+    },
+    {
+      "libelle": "Combustible « charbon » en 2014",
+      "conforme": true,
+      "valeur_brute": 42.1,
+      "valeur_publiee": 42.1,
+      "unite": "%"
+    },
+    {
+      "libelle": "Combustible « charbon » en 2017",
+      "conforme": true,
+      "valeur_brute": 37.6,
+      "valeur_publiee": 37.6,
+      "unite": "%"
+    },
+    {
+      "libelle": "Combustible « gpl » en 2014",
+      "conforme": true,
+      "valeur_brute": 6.6,
+      "valeur_publiee": 6.6,
+      "unite": "%"
+    },
+    {
+      "libelle": "Combustible « gpl » en 2017",
+      "conforme": true,
+      "valeur_brute": 8.8,
+      "valeur_publiee": 8.8,
+      "unite": "%"
+    },
+    {
+      "libelle": "Total biomasse (dernière enquête)",
+      "conforme": true,
+      "valeur_brute": 89.4,
+      "valeur_publiee": 89.4,
+      "unite": "%"
+    },
+    {
+      "libelle": "Cuisson propre en milieu rural",
+      "conforme": true,
+      "valeur_brute": 0.9,
+      "valeur_publiee": 0.9,
+      "unite": "%"
+    },
+    {
+      "libelle": "Cuisson propre (ensemble du pays)",
+      "conforme": true,
+      "valeur_brute": 11.9,
+      "valeur_publiee": 11.9,
+      "unite": "%"
+    },
+    {
+      "libelle": "Part « renouvelable » de l'énergie finale",
+      "conforme": true,
+      "valeur_brute": 75.1,
+      "valeur_publiee": 75.1,
+      "unite": "%"
+    },
+    {
+      "libelle": "Couvert forestier en 1990",
+      "conforme": true,
+      "valeur_brute": 13616.6,
+      "valeur_publiee": 13616.6,
+      "unite": "km²"
+    },
+    {
+      "libelle": "Couvert forestier en 2021",
+      "conforme": true,
+      "valeur_brute": 12063.1,
+      "valeur_publiee": 12063.1,
+      "unite": "km²"
+    },
+    {
+      "libelle": "Perte forestière annuelle",
+      "conforme": true,
+      "valeur_brute": 5011.290322580645,
+      "valeur_publiee": 5011.290322580645,
+      "unite": "ha/an"
+    },
+    {
+      "libelle": "Perte forestière relative",
+      "conforme": true,
+      "valeur_brute": 11.408868586871906,
+      "valeur_publiee": 11.408868586871906,
+      "unite": "%"
+    },
+    {
+      "libelle": "Coupures/mois en 2016",
+      "conforme": true,
+      "valeur_brute": 5.5,
+      "valeur_publiee": 5.5,
+      "unite": "/mois"
+    },
+    {
+      "libelle": "Coupures/mois en 2009",
+      "conforme": true,
+      "valeur_brute": 7.2,
+      "valeur_publiee": 7.2,
+      "unite": "/mois"
+    },
+    {
+      "libelle": "Entreprises touchées en 2016",
+      "conforme": true,
+      "valeur_brute": 93.8,
+      "valeur_publiee": 93.8,
+      "unite": "%"
+    },
+    {
+      "libelle": "Entreprises touchées en 2009",
+      "conforme": true,
+      "valeur_brute": 80.4,
+      "valeur_publiee": 80.4,
+      "unite": "%"
+    },
+    {
+      "libelle": "Exposition aux PM2,5",
+      "conforme": true,
+      "valeur_brute": 51.6661369398223,
+      "valeur_publiee": 51.6661369398223,
+      "unite": "µg/m³"
+    },
+    {
+      "libelle": "Mortalité attribuée à la pollution de l'air",
+      "conforme": true,
+      "valeur_brute": 223.1,
+      "valeur_publiee": 223.1,
+      "unite": "/100 000"
+    },
+    {
+      "libelle": "Total national GES 2018",
+      "conforme": true,
+      "valeur_brute": 40843.34,
+      "valeur_publiee": 40843.34,
+      "unite": "Gg"
+    },
+    {
+      "libelle": "Part du secteur énergie",
+      "conforme": true,
+      "valeur_brute": 6.164823934575381,
+      "valeur_publiee": 6.164823934575381,
+      "unite": "%"
+    },
+    {
+      "libelle": "Part agriculture & forêts",
+      "conforme": true,
+      "valeur_brute": 87.72654244241534,
+      "valeur_publiee": 87.72654244241534,
+      "unite": "%"
+    },
+    {
+      "libelle": "Part de l'énergie dans le méthane national",
+      "conforme": true,
+      "valeur_brute": 22.56849119565725,
+      "valeur_publiee": 22.6,
+      "unite": "%"
+    },
+    {
+      "libelle": "Part de l'énergie dans le N2O national",
+      "conforme": true,
+      "valeur_brute": 56.9843293094399,
+      "valeur_publiee": 57.0,
+      "unite": "%"
+    },
+    {
+      "libelle": "Amplitude thermique entre stations",
+      "conforme": true,
+      "valeur_brute": 6.44047619047619,
+      "valeur_publiee": 6.44047619047619,
+      "unite": "°C"
+    },
+    {
+      "libelle": "Station la plus chaude (valeur)",
+      "conforme": true,
+      "valeur_brute": 35.535714285714285,
+      "valeur_publiee": 35.535714285714285,
+      "unite": "°C"
+    },
+    {
+      "libelle": "Station la plus fraîche (valeur)",
+      "conforme": true,
+      "valeur_brute": 29.095238095238095,
+      "valeur_publiee": 29.095238095238095,
+      "unite": "°C"
+    },
+    {
+      "libelle": "Mois le plus chaud (numéro)",
+      "conforme": true,
+      "valeur_brute": 3.0,
+      "valeur_publiee": 3.0,
+      "unite": ""
+    },
+    {
+      "libelle": "Température du mois le plus chaud",
+      "conforme": true,
+      "valeur_brute": 36.08571428571429,
+      "valeur_publiee": 36.09,
+      "unite": "°C"
+    },
+    {
+      "libelle": "Nombre de forêts classées analysées",
+      "conforme": true,
+      "valeur_brute": 53.0,
+      "valeur_publiee": 53.0,
+      "unite": ""
+    },
+    {
+      "libelle": "Ruraux sans électricité en 1998",
+      "conforme": true,
+      "valeur_brute": 3114745.972705316,
+      "valeur_publiee": 3114745.972705316,
+      "unite": "pers."
+    },
+    {
+      "libelle": "Ruraux sans électricité en 2022",
+      "conforme": true,
+      "valeur_brute": 3721696.5,
+      "valeur_publiee": 3721696.5,
+      "unite": "pers."
+    },
+    {
+      "libelle": "Variation du stock de ruraux sans électricité",
+      "conforme": true,
+      "valeur_brute": 606950.5272946842,
+      "valeur_publiee": 606950.5272946842,
+      "unite": "pers."
+    },
+    {
+      "libelle": "Effet démographie",
+      "conforme": true,
+      "valeur_brute": 1693546.9824674805,
+      "valeur_publiee": 1693546.9824674805,
+      "unite": "pers."
+    },
+    {
+      "libelle": "Effet électrification",
+      "conforme": true,
+      "valeur_brute": -1086596.455172796,
+      "valeur_publiee": -1086596.455172796,
+      "unite": "pers."
+    },
+    {
+      "libelle": "Seuil de raccordement pour stabiliser le stock",
+      "conforme": true,
+      "valeur_brute": 65658.0,
+      "valeur_publiee": 65658.0,
+      "unite": "/an"
+    },
+    {
+      "libelle": "Raccordements moyens 2012-2022",
+      "conforme": true,
+      "valeur_brute": 56800.7848,
+      "valeur_publiee": 56800.7848,
+      "unite": "/an"
+    },
+    {
+      "libelle": "Seuil moyen 2012-2022",
+      "conforme": true,
+      "valeur_brute": 70556.8,
+      "valeur_publiee": 70556.8,
+      "unite": "/an"
+    },
+    {
+      "libelle": "Variation du stock 2012-2022 (= déficit × 10)",
+      "conforme": true,
+      "valeur_brute": 137560.152,
+      "valeur_publiee": 137560.15200000023,
+      "unite": "pers."
+    },
+    {
+      "libelle": "Pentes distinctes de la série forestière",
+      "conforme": true,
+      "valeur_brute": 2.0,
+      "valeur_publiee": 2.0,
+      "unite": ""
+    },
+    {
+      "libelle": "Perte forestière du régime en cours",
+      "conforme": true,
+      "valeur_brute": 2960.0,
+      "valeur_publiee": 2960.0,
+      "unite": "ha/an"
+    },
+    {
+      "libelle": "Perte forestière du premier régime",
+      "conforme": true,
+      "valeur_brute": 9320.0,
+      "valeur_publiee": 9320.0,
+      "unite": "ha/an"
+    },
+    {
+      "libelle": "Surface agricole en 1990",
+      "conforme": true,
+      "valeur_brute": 31600.0,
+      "valeur_publiee": 31600.0,
+      "unite": "km²"
+    },
+    {
+      "libelle": "Surface agricole en 2013",
+      "conforme": true,
+      "valeur_brute": 38200.0,
+      "valeur_publiee": 38200.0,
+      "unite": "km²"
+    },
+    {
+      "libelle": "Expansion agricole nette",
+      "conforme": true,
+      "valeur_brute": 6600.0,
+      "valeur_publiee": 6600.0,
+      "unite": "km²"
+    },
+    {
+      "libelle": "Recul forestier sur la même fenêtre",
+      "conforme": true,
+      "valeur_brute": -1316.7000000000007,
+      "valeur_publiee": -1316.7000000000007,
+      "unite": "km²"
+    },
+    {
+      "libelle": "Rapport expansion agricole / recul forestier",
+      "conforme": true,
+      "valeur_brute": 5.012531328320799,
+      "valeur_publiee": 5.012531328320799,
+      "unite": "×"
+    },
+    {
+      "libelle": "Rendement céréalier en 1990",
+      "conforme": true,
+      "valeur_brute": 0.7468418502297818,
+      "valeur_publiee": 0.7468418502297818,
+      "unite": "t/ha"
+    },
+    {
+      "libelle": "Rendement céréalier en 2022",
+      "conforme": true,
+      "valeur_brute": 1.167754927587597,
+      "valeur_publiee": 1.167754927587597,
+      "unite": "t/ha"
+    },
+    {
+      "libelle": "Pente d'électrification rurale (moindres carrés)",
+      "conforme": true,
+      "valeur_brute": 0.9922420454755437,
+      "valeur_publiee": 0.9922420454755339,
+      "unite": "pt/an"
+    },
+    {
+      "libelle": "Station la plus chaude (nom)",
+      "conforme": true,
+      "valeur_brute": null,
+      "valeur_publiee": null,
+      "unite": ""
+    },
+    {
+      "libelle": "Station la plus fraîche (nom)",
+      "conforme": true,
+      "valeur_brute": null,
+      "valeur_publiee": null,
+      "unite": ""
+    }
+  ]
+}

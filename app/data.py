@@ -15,6 +15,20 @@ def national():
 
 
 @st.cache_data(show_spinner=False)
+def verification():
+    """Résultat de `src/verify.py` — l'audit qui recalcule tout depuis data/raw/.
+
+    Le fichier est écrit par le script d'audit lui-même : si l'audit n'a jamais
+    tourné, la page le dit au lieu d'afficher un chiffre rassurant sans preuve.
+    """
+    p = GOLD / "verification.json"
+    if not p.exists():
+        return None
+    with open(p, encoding="utf-8") as f:
+        return json.load(f)
+
+
+@st.cache_data(show_spinner=False)
 def forets():
     return pd.read_csv(GOLD / "forets_vulnerabilite.csv")
 

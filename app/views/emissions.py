@@ -7,7 +7,8 @@ import plotly.graph_objects as go
 
 import data as D
 from theme import (C, MOIS, RAMPE_T, banniere, section, kpi_row, encart,
-                   style_fig, annote, pied, fr, titre_carte, rgba)
+                   style_fig, annote, pied, fr, titre_carte, rgba,
+                   telecharger, reglages, jetons)
 
 nat = D.national()
 R = nat["reperes"]
@@ -56,19 +57,28 @@ with o1:
             "Changez le gaz observé, ou passez en équivalent CO₂ : "
             "le podium ne tient pas en place.")
 
-    f1, f2 = st.columns([1.5, 1])
-    with f1:
-        choix_gaz = st.radio("Gaz observé",
-                             ["Tous les gaz", "CO₂", "CH₄ (méthane)", "N₂O (protoxyde d'azote)"],
-                             horizontal=True)
-    with f2:
-        base = st.radio("Unité de lecture",
-                        ["Masse brute (Gg, source)", "Équivalent CO₂ (PRG 100 ans)"],
-                        horizontal=False)
+    with reglages("Réglages de lecture de l'inventaire",
+                  "Le classement des secteurs dépend de ces deux réglages — "
+                  "c'est précisément la démonstration de cette page."):
+        f1, f2 = st.columns([1.5, 1])
+        with f1:
+            choix_gaz = st.radio(
+                "Gaz observé",
+                ["Tous les gaz", "CO₂", "CH₄ (méthane)", "N₂O (protoxyde d'azote)"],
+                horizontal=True, key="emissions_gaz")
+        with f2:
+            base = st.radio("Unité de lecture",
+                            ["Masse brute (Gg, source)",
+                             "Équivalent CO₂ (PRG 100 ans)"],
+                            horizontal=False, key="emissions_unite")
 
     cle_gaz = {"Tous les gaz": None, "CO₂": "CO2",
                "CH₄ (méthane)": "CH4", "N₂O (protoxyde d'azote)": "N2O"}[choix_gaz]
     en_co2e = base.startswith("Équivalent")
+    jetons(("Gaz", choix_gaz),
+           ("Lecture", "équivalent CO₂ (PRG 100 ans)" if en_co2e
+            else "masse brute, telle que publiée"),
+           ("Source", "inventaire national 2018"))
 
     d = gaz_df.copy()
     d["poids"] = d["gaz"].map(PRG) if en_co2e else 1
@@ -95,6 +105,10 @@ with o1:
         fig.update_xaxes(title=unite, range=[0, agg["val"].max() * 1.22])
         fig.update_yaxes(title=None)
         st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
+        telecharger(agg.rename(columns={"secteur_court": "secteur",
+                                        "val": f"emissions_{unite}",
+                                        "part": "part_pct"}),
+                    "emissions_par_secteur")
 
     with g2:
         # composition interne de chaque secteur : quel gaz le compose
@@ -155,6 +169,7 @@ with o1:
     fig3.update_yaxes(title="Mt CO₂e")
     fig3.update_xaxes(title=None)
     st.plotly_chart(fig3, width="stretch", config={"displayModeBar": False})
+    telecharger(co2.rename(columns={"valeur": "co2_energie_Mt"}), "co2_secteur_energie")
     if len(co2) > 1:
         encart("constat",
                f"Les émissions de CO₂ du secteur énergie sont passées de "
@@ -187,21 +202,35 @@ with o2:
     section("Le gradient Sud → Nord, mois par mois",
             "10 stations, 2013-2019. Sélectionnez les villes à comparer.")
 
-    f1, f2 = st.columns([2.4, 1])
-    with f1:
-        ordre_sud_nord = list(villes.sort_values("lat")["ville"])
-        choix = st.multiselect("Stations affichées", ordre_sud_nord,
-                               default=ordre_sud_nord,
-                               help="Les stations sont listées du Sud vers le Nord.")
-    with f2:
-        mesure = st.selectbox("Mesure",
-                              ["Température maximale", "Température minimale",
-                               "Amplitude jour / nuit"])
+    with reglages("Réglages des stations",
+                  "Les dix stations sont listées du Sud vers le Nord ; "
+                  "la couleur des courbes suit cet ordre."):
+        f1, f2 = st.columns([2.4, 1])
+        with f1:
+            ordre_sud_nord = list(villes.sort_values("lat")["ville"])
+            choix = st.multiselect("Stations affichées", ordre_sud_nord,
+                                   default=ordre_sud_nord, key="climat_stations",
+                                   help="Les stations sont listées du Sud vers "
+                                        "le Nord.")
+        with f2:
+            mesure = st.selectbox("Mesure",
+                                  ["Température maximale", "Température minimale",
+                                   "Amplitude jour / nuit"], key="climat_mesure")
     col_mes = {"Température maximale": "t_max", "Température minimale": "t_min",
                "Amplitude jour / nuit": "amplitude"}[mesure]
 
+    # Une sélection vide viderait les deux graphiques sans rien expliquer :
+    # on retombe sur les dix stations et on le dit.
+    vide = not choix
+    if vide:
+        choix = ordre_sud_nord
+
     t = temp[(temp["annee"] >= an_min) & (temp["annee"] <= an_max)]
     t = t[t["ville"].isin(choix)]
+    jetons(("Stations", f"{len(choix)} / {len(villes)}"
+            + (" — sélection vide, toutes affichées" if vide else "")),
+           ("Mesure", mesure.lower()),
+           ("Relevés", f"{len(t)} observations ville × mois"))
 
     g1, g2 = st.columns([1.35, 1])
     with g1:
@@ -219,7 +248,7 @@ with o2:
             fig4.add_trace(go.Scatter(
                 x=[MOIS[m - 1] for m in sub["mois"]], y=sub[col_mes], name=v,
                 mode="lines", line=dict(color=coul, width=2.4),
-                hovertemplate=f"{v} · %{{x}} : %{{fr(y, 1)}} °C<extra></extra>"))
+                hovertemplate=f"{v} · %{{x}} : %{{y:.1f}} °C<extra></extra>"))
         style_fig(fig4, hauteur=384)
         fig4.update_yaxes(title="°C")
         fig4.update_xaxes(title=None)
@@ -230,6 +259,8 @@ with o2:
                            annotation_text="pic thermique", annotation_position="top left",
                            annotation_font=dict(size=11, color=C["risque"]))
         st.plotly_chart(fig4, width="stretch", config={"displayModeBar": False})
+        telecharger(prof_mois.rename(columns={col_mes: mesure}),
+                    "saisonnalite_par_station")
 
     with g2:
         # profil latitudinal : la température suit-elle vraiment la latitude ?
@@ -258,6 +289,8 @@ with o2:
         fig5.update_xaxes(title="latitude Nord (°)")
         fig5.update_yaxes(title="°C")
         st.plotly_chart(fig5, width="stretch", config={"displayModeBar": False})
+        telecharger(vv[["ville", "lat", "lon", "region", "t_max", "t_min",
+                        "amplitude"]], "stations_meteo")
 
     encart("constat",
            f"Le Togo s'étire sur près de 700 km du Sud au Nord et cela se lit dans les "

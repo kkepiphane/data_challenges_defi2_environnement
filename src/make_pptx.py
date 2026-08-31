@@ -48,6 +48,11 @@ er, ec, rs = R["elec_rural"], R["ecart_urbain_rural"], R["ruraux_sans_elec"]
 cb, dfr, sa = R["combustibles"], R["deforestation"], R["sante"]
 rp, fi, ges, fo = (R["renouvelable_piege"], R["fiabilite"], R["ges"],
                    R["forets"])
+tr, us, rg = R["tapis_roulant"], R["usage_sols"], R["regimes_foret"]
+# Perte forestière du régime en cours : la moyenne 1990-2021 mélange deux
+# rythmes et ne correspond à aucune année réelle.
+PERTE = dfr["perte_actuelle_ha_an"]
+DEFICIT = tr["seuil_moyen_10ans"] - tr["raccordements_moyens_10ans"]
 PRG = {"CO2": 1, "CH4": 28, "N2O": 265}          # PRG 100 ans, GIEC AR5
 
 # La portée de chaque levier sert deux fois : en synthèse et en détail.
@@ -136,8 +141,19 @@ def rectangle(slide, x, y, w, h, fond=None, bord=None, arrondi=True):
 
 
 # --------------------------------------------------------------- gabarit
-def diapo(prs, kicker, titre, numero):
-    """Diapositive de contenu : intitulé de rubrique, titre-trouvaille, pied."""
+TOTAL_DIAPOS = 10
+_rang = [1]          # la couverture est déjà posée quand `diapo` est appelée
+
+
+def diapo(prs, kicker, titre, numero=None):
+    """Diapositive de contenu : intitulé de rubrique, titre-trouvaille, pied.
+
+    La numérotation est tenue par un compteur : insérer ou déplacer une
+    diapositive ne demande pas de renuméroter les autres à la main, et le pied
+    de page ne peut donc pas mentir sur la position.
+    """
+    _rang[0] += 1
+    numero = _rang[0]
     s = prs.slides.add_slide(prs.slide_layouts[6])
     fond = rectangle(s, 0, 0, L, H, fond="surface", arrondi=False)
     fond.line.fill.background()
@@ -150,7 +166,7 @@ def diapo(prs, kicker, titre, numero):
           "Défi 2 · Énergie, Climat & Forêts au Togo", taille=8.5,
           couleur="sourdine")
     texte(s, L - MARGE - Inches(.6), H - Inches(.46), Inches(.6), Inches(.2),
-          f"{numero} / 10", taille=8.5, couleur="sourdine",
+          f"{numero} / {TOTAL_DIAPOS}", taille=8.5, couleur="sourdine",
           align=PP_ALIGN.RIGHT)
     if ARMOIRIES.exists():
         s.shapes.add_picture(str(ARMOIRIES), MARGE - Inches(.02),
@@ -284,25 +300,29 @@ def aligner(annees_ref, annees, valeurs):
 
 
 # --------------------------------------------------- contenu partage
-# Les cinq chiffres du diagnostic et les trois leviers servent deux
+# Les cinq chiffres du diagnostic et les quatre leviers servent deux
 # fois chacun : en synthese (diapositive 2) et en detail (10). Une
 # seule definition, donc aucun risque de divergence entre les deux.
 CHIFFRES = [
-    ("Accès rural à l'électricité", f"{er['valeur']:.0f}", "%",
-     f"contre {ec['urbain']:.0f} % en ville en {ec['annee']} — "
-     f"{ec['valeur']:.0f} points d'écart", "energie"),
-    ("Ruraux sans électricité", f"{fr(rs['personnes']/1e6, 1)}", "M",
-     f"personnes, soit {100-er['valeur']:.0f} % de la population rurale",
-     "risque"),
+    ("Ruraux privés d'électricité", f"+{tr['variation_pct']:.0f}", "%",
+     f"depuis {tr['annee_debut']} — de {fr(tr['sans_elec_debut']/1e6, 2)} à "
+     f"{fr(tr['sans_elec_fin']/1e6, 2)} M de personnes, alors que le taux "
+     f"d'accès était multiplié par "
+     f"{er['valeur']/er['valeur_depart']:.0f}", "risque"),
+    ("Raccordements manquants", f"{fr(round(DEFICIT, -2))}", "/an",
+     f"le déficit annuel face à la seule croissance rurale, sur "
+     f"{tr['annee_debut_decennie']}–{tr['annee_fin']}", "risque"),
     ("Ménages au bois ou au charbon", f"{cb['biomasse'][1]:.0f}", "%",
      f"en {cb['annees'][1]}, contre {cb['biomasse'][0]:.0f} % en "
      f"{cb['annees'][0]} : aucun recul", "risque"),
-    ("Forêt perdue chaque année", f"{fr(dfr['perte_ha_par_an'])}", "ha",
-     f"soit −{dfr['perte_pct_relative']:.0f} % du couvert entre "
-     f"{dfr['annee_debut']} et {dfr['annee_fin']}", "risque"),
-    ("Accélération requise", f"× {er['facteur_acceleration']:.0f}", "",
-     f"il faudrait +{fr(er['rythme_requis_2030'], 1)} pt/an au lieu de "
-     f"+{fr(er['rythme_observe'], 1)}", "risque"),
+    ("Forêt perdue chaque année", f"{fr(PERTE)}", "ha",
+     f"dans le régime en cours depuis {dfr['regime_depuis']} — "
+     f"{rg['ralentissement']:.1f} fois moins que dans les années 1990, "
+     f"mais sans reprise", "risque"),
+    ("Expansion agricole", f"× {us['ratio_agri_foret']:.1f}", "",
+     f"ce que la forêt perd : {fr(us['delta_agri_km2'])} km² gagnés par "
+     f"l'agriculture contre {fr(abs(us['delta_foret_km2']))} km² de forêt "
+     f"perdus", "energie"),
 ]
 LEVIERS = [
     ("1", "risque", "Cuisson propre",
@@ -315,17 +335,25 @@ LEVIERS = [
     ("2", "energie", "Solaire villageois décentralisé",
      "Mini-réseaux avec stockage pour les gros bourgs, kits domestiques "
      "pour l'habitat dispersé, dimensionnés sur les usages productifs.",
-     f"{fr(rs['personnes']/1e6, 1)} M de ruraux sans électricité",
-     "Accès universel rural en 2030",
-     "EG.ELC.ACCS.RU.ZS + un indicateur de disponibilité horaire, "
-     "absent des données actuelles"),
+     f"{fr(tr['sans_elec_fin']/1e6, 1)} M de ruraux sans électricité",
+     f"Dépasser {fr(round(tr['seuil_stagnation'], -2))} raccordements ruraux "
+     f"par an — le seuil démographique — puis viser l'accès universel",
+     "Le volume annuel de raccordements, et non le seul taux d'accès"),
     ("3", "foret", "Protection ciblée des massifs",
      "Surveillance, régénération assistée et agroforesterie concentrées "
      "sur les massifs prioritaires plutôt que saupoudrées.",
      f"{fo['nb_robustes']} massifs · {fr(fo['surface_totale_ha'])} ha "
      "de forêts classées",
      "Perte nette nulle sur les massifs prioritaires",
-     "AG.LND.FRST.K2 + un suivi surfacique par massif, à créer"),
+     f"Un suivi surfacique par massif, à créer : AG.LND.FRST.K2 ne contient "
+     f"que {rg['n_mesures_independantes']} mesures indépendantes"),
+    ("4", "charbon", "Intensification agricole",
+     "Semences améliorées, fertilité des sols et conseil agricole sur les "
+     "bassins céréaliers riverains des massifs prioritaires.",
+     f"{fr(round(us['expansion_cerealiere_ha_an'], -2))} ha défrichés par an, "
+     f"soit {us['ratio_defrichement_deforestation']:.1f} × la perte forestière",
+     "Ramener l'expansion des surfaces céréalières vers zéro",
+     "AG.PRD.CREL.MT / AG.LND.CREL.HA, lus comme un rendement en t/ha"),
 ]
 
 # ============================================================ le deck
@@ -367,9 +395,55 @@ def construire():
     texte(s, MARGE, H - Inches(.9), Inches(9.3), Inches(.6), SOURCE,
           taille=9, couleur="sur_nuit_2", interligne=1.4)
 
-    # ------------------------------------------- 2. ce qui a été analysé
+    # ------------------------------------------------------ 2. l'essentiel
+    # Cette diapositive doit se suffire à elle-même : un décideur qui ne lit
+    # que la couverture et celle-ci doit pouvoir arbitrer. Tout ce qui suit
+    # est de la preuve, et se place donc après.
+    s = diapo(prs, "L'essentiel", "Ce qu'il faut décider, et pourquoi")
+    y = HAUT
+    larg_t = (LARG - Inches(.36)) / 5
+    for i_t, (lab, val, unite, sous, coul) in enumerate(CHIFFRES):
+        tuile(s, MARGE + i_t * (larg_t + Inches(.09)), y, larg_t,
+              lab, val, unite, sous, coul, h=Inches(1.62))
+
+    encart(s, MARGE, y + Inches(1.76), LARG, Inches(1.2), "alerte",
+           f"Le taux d'accès rural a été multiplié par "
+           f"{er['valeur']/er['valeur_depart']:.0f} depuis {tr['annee_debut']} ; "
+           f"le nombre de ruraux privés d'électricité a augmenté de "
+           f"{tr['variation_pct']:.0f} % sur la même période, parce que la "
+           f"population rurale croît plus vite que le réseau. Piloter sur le "
+           f"taux, c'est piloter sur l'indicateur qui progresse pendant que le "
+           f"problème grandit. Au rythme observé "
+           f"(+{fr(er['rythme_observe'], 2)} pt/an), l'accès universel rural "
+           f"tombe en {er['annee_atteinte_tendanciel']:.0f} : tenir 2030 "
+           f"demanderait +{fr(er['rythme_requis_2030'], 1)} pt/an, soit "
+           f"{er['facteur_acceleration']:.0f} fois plus vite.",
+           titre="Le résultat qui commande tout le reste")
+
+    y2 = y + Inches(3.14)
+    texte(s, MARGE, y2, LARG, Inches(.2),
+          "Quatre leviers, dans cet ordre de priorité", taille=11, gras=True,
+          couleur="encre", majuscules=True, espacement=.6)
+    larg_l = (LARG - Inches(.27)) / 4
+    for i_l, (num, coul, titre_l, _quoi, portee, cible, _suivi) in enumerate(LEVIERS):
+        x = MARGE + i_l * (larg_l + Inches(.09))
+        rectangle(s, x, y2 + Inches(.3), larg_l, Inches(1.62),
+                  fond="surface", bord="bord")
+        texte(s, x + Inches(.16), y2 + Inches(.4), Inches(.3), Inches(.32),
+              num, taille=19, gras=True, couleur=coul, interligne=1)
+        texte(s, x + Inches(.5), y2 + Inches(.44), larg_l - Inches(.62),
+              Inches(.28), titre_l, taille=11.5, gras=True, couleur="encre",
+              interligne=1.1)
+        texte(s, x + Inches(.16), y2 + Inches(.92), larg_l - Inches(.32),
+              Inches(.3), portee, taille=9, gras=True, couleur=coul,
+              interligne=1.25)
+        texte(s, x + Inches(.16), y2 + Inches(1.24), larg_l - Inches(.32),
+              Inches(.58), cible, taille=8.5, couleur="sourdine",
+              interligne=1.25)
+
+    # ------------------------------------------- 3. ce qui a été analysé
     s = diapo(prs, "Méthode", "Six jeux de données, une seule question : "
-              "où agir en premier ?", 2)
+              "où agir en premier ?")
     y = HAUT
     jeux = [
         ("Accès à l'électricité", "Banque Mondiale · total, urbain, rural · "
@@ -405,22 +479,9 @@ def construire():
            "reste un curseur explicite dans le tableau de bord.",
            titre="Ce que ces données ne permettent pas de dire")
 
-    # ------------------------------------------ 3. diagnostic en 5 chiffres
-    s = diapo(prs, "Diagnostic", "Cinq chiffres qui commandent tout le reste", 3)
-    larg_t = (LARG - Inches(.48)) / 5
-    for i_t, (lab, val, unite, sous, coul) in enumerate(CHIFFRES):
-        tuile(s, MARGE + i_t * (larg_t + Inches(.12)), HAUT, larg_t,
-              lab, val, unite, sous, coul, h=Inches(1.75))
-
-    encart(s, MARGE, Inches(3.75), LARG, Inches(1.5), "alerte",
-           f"Le rythme actuel ne mène pas à 2030, il mène à "
-           f"{er['annee_atteinte_tendanciel']:.0f}. L'électrification rurale "
-           f"progresse de +{fr(er['rythme_observe'], 2)} point par an depuis "
-           f"{er['annee_depart']} ; atteindre 100 % en 2030 en demanderait "
-           f"+{fr(er['rythme_requis_2030'], 1)}, soit "
-           f"{er['facteur_acceleration']:.0f} fois plus vite. L'extension du "
-           f"réseau seule ne produit pas une telle accélération.",
-           titre="Le constat qui commande tout le reste")
+    # Pas de diapositive « Diagnostic » séparée : elle reprendrait les cinq
+    # mêmes tuiles que « L'essentiel ». Les chiffres se lisent une fois, à
+    # l'endroit où ils servent à décider.
 
     # -------------------------------------------------------- 4. la preuve
     s = diapo(prs, "La preuve", "L'accès progresse, la forêt recule, "
@@ -600,33 +661,31 @@ def construire():
            "complémentaire avant tout engagement.")
 
     # ------------------------------------------------ 10. recommandations
-    s = diapo(prs, "Recommandations", "Trois leviers, dans cet ordre", 10)
+    s = diapo(prs, "Recommandations", "Quatre leviers, dans cet ordre")
     y = HAUT
+    # Quatre cartes pleine largeur : le pas est calé pour que la dernière
+    # s'arrête au-dessus du pied de page. Pas de renvoi sous les cartes —
+    # la réserve « aucun coût, aucun budget » est déjà posée en Méthode, et
+    # la répéter ici mordrait sur le pied.
     for num, coul, titre_l, quoi, portee, cible, suivi in LEVIERS:
-        h = Inches(1.5)
+        h = Inches(1.20)
         rectangle(s, MARGE, y, LARG, h, fond="surface", bord="bord")
-        texte(s, MARGE + Inches(.22), y + Inches(.3), Inches(.5), Inches(.5),
-              num, taille=30, gras=True, couleur=coul, interligne=1)
-        texte(s, MARGE + Inches(.75), y + Inches(.2), Inches(3.3), Inches(.3),
-              titre_l, taille=14, gras=True, couleur="encre")
-        texte(s, MARGE + Inches(.75), y + Inches(.55), Inches(3.4), Inches(.8),
-              quoi, taille=9.5, couleur="sourdine", interligne=1.3)
+        texte(s, MARGE + Inches(.2), y + Inches(.26), Inches(.45), Inches(.42),
+              num, taille=24, gras=True, couleur=coul, interligne=1)
+        texte(s, MARGE + Inches(.66), y + Inches(.16), Inches(3.3), Inches(.28),
+              titre_l, taille=12.5, gras=True, couleur="encre")
+        texte(s, MARGE + Inches(.66), y + Inches(.48), Inches(3.4), Inches(.64),
+              quoi, taille=8.5, couleur="sourdine", interligne=1.25)
         for i, (etiq, val) in enumerate(
                 [("Portée directe", portee), ("Cible 2030", cible),
                  ("Indicateur de suivi", suivi)]):
             x = MARGE + Inches(4.4) + i * Inches(2.6)
-            texte(s, x, y + Inches(.22), Inches(2.4), Inches(.18), etiq,
-                  taille=8, gras=True, couleur="sourdine", majuscules=True,
+            texte(s, x, y + Inches(.17), Inches(2.4), Inches(.16), etiq,
+                  taille=7.5, gras=True, couleur="sourdine", majuscules=True,
                   espacement=.5)
-            texte(s, x, y + Inches(.46), Inches(2.42), Inches(.9), val,
-                  taille=9.5, couleur="encre", interligne=1.3)
-        y += Inches(1.62)
-
-    texte(s, MARGE, Inches(6.6), LARG, Inches(.4),
-          "Aucun coût ni budget dans les six jeux de données : ces trois "
-          "leviers fixent un ordre de priorité et des cibles physiques, pas "
-          "un plan de financement.", taille=9.5, couleur="sourdine",
-          interligne=1.3)
+            texte(s, x, y + Inches(.38), Inches(2.42), Inches(.76), val,
+                  taille=8.5, couleur="encre", interligne=1.25)
+        y += Inches(1.30)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     prs.save(OUT)

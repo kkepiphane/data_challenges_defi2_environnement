@@ -19,6 +19,7 @@ import csv
 import json
 import sys
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -230,7 +231,90 @@ with open(RAW / "file-zones-protegees-forets-classees-23-12-2024-09-53-17.csv",
 verifie("Nombre de forêts classées analysées", float(len(lignes_forets)),
         float(R["forets"]["nb"]), tol=0, unite="")
 
-# =============================================================== 12. cohérence
+# ======================================================= 12. analyses croisées
+# Les analyses de la section 8 du pipeline sont recalculées ici à partir des
+# séries brutes, sans réutiliser une seule ligne de `build_gold.py`.
+
+# --- tapis roulant démographique
+er_s, pr_s = wb["EG.ELC.ACCS.RU.ZS"], wb["SP.RUR.TOTL"]
+ans_tr = sorted(set(er_s) & set(pr_s))
+t0, t1 = ans_tr[0], ans_tr[-1]
+s0 = pr_s[t0] * (1 - er_s[t0] / 100)
+s1 = pr_s[t1] * (1 - er_s[t1] / 100)
+TR = R["tapis_roulant"]
+verifie(f"Ruraux sans électricité en {t0}", s0, TR["sans_elec_debut"], tol=1,
+        unite="pers.")
+verifie(f"Ruraux sans électricité en {t1}", s1, TR["sans_elec_fin"], tol=1,
+        unite="pers.")
+verifie("Variation du stock de ruraux sans électricité", s1 - s0,
+        TR["variation"], tol=1, unite="pers.")
+verifie("Effet démographie", (pr_s[t1] - pr_s[t0]) * (1 - er_s[t0] / 100),
+        TR["effet_demographie"], tol=1, unite="pers.")
+verifie("Effet électrification", -pr_s[t1] * (er_s[t1] - er_s[t0]) / 100,
+        TR["effet_acces"], tol=1, unite="pers.")
+verifie("Seuil de raccordement pour stabiliser le stock",
+        pr_s[t1] - pr_s[t1 - 1], TR["seuil_stagnation"], tol=1, unite="/an")
+# Le déficit annuel de la dernière décennie doit reconstituer exactement la
+# variation du stock sur la même décennie : si l'identité ne tient pas, le
+# récit du « tapis roulant » est faux quelque part.
+d0 = TR["annee_debut_decennie"]
+n_ans = t1 - d0
+racc_moy = sum(pr_s[a] * er_s[a] / 100 - pr_s[a - 1] * er_s[a - 1] / 100
+               for a in range(d0 + 1, t1 + 1)) / n_ans
+seuil_moy = sum(pr_s[a] - pr_s[a - 1] for a in range(d0 + 1, t1 + 1)) / n_ans
+verifie(f"Raccordements moyens {d0}-{t1}", racc_moy,
+        TR["raccordements_moyens_10ans"], tol=1, unite="/an")
+verifie(f"Seuil moyen {d0}-{t1}", seuil_moy, TR["seuil_moyen_10ans"], tol=1,
+        unite="/an")
+verifie(f"Variation du stock {d0}-{t1} (= déficit × {n_ans})",
+        (seuil_moy - racc_moy) * n_ans, TR["variation_decennie"], tol=1,
+        unite="pers.")
+
+# --- régimes de la série forestière : les pentes annuelles successives.
+# Arrondi au dixième de km² : la série FAO porte des valeurs à trois décimales
+# dont les derniers chiffres sont un artefact d'interpolation, pas une mesure.
+pentes = [round(fk[b] - fk[a], 1) for a, b in zip(sorted(fk), sorted(fk)[1:])]
+RG = R["regimes_foret"]
+verifie("Pentes distinctes de la série forestière", float(len(set(pentes))),
+        float(RG["n_regimes"]), tol=0, unite="")
+verifie("Perte forestière du régime en cours", -min(pentes, key=abs) * 100,
+        RG["perte_recente_ha_an"], tol=1, unite="ha/an")
+verifie("Perte forestière du premier régime", -min(pentes) * 100,
+        RG["perte_ancienne_ha_an"], tol=1, unite="ha/an")
+
+# --- usage des sols
+ag = wb["AG.LND.AGRI.K2"]
+US = R["usage_sols"]
+u0, u1 = US["annee_debut"], US["annee_fin"]
+verifie(f"Surface agricole en {u0}", ag[u0], US["agri_debut_km2"], tol=0.1,
+        unite="km²")
+verifie(f"Surface agricole en {u1}", ag[u1], US["agri_fin_km2"], tol=0.1,
+        unite="km²")
+verifie("Expansion agricole nette", ag[u1] - ag[u0], US["delta_agri_km2"],
+        tol=0.1, unite="km²")
+verifie("Recul forestier sur la même fenêtre", fk[u1] - fk[u0],
+        US["delta_foret_km2"], tol=0.1, unite="km²")
+verifie("Rapport expansion agricole / recul forestier",
+        abs((ag[u1] - ag[u0]) / (fk[u1] - fk[u0])), US["ratio_agri_foret"],
+        tol=0.01, unite="×")
+ch, ct = wb["AG.LND.CREL.HA"], wb["AG.PRD.CREL.MT"]
+c0, c1 = US["cereales_annee_debut"], US["cereales_annee_fin"]
+verifie(f"Rendement céréalier en {c0}", ct[c0] / ch[c0], US["rendement_debut"],
+        tol=0.001, unite="t/ha")
+verifie(f"Rendement céréalier en {c1}", ct[c1] / ch[c1], US["rendement_fin"],
+        tol=0.001, unite="t/ha")
+
+# --- pente d'électrification (moindres carrés, calculés à la main)
+ans_er = sorted(er_s)
+n = len(ans_er)
+mx = sum(ans_er) / n
+my = sum(er_s[a] for a in ans_er) / n
+pente = (sum((a - mx) * (er_s[a] - my) for a in ans_er)
+         / sum((a - mx) ** 2 for a in ans_er))
+verifie("Pente d'électrification rurale (moindres carrés)", pente,
+        R["tendance_elec"]["pente"], tol=0.001, unite="pt/an")
+
+# =============================================================== 13. cohérence
 # les deux villes citées comme extrêmes doivent être celles des données
 ville_chaude = max(moy, key=moy.get)
 ville_froide = min(moy, key=moy.get)
@@ -265,4 +349,21 @@ if echecs:
     for _, lib, *_ in echecs:
         print(f"     - {lib}")
 print("=" * 78)
+
+# Le résultat de l'audit est publié dans le tableau de bord : un jury ne doit
+# pas avoir à lancer un script pour savoir si les chiffres ont été recontrôlés.
+# Ce fichier est écrit par le script d'audit lui-même, jamais à la main.
+with open(GOLD / "verification.json", "w", encoding="utf-8") as f:
+    json.dump({
+        "date": datetime.now().strftime("%d/%m/%Y"),
+        "n_controles": len(resultats),
+        "n_conformes": n_ok,
+        "n_ecarts": len(echecs),
+        "controles": [{"libelle": lib, "conforme": bool(ok),
+                       "valeur_brute": attendu, "valeur_publiee": obtenu,
+                       "unite": unite}
+                      for ok, lib, attendu, obtenu, unite in resultats],
+    }, f, ensure_ascii=False, indent=2)
+print(f"  [OK] resultat ecrit dans {GOLD / 'verification.json'}")
+
 sys.exit(1 if echecs else 0)
