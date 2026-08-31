@@ -1,13 +1,12 @@
 """Cartographie des 53 forêts classées et désignation des priorités."""
 import numpy as np
-import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
 
 import data as D
 from theme import (C, banniere, section, kpi_row, encart, style_fig,
                    barres_donnees, legende, pied, fr, titre_carte, rgba, RAMPE,
-                   telecharger, reglages, jetons)
+                   region_active, rappel_filtre)
 
 nat = D.national()
 R = nat["reperes"]
@@ -22,92 +21,78 @@ banniere("Les 53 forêts classées du territoire",
      "composantes, le rend entièrement réglable, et vérifie quelles priorités "
      "résistent au changement de pondération.")
 
+# Les chiffres-clés suivent le filtre régional : afficher « 53 forêts » à côté
+# d'une carte qui n'en montre que douze serait un mensonge par juxtaposition.
+_reg = region_active()
+_f = forets[forets["region_nom_bdd"] == _reg] if _reg else forets
+_fiables = _f[~_f["surface_incertaine"]]
+_robustes = set(robust.loc[robust["toujours_top10"], "foret"])
+_nb_rob = int(_f["etab_nom"].isin(_robustes).sum())
+_ou = f"dans la région {_reg}" if _reg else "sur l'ensemble du territoire"
+
+rappel_filtre("carte, classement et chiffres-clés de cette page")
 kpi_row([
-    ("Forêts classées analysées", f"{R['forets']['nb']}",
-     f"pour {fr(R['forets']['surface_totale_ha'])} ha de surface fiable cumulée",
+    ("Forêts classées analysées", f"{len(_f)}",
+     f"{_ou}, pour {fr(_fiables['surface_ha'].sum())} ha de surface fiable "
+     f"cumulée", C["foret"]),
+    ("Priorités robustes", f"{_nb_rob} forêts",
+     f"restent dans le top 10 national quelle que soit la pondération testée"
+     + (f" — sur les {R['forets']['nb_robustes']} du pays" if _reg else ""),
      C["foret"]),
-    ("Priorités robustes", f"{R['forets']['nb_robustes']} forêts",
-     "restent dans le top 10 quelle que soit la pondération testée", C["foret"]),
-    ("Éloignement médian", f"{R['forets']['dist_mediane']:.0f} km",
+    ("Éloignement médian", f"{_f['dist_km'].median():.0f} km",
      "du pôle urbain le plus proche — proxy de la pression bois-énergie",
      C["energie"]),
-    ("Surfaces à vérifier", f"{R['forets']['nb_incertaines']} / {R['forets']['nb']}",
+    ("Surfaces à vérifier", f"{int(_f['surface_incertaine'].sum())} / {len(_f)}",
      "polygones < 10 ha, signalés et neutralisés dans l'indice", C["neutre"]),
 ])
 
 # ------------------------------------------------------------------- réglages
 section("Réglez l'indice, le classement et la carte suivent",
         "Les trois curseurs sont normalisés automatiquement : ce qui compte est "
-        "leur poids relatif. Vous testez ainsi votre propre doctrine de priorisation — "
-        "et le test de robustesse, plus bas, vous dit si elle change la décision.")
+        "leur poids relatif. Vous testez ainsi votre propre doctrine de priorisation.")
 
-# Doctrines pré-réglées : elles évitent d'avoir à deviner ce qu'un curseur
-# change, et rendent le test de robustesse accessible en un clic.
-DOCTRINES = {
-    "Référence": (40, 35, 25),
-    "Enclavement d'abord": (70, 20, 10),
-    "Grands massifs d'abord": (20, 60, 20),
-    "Stress thermique d'abord": (20, 20, 60),
-}
-with reglages("Doctrine de priorisation",
-              "Choisissez une pondération type, ou réglez la vôtre au curseur."):
-    cols_d = st.columns(len(DOCTRINES))
-    for col, (nom_d, poids_d) in zip(cols_d, DOCTRINES.items()):
-        with col:
-            if st.button(nom_d, width="stretch", key=f"prio_preset_{nom_d}"):
-                (st.session_state["prio_enc"], st.session_state["prio_sur"],
-                 st.session_state["prio_str"]) = poids_d
-                st.rerun()
-
-    p1, p2, p3, p4 = st.columns(4)
-    with p1:
-        w_enc = st.slider("Enclavement", 0, 100, 40, 5, key="prio_enc",
-                          help="Distance au pôle urbain le plus proche. Plus une "
-                               "forêt est loin d'une ville raccordée, plus la "
-                               "pression bois-énergie sur elle est forte.")
-    with p2:
-        w_sur = st.slider("Enjeu / surface", 0, 100, 35, 5, key="prio_sur",
-                          help="Superficie du massif, en échelle logarithmique. "
-                               "Protéger un grand massif a plus d'effet.")
-    with p3:
-        w_str = st.slider("Stress thermique", 0, 100, 25, 5, key="prio_str",
-                          help="Température maximale de la zone de rattachement. "
-                               "Les forêts sèches du Nord sont plus exposées.")
-    with p4:
-        st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
-        if w_enc + w_sur + w_str == 0:      # dégénéré : on revient à la référence
-            w_enc, w_sur, w_str = 40, 35, 25
-            st.caption("Les trois poids sont nuls : la pondération de référence "
-                       "**40 / 35 / 25** est appliquée.")
-        else:
-            tot_w = w_enc + w_sur + w_str
-            st.caption(f"Pondération effective : **{100*w_enc/tot_w:.0f} % / "
-                       f"{100*w_sur/tot_w:.0f} % / {100*w_str/tot_w:.0f} %**  \n"
-                       "Pondération de référence : 40 / 35 / 25.")
-
-with reglages("Périmètre du classement",
-              "Ces filtres agissent en même temps sur la carte et sur le tableau."):
-    f1, f2, f3, f4 = st.columns([1.2, 1.4, 1, 1.4])
-    with f1:
-        regions = ["Toutes les régions"] + sorted(
-            forets["region_nom_bdd"].dropna().unique())
-        reg = st.selectbox("Région", regions, key="prio_region")
-    with f2:
-        cherche = st.text_input("Rechercher une forêt", "", key="prio_recherche",
-                                placeholder="Assoukoko, Fazao, Abdoulaye…",
-                                help="Filtre sur le nom du massif et sur sa "
-                                     "préfecture de rattachement.")
-    with f3:
-        nb_aff = st.slider("Lignes affichées", 5, 53, 15, 1, key="prio_nb")
-    with f4:
-        st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
-        incl = st.checkbox("Inclure les surfaces incertaines", value=True,
-                           key="prio_incertaines",
-                           help="16 polygones font moins de 10 ha, ce qui est "
-                                "incompatible avec le statut de forêt classée : "
-                                "leur numérisation est probablement partielle.")
-
+p1, p2, p3, p4 = st.columns(4)
+with p1:
+    w_enc = st.slider("Enclavement", 0, 100, 40, 5,
+                      help="Distance au pôle urbain le plus proche. Plus une forêt est "
+                           "loin d'une ville raccordée, plus la pression bois-énergie "
+                           "sur elle est forte.")
+with p2:
+    w_sur = st.slider("Enjeu / surface", 0, 100, 35, 5,
+                      help="Superficie du massif, en échelle logarithmique. "
+                           "Protéger un grand massif a plus d'effet.")
+with p3:
+    w_str = st.slider("Stress thermique", 0, 100, 25, 5,
+                      help="Température maximale de la zone de rattachement. "
+                           "Les forêts sèches du Nord sont plus exposées.")
+with p4:
+    st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
+    if w_enc + w_sur + w_str == 0:      # dégénéré : on revient à la référence
+        w_enc, w_sur, w_str = 40, 35, 25
+        st.caption("Les trois poids sont nuls : la pondération de référence "
+                   "**40 / 35 / 25** est appliquée.")
+    else:
+        tot_w = w_enc + w_sur + w_str
+        st.caption(f"Pondération effective : **{100*w_enc/tot_w:.0f} % / "
+                   f"{100*w_sur/tot_w:.0f} % / {100*w_str/tot_w:.0f} %**  \n"
+                   "Pondération de référence : 40 / 35 / 25.")
 tot_w = w_enc + w_sur + w_str
+
+# La région n'est plus choisie ici : elle vient du volet et vaut pour toute
+# l'application. Un filtre qui commande la carte, le classement et les stations
+# climatiques n'a pas sa place au milieu d'une seule page.
+reg = region_active() or "Toutes les régions"
+
+f2, f3 = st.columns([1.2, 2])
+with f2:
+    nb_aff = st.slider("Forêts au classement", 5, 53, 15, 1, key="prio_nb")
+with f3:
+    st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
+    incl = st.checkbox("Inclure les forêts à surface incertaine", value=True,
+                       key="prio_incertaines",
+                       help="16 polygones font moins de 10 ha, ce qui est incompatible "
+                            "avec le statut de forêt classée : leur numérisation est "
+                            "probablement partielle.")
 
 # ---------------------------------------------------- recalcul en direct du score
 d = forets.copy()
@@ -120,25 +105,8 @@ if reg != "Toutes les régions":
     vue = vue[vue["region_nom_bdd"] == reg]
 if not incl:
     vue = vue[~vue["surface_incertaine"]]
-if cherche.strip():
-    motif = cherche.strip()
-    vue = vue[vue["etab_nom"].str.contains(motif, case=False, na=False)
-              | vue["prefecture_nom_bdd"].astype(str).str.contains(
-                  motif, case=False, na=False)]
 vue = vue.sort_values("score_live", ascending=False).reset_index(drop=True)
 vue["rang_live"] = np.arange(1, len(vue) + 1)
-
-jetons(("Pondération", f"{100*w_enc/tot_w:.0f} / {100*w_sur/tot_w:.0f} / "
-                       f"{100*w_str/tot_w:.0f}"),
-       ("Région", reg if reg != "Toutes les régions" else "toutes"),
-       ("Recherche", cherche.strip() or None),
-       ("Forêts retenues", f"{len(vue)} / {len(d)}"),
-       ("Surfaces incertaines", "incluses" if incl else "exclues"))
-
-if vue.empty:
-    st.warning(f"Aucune forêt ne correspond à « {cherche} » avec ces filtres. "
-               "Effacez la recherche ou élargissez le périmètre.")
-    st.stop()
 
 # écart au classement de référence : le réglage change-t-il la décision ?
 ref_top = list(d.sort_values("score", ascending=False).head(10)["etab_nom"])
@@ -151,7 +119,7 @@ gauche, droite = st.columns([1.05, 1])
 with gauche:
     fond = st.selectbox("Fond de carte", ["Clair (Carto)", "OpenStreetMap",
                                           "Aucun — mode hors ligne"],
-                        label_visibility="collapsed", key="prio_fond")
+                        label_visibility="collapsed")
     style_map = {"Clair (Carto)": "carto-positron", "OpenStreetMap": "open-street-map",
                  "Aucun — mode hors ligne": "white-bg"}[fond]
 
@@ -213,19 +181,9 @@ with droite:
     st.markdown(barres_donnees(lignes, ["#", "Forêt", "Région", "ha", "km"],
                                score_max=float(d["score_live"].max())),
                 unsafe_allow_html=True)
-    st.write("")
-    telecharger(
-        vue[["rang_live", "etab_nom", "region_nom_bdd", "prefecture_nom_bdd",
-             "surface_ha", "dist_km", "ville_proche", "t_max_ville",
-             "surface_incertaine", "score_live", "score"]].rename(columns={
-                 "rang_live": "rang", "etab_nom": "foret",
-                 "region_nom_bdd": "region", "prefecture_nom_bdd": "prefecture",
-                 "score_live": "indice_avec_votre_ponderation",
-                 "score": "indice_ponderation_reference"}),
-        "classement_forets", "Classement complet avec votre pondération (CSV)")
 
 st.write("")
-if reg == "Toutes les régions" and incl and not cherche.strip():
+if reg == "Toutes les régions" and incl:
     encart("constat",
            f"Avec votre pondération ({100*w_enc/tot_w:.0f} / {100*w_sur/tot_w:.0f} / "
            f"{100*w_str/tot_w:.0f}), <b>{stables} des 10 forêts prioritaires</b> sont les "
@@ -267,11 +225,6 @@ fig2.add_annotation(x=10.5, y=-0.6, text="seuil du top 10", showarrow=False,
 st.plotly_chart(fig2, width="stretch", config={"displayModeBar": False})
 legende((C["foret"], "toujours dans le top 10 — priorité robuste"),
         (C["neutre"], "rang dépendant de la pondération"))
-telecharger(robust.merge(d[["etab_nom", "region_nom_bdd", "prefecture_nom_bdd",
-                            "surface_ha", "dist_km", "score"]],
-                         left_on="foret", right_on="etab_nom", how="left")
-            .drop(columns=["etab_nom"]).sort_values("rang_min"),
-            "robustesse_classement", "Test de robustesse complet (CSV)")
 
 encart("action",
        f"<b>{R['forets']['nb_robustes']} forêts ne quittent jamais le top 10.</b> Ce sont "

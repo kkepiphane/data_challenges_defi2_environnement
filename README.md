@@ -24,58 +24,47 @@ Le rapport se lit hors ligne dans un navigateur : ouvrir `report/rapport.html`
 
 ## Ce que contient le tableau de bord
 
-Sept pages, une par objectif du défi plus une sur la qualité des données, toutes
-construites sur le même principe : **la conclusion en haut, la preuve en dessous,
-les réglages regroupés dans un bandeau unique.** Les données de chaque graphique
-sont exportables en CSV telles qu'elles sont affichées.
+Six pages, une par objectif du défi, toutes construites sur le même principe :
+**la conclusion en haut, la preuve en dessous, les réglages à portée de main.**
 
 | Page | Objectif du défi | Interactions |
 |---|---|---|
-| 🧭 **Diagnostic** | Vue décisionnelle | Filtre de période global, cascade de décomposition du stock, exports CSV |
-| ⚡ **Électrification** | 1 — accès et coupures | Cible 2030 réglable, enveloppe d'incertitude à 95 % de la pente, raccordements annuels face au seuil démographique, lissage optionnel |
-| 🔥 **Cuisson** | 2 — ménages et biomasse | Simulateur de sortie de la biomasse, attribution du recul forestier paramétrable et bornée par la mesure d'usage des sols |
+| 🧭 **Diagnostic** | Vue décisionnelle | Filtre de période global |
+| ⚡ **Électrification** | 1 — accès et coupures | Cible d'accès 2030 réglable, projection tendancielle, effort recalculé en personnes |
+| 🔥 **Cuisson** | 2 — ménages et biomasse | Simulateur de sortie de la biomasse, attribution du recul forestier paramétrable |
 | 🌍 **Inventaire** | 3 et 4 — GES et températures | Sélecteur de gaz, bascule masse brute / équivalent CO₂, choix des stations |
-| 🗺️ **Forêts** | 5 — cartographie | Quatre doctrines de priorisation pré-réglées, trois curseurs de pondération recalculant carte et classement en direct, recherche par massif |
-| ✅ **Recommandations** | 6 — recommandations | Trois scénarios pré-réglés, simulateur de trajectoire 2030, récapitulatif décisionnel exportable |
-| 🔍 **Données** | Méthode et qualité | Audit automatique des 32 séries filtrable par verdict, détail des 62 contrôles d'intégrité |
+| 🗺️ **Forêts** | 5 — cartographie | Trois curseurs de pondération recalculant carte et classement en direct |
+| ✅ **Recommandations** | 6 — recommandations | Simulateur de trajectoire 2030 à trois leviers |
 
 ---
 
-## Les sept résultats
+## Les six résultats
 
 1. **Le taux monte, le nombre de personnes privées d'électricité aussi.** Le taux
    d'accès rural a été multiplié par huit depuis 1998 ; le **nombre** de ruraux
    sans électricité est passé de 3,11 à 3,72 millions, soit **+19 %**. La
    décomposition est une identité comptable : la démographie a ajouté 1 693 547
-   personnes non raccordées, l'électrification en a retiré 1 086 596.
-2. **Le repère opérationnel n'est pas un taux mais un volume.** Le stock cesse de
-   croître exactement quand les raccordements annuels égalent la croissance de la
-   population rurale — 65 658 personnes en 2022. Sur 2012-2022, 56 801
-   raccordements par an ont été réalisés pour un seuil moyen de 70 557 : le
-   déficit de 13 756 par an explique, au chiffre près, les 137 560 personnes
-   supplémentaires sans électricité.
+   personnes non raccordées, l'électrification en a retiré 1 086 596. Le repère à
+   piloter n'est donc pas un taux mais un volume — 65 658 raccordements par an
+   en 2022, la seule croissance rurale.
+2. **L'accès rural progresse dix fois trop lentement.** +0,91 point par an depuis
+   1998, quand l'objectif 2030 en exigerait 9,4. Au rythme observé, l'accès
+   universel rural tomberait vers 2104.
 3. **Le réseau qui arrive n'est pas fiable.** Les coupures se raréfient (7,2 →
    5,5 par mois entre 2009 et 2016) mais se généralisent : 80,4 % → 93,8 % des
    entreprises touchées.
 4. **C'est la marmite, pas l'ampoule, qui consomme la forêt.** 89,4 % des ménages
    cuisinent au bois ou au charbon, part inchangée depuis 2014 — et le bois brut
-   a gagné 3,6 points.
-5. **La série forestière ne contient que trois mesures indépendantes.** Elle est
-   interpolée entre points de référence FAO : la perte n'est pas de 5 011 ha/an
-   (moyenne qui ne correspond à aucune année réelle) mais de 9 320 ha/an jusqu'en
-   2000, puis **2 960 ha/an depuis** — divisée par 3,1, jamais interrompue.
-6. **Ce qui prend la place de la forêt se mesure, et ce n'est pas le bois de feu.**
-   Entre 1990 et 2013, la surface agricole a gagné 6 600 km² quand la forêt en
-   perdait 1 317 : **cinq fois plus**. Le pays défriche 19 690 ha de terres
-   céréalières par an, près de sept fois sa perte forestière, et 46 % de la
-   hausse de sa production vient de la surface, non du rendement (1,17 t/ha).
-7. **Le « renouvelable » togolais est du bois de feu.** 75,1 % d'énergie finale
+   a gagné 3,6 points. Le couvert recule de 2 960 hectares par an depuis 2000 :
+   la série FAO ne contient que **trois mesures indépendantes** sur trente-deux
+   points annuels, et ses deux régimes — 9 320 ha/an jusqu'en 2000, 2 960 depuis —
+   montrent un ralentissement d'un facteur trois que la moyenne efface.
+5. **Le « renouvelable » togolais est du bois de feu.** 75,1 % d'énergie finale
    renouvelable pour 11,9 % d'accès à une cuisson propre : l'indicateur de suivi
    officiel se dégradera quand la situation s'améliorera.
-
-Et, pour l'action : **neuf forêts concentrent la priorité.** Sur 53 forêts
-classées, neuf restent dans le top 10 quelle que soit la pondération testée — le
-classement de tête est un résultat des données, pas un choix d'analyste.
+6. **Neuf forêts concentrent la priorité.** Sur 53 forêts classées, neuf restent
+   dans le top 10 quelle que soit la pondération testée — le classement de tête
+   est un résultat des données, pas un choix d'analyste.
 
 ---
 
@@ -92,18 +81,16 @@ dashboard_defi2_togo/
 │   └── views/                    une page par objectif du défi
 │       ├── synthese.py           vue décisionnelle
 │       ├── acces.py              objectif 1 — accès et fiabilité
-│       ├── cuisson.py            objectif 2 — ménages, forêts et usage des sols
+│       ├── cuisson.py            objectif 2 — ménages et forêts
 │       ├── emissions.py          objectifs 3 et 4 — GES et climat
 │       ├── priorisation.py       objectif 5 — carte des 53 forêts
-│       ├── plan.py               objectif 6 — recommandations
-│       └── donnees.py            méthode, audit qualité et limites
+│       └── plan.py               objectif 6 — recommandations
 │
 ├── src/                          pipeline reproductible
 │   ├── build_gold.py             bronze -> gold, avec journal des traitements
 │   ├── verify.py                 audit : recalcul indépendant depuis data/raw/
 │   ├── make_figures.py           figures SVG du rapport
-│   ├── make_report.py            assemblage du rapport + contrôle de cohérence
-│   └── make_pptx.py              présentation 10 diapositives
+│   └── make_report.py            assemblage du rapport final
 │
 ├── data/
 │   ├── raw/                      les 6 jeux de données du défi, intacts
@@ -142,24 +129,19 @@ exécution.
 python src/verify.py
 ```
 
-Ce script recalcule 62 chiffres clés **directement depuis `data/raw/`**, avec un
+Ce script recalcule 54 chiffres clés **directement depuis `data/raw/`**, avec un
 code écrit indépendamment du pipeline (lecture `csv` standard, aucune fonction
 partagée), et les compare à ce qui est publié. Il vérifie aussi les **identités
 comptables** sur lesquelles reposent les conclusions — que la somme des deux
-effets reconstitue bien la variation du stock de ruraux sans électricité, que le
-déficit annuel de raccordement multiplié par dix redonne bien la hausse
-observée sur la décennie. Il sort en erreur au moindre écart.
-Dernier passage : **62/62 conformes**.
+effets reconstitue la variation du stock de ruraux sans électricité, que le
+déficit annuel de raccordement multiplié par dix redonne la hausse observée sur
+la décennie. Il sort en erreur au moindre écart.
+Dernier passage : **54/54 conformes**.
 
-Deux garde-fous complètent cet audit :
-
-- `src/build_gold.py` **audite automatiquement les 32 séries** (valeurs
-  distinctes, pentes distinctes, queue gelée) et publie le verdict dans la page
-  « Données » du tableau de bord. Six séries portent un défaut structurel qui
-  change la lecture, et le tableau de bord en tient compte explicitement ;
-- `src/make_report.py` **refuse de produire le rapport** si l'un des 34 chiffres
-  directeurs qu'il contient ne correspond plus au fichier gold : le texte rédigé
-  à la main ne peut donc pas dériver silencieusement des données.
+Un second garde-fou protège le rapport : `src/make_report.py` **refuse de le
+produire** si l'un de ses 14 chiffres directeurs ne correspond plus au fichier
+gold. Le texte, rédigé à la main, ne peut donc pas dériver silencieusement des
+données.
 
 Trois éléments seulement ne proviennent pas des six fichiers du défi, et sont
 signalés comme tels dans l'interface et dans `docs/sources.md` :
@@ -180,10 +162,6 @@ Le détail complet est dans [`docs/sources.md`](docs/sources.md). En résumé :
 - **22 % de doublons stricts** supprimés du fichier Banque Mondiale ;
 - **précipitations écartées** (valeur constante répétée — les tracer produirait
   une fausse tendance) ;
-- **couvert forestier lu par régime, pas en moyenne** : la série n'a que trois
-  mesures indépendantes, la moyenne 1990-2021 mélange deux rythmes ;
-- **comparaison d'usage des sols arrêtée à 2013** : la surface agricole est gelée
-  à la même valeur au-delà ;
 - **températures au degré entier** : gradient spatial exploité, tendance sur
   7 ans écartée ;
 - **16 forêts sur 53** ont un polygone < 10 ha (numérisation partielle) :

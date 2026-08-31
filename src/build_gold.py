@@ -93,22 +93,8 @@ INDICS = {
     # santé / pollution de l'air (impact de la cuisson au bois)
     "pm25":           "EN.ATM.PM25.MC.M3",
     "mortalite_air":  "SH.STA.AIRP.P5",
-    # usage des sols — le moteur concurrent du recul forestier
-    "agri_km2":       "AG.LND.AGRI.K2",
-    "agri_pct":       "AG.LND.AGRI.ZS",
-    "arable_pct":     "AG.LND.ARBL.ZS",
-    "cereales_ha":    "AG.LND.CREL.HA",
-    "cereales_t":     "AG.PRD.CREL.MT",
     # contexte
     "pib_hab":        "NY.GDP.PCAP.CD",
-    "pib_hab_const":  "NY.GDP.PCAP.KD",
-    "emploi_agri":    "SL.AGR.EMPL.ZS",
-    "densite_pop":    "EN.POP.DNST",
-    "croissance_pop": "SP.POP.GROW",
-    "croissance_urb": "SP.URB.GROW",
-    "intensite_nrj":  "EG.EGY.PRIM.PP.KD",
-    # conservée uniquement pour que l'audit qualité montre pourquoi on l'écarte
-    "precipitations": "AG.LND.PRCP.MM",
 }
 series = {k: serie(c) for k, c in INDICS.items()}
 for k, s in series.items():
@@ -420,6 +406,64 @@ reperes["ruraux_sans_elec"] = {"annee": y1, "personnes": sans_elec,
 log(f"   Ruraux sans électricité : {sans_elec/1e6:.2f} million de personnes "
     f"({pr[an_pop]/1e6:.2f} M de ruraux x {100-er[y1]:.0f} %)")
 
+# --- le tapis roulant démographique
+# Le taux d'accès est un rapport, et son dénominateur bouge. On calcule donc
+# le NOMBRE de personnes concernées année par année, et on décompose sa
+# variation. La décomposition est une identité comptable exacte :
+#     P1(1-a1) - P0(1-a0) = (P1-P0)(1-a0)  -  P1(a1-a0)
+#                            effet démographie   effet électrification
+# Aucune hypothèse n'intervient : c'est de l'arithmétique sur deux séries.
+ans_tr = sorted(set(pr) & set(er))
+sans_elec_serie = {a: pr[a] * (1 - er[a] / 100) for a in ans_tr}
+t0, t1 = ans_tr[0], ans_tr[-1]
+effet_demo = (pr[t1] - pr[t0]) * (1 - er[t0] / 100)
+effet_acces = -pr[t1] * (er[t1] - er[t0]) / 100
+variation = sans_elec_serie[t1] - sans_elec_serie[t0]
+assert abs(effet_demo + effet_acces - variation) < 1, "décomposition non conservative"
+
+# Le stock vaut P - raccordés ; sa variation vaut donc dP - (nouveaux raccordés).
+# Il cesse de croître exactement quand les raccordements annuels égalent la
+# croissance de la population rurale. Ce seuil n'est pas une constante : la
+# croissance rurale décélère, on le calcule donc année par année.
+seuil_serie = {a: pr[a] - pr[a - 1] for a in ans_tr[1:] if a - 1 in pr}
+raccordes = {a: pr[a] * er[a] / 100 - pr[a - 1] * er[a - 1] / 100
+             for a in ans_tr[1:] if a - 1 in pr and a - 1 in er}
+dix = sorted(raccordes)[-10:]
+raccord_moyen = float(np.mean([raccordes[a] for a in dix]))
+seuil_moyen = float(np.mean([seuil_serie[a] for a in dix]))
+variation_dix = sans_elec_serie[t1] - sans_elec_serie[dix[0] - 1]
+assert abs(variation_dix - (seuil_moyen - raccord_moyen) * len(dix)) < 1, \
+    "le déficit annuel doit reconstituer la variation du stock sur la décennie"
+
+reperes["tapis_roulant"] = {
+    "annee_debut": t0, "annee_fin": t1,
+    "sans_elec_debut": sans_elec_serie[t0], "sans_elec_fin": sans_elec_serie[t1],
+    "variation": variation, "variation_pct": 100 * variation / sans_elec_serie[t0],
+    "effet_demographie": effet_demo, "effet_acces": effet_acces,
+    "taux_compensation": 100 * abs(effet_acces) / effet_demo,
+    "pop_rurale_debut": pr[t0], "pop_rurale_fin": pr[t1],
+    "seuil_stagnation": seuil_serie[t1], "seuil_moyen_10ans": seuil_moyen,
+    "raccordements_moyens_10ans": raccord_moyen,
+    "annee_debut_decennie": dix[0] - 1, "variation_decennie": variation_dix,
+}
+series["ruraux_sans_elec"] = sans_elec_serie
+series["raccordes_par_an"] = raccordes
+series["seuil_stagnation"] = seuil_serie
+
+log(f"   Tapis roulant : {sans_elec_serie[t0]/1e6:.2f} M de ruraux sans "
+    f"électricité en {t0} -> {sans_elec_serie[t1]/1e6:.2f} M en {t1} "
+    f"({100*variation/sans_elec_serie[t0]:+.0f} %), alors que le taux passait "
+    f"de {er[t0]:.1f} % à {er[t1]:.1f} %")
+log(f"     décomposition : démographie {effet_demo:+,.0f} | "
+    f"électrification {effet_acces:+,.0f} "
+    f"-> l'électrification n'annule que "
+    f"{100*abs(effet_acces)/effet_demo:.0f} % de la poussée démographique")
+log(f"     seuil de stagnation {t1} : {seuil_serie[t1]:,.0f} raccordements/an ; "
+    f"sur {dix[0]-1}-{t1}, {raccord_moyen:,.0f}/an réalisés pour un seuil moyen "
+    f"de {seuil_moyen:,.0f}/an")
+log(f"     -> déficit de {seuil_moyen-raccord_moyen:,.0f}/an, soit "
+    f"{variation_dix:+,.0f} personnes sur la décennie")
+
 # --- cuisson propre : le vrai point noir
 cr = series["cuisson_rural"]
 cy0, cy1 = min(cr), max(cr)
@@ -471,6 +515,51 @@ reperes["deforestation"] = {
 log(f"   Déforestation {fy0}-{fy1} : {fk[fy0]:,.0f} -> {fk[fy1]:,.0f} km² "
     f"= -{perte_km2:,.0f} km² (-{100*perte_km2/fk[fy0]:.1f} %)")
 log(f"     -> {perte_km2*100/(fy1-fy0):,.0f} hectares perdus par an, en moyenne")
+
+# --- combien de mesures cette série contient-elle réellement ?
+# Les écarts d'une année à l'autre ne prennent que deux valeurs distinctes :
+# la série est interpolée linéairement entre les points de référence de la
+# FAO. Le nombre de ruptures de pente donne donc le nombre de mesures
+# indépendantes — et surtout, il révèle deux régimes que la moyenne efface.
+fk_ans = sorted(fk)
+ecarts = [fk[b] - fk[a] for a, b in zip(fk_ans, fk_ans[1:])]
+tol = max(abs(e) for e in ecarts) * 0.005
+regimes, seg = [], [0, 1, ecarts[0]]
+for i, e in enumerate(ecarts[1:], start=1):
+    if abs(e - seg[2]) <= tol:
+        seg[1] = i + 1
+    else:
+        regimes.append(seg)
+        seg = [i, i + 1, e]
+regimes.append(seg)
+regimes = [{"debut": fk_ans[i0], "fin": fk_ans[i1],
+            # Arrondi à la dizaine d'hectares : au-delà, on afficherait la
+            # précision d'une interpolation, pas celle d'une mesure.
+            "perte_ha_an": round(-(fk[fk_ans[i1]] - fk[fk_ans[i0]])
+                                 / (fk_ans[i1] - fk_ans[i0]) * 100, -1)}
+           for i0, i1, _ in regimes]
+
+reperes["regimes_foret"] = {
+    "n_regimes": len(regimes), "n_points_annuels": len(fk_ans),
+    "n_mesures_independantes": len(regimes) + 1,
+    "regimes": regimes,
+    "perte_recente_ha_an": regimes[-1]["perte_ha_an"],
+    "perte_ancienne_ha_an": regimes[0]["perte_ha_an"],
+    "ralentissement": regimes[0]["perte_ha_an"] / regimes[-1]["perte_ha_an"],
+}
+# Le régime en cours est le chiffre à utiliser partout : la moyenne 1990-2021
+# mélange deux rythmes et ne correspond à aucune année réelle.
+reperes["deforestation"]["perte_actuelle_ha_an"] = regimes[-1]["perte_ha_an"]
+reperes["deforestation"]["regime_depuis"] = regimes[-1]["debut"]
+
+log(f"     {len(fk_ans)-1} intervalles annuels, mais seulement "
+    f"{len(regimes)} pentes distinctes -> série INTERPOLÉE, "
+    f"{len(regimes)+1} mesures réellement indépendantes")
+for r in regimes:
+    log(f"       {r['debut']}-{r['fin']} : {r['perte_ha_an']:,.0f} ha/an")
+log(f"     -> la perte a été divisée par "
+    f"{regimes[0]['perte_ha_an']/regimes[-1]['perte_ha_an']:.1f} après "
+    f"{regimes[0]['fin']}, mais elle ne s'est jamais interrompue")
 
 # --- fiabilité : synthèse
 co = {int(y): v for y, v in serie("IC.ELC.OUTG").items()}
@@ -536,339 +625,7 @@ reperes["forets"] = {
 }
 
 # =============================================================================
-# 8. ANALYSES CROISÉES — ce que les séries disent quand on les confronte
-# =============================================================================
-# Les repères ci-dessus décrivent chaque indicateur pour lui-même. Cette
-# section les met en présence : c'est là que se trouvent les résultats qu'aucune
-# série ne donne seule, et les défauts qu'aucune série n'avoue seule.
-log("")
-log("=" * 78)
-log("8. ANALYSES CROISÉES")
-log("=" * 78)
-
-
-def regression(xs, ys):
-    """Moindres carrés : pente, ordonnée, r², erreur type de la pente.
-
-    L'erreur type sert à borner la projection. Une pente annoncée sans son
-    intervalle laisse croire que la date d'arrivée est connue au mois près.
-    """
-    x, y = np.asarray(xs, float), np.asarray(ys, float)
-    a, b = np.polyfit(x, y, 1)
-    res = y - (a * x + b)
-    sst = float(((y - y.mean()) ** 2).sum())
-    r2 = 1 - float((res ** 2).sum()) / sst if sst else 0.0
-    sxx = float(((x - x.mean()) ** 2).sum())
-    se = float(np.sqrt((res ** 2).sum() / (len(x) - 2) / sxx)) if len(x) > 2 and sxx else 0.0
-    return float(a), float(b), r2, se
-
-
-# -----------------------------------------------------------------------------
-# 8.1 LE TAPIS ROULANT DÉMOGRAPHIQUE
-# -----------------------------------------------------------------------------
-# Le taux d'accès rural a été multiplié par 8 depuis 1998. La question qu'aucun
-# taux ne pose : combien de personnes restent privées d'électricité ? Le taux
-# est un rapport ; la population rurale, son dénominateur, a augmenté de moitié
-# sur la même période. On confronte donc les deux séries.
-log("")
-log("8.1 Tapis roulant démographique — le taux monte, le stock aussi")
-
-pr_s, er_s = series["pop_rurale"], series["elec_rural"]
-ans_tr = sorted(set(pr_s) & set(er_s))
-sans_elec_serie = {a: pr_s[a] * (1 - er_s[a] / 100) for a in ans_tr}
-t0, t1 = ans_tr[0], ans_tr[-1]
-
-# Décomposition exacte de la variation du stock :
-#   P1(1-a1) - P0(1-a0) = (P1-P0)(1-a0)  -  P1(a1-a0)
-#                          effet démographie   effet électrification
-effet_demo = (pr_s[t1] - pr_s[t0]) * (1 - er_s[t0] / 100)
-effet_acces = -pr_s[t1] * (er_s[t1] - er_s[t0]) / 100
-variation = sans_elec_serie[t1] - sans_elec_serie[t0]
-assert abs(effet_demo + effet_acces - variation) < 1, "décomposition non conservative"
-
-# Combien faut-il raccorder chaque année pour que le stock cesse de croître ?
-# Le stock vaut P - raccordés ; sa variation vaut donc dP - (nouveaux raccordés).
-# Le seuil est exactement la croissance de la population rurale : raccorder
-# moins, c'est laisser le nombre de personnes privées d'électricité augmenter,
-# quel que soit le taux d'accès affiché. Ce seuil n'est pas une constante —
-# la croissance rurale décélère — on le calcule donc année par année.
-seuil_serie = {a: pr_s[a] - pr_s[a - 1] for a in ans_tr[1:] if a - 1 in pr_s}
-croiss_rur = pr_s[t1] - pr_s[t1 - 1]
-seuil_stagnation = seuil_serie[t1]
-# Raccordements réellement réalisés, année par année
-raccordes = {a: pr_s[a] * er_s[a] / 100 - pr_s[a - 1] * er_s[a - 1] / 100
-             for a in ans_tr[1:] if a - 1 in pr_s and a - 1 in er_s}
-dix = sorted(raccordes)[-10:]
-raccord_moyen = float(np.mean([raccordes[a] for a in dix]))
-seuil_moyen_10 = float(np.mean([seuil_serie[a] for a in dix]))
-variation_10 = sans_elec_serie[t1] - sans_elec_serie[dix[0] - 1]
-
-reperes["tapis_roulant"] = {
-    "annee_debut": t0, "annee_fin": t1,
-    "sans_elec_debut": sans_elec_serie[t0], "sans_elec_fin": sans_elec_serie[t1],
-    "variation": variation, "variation_pct": 100 * variation / sans_elec_serie[t0],
-    "effet_demographie": effet_demo, "effet_acces": effet_acces,
-    "taux_compensation": 100 * abs(effet_acces) / effet_demo,
-    "pop_rurale_debut": pr_s[t0], "pop_rurale_fin": pr_s[t1],
-    "croissance_rurale_annuelle": croiss_rur,
-    "seuil_stagnation": seuil_stagnation,
-    "seuil_moyen_10ans": seuil_moyen_10,
-    "raccordements_moyens_10ans": raccord_moyen,
-    "annee_debut_decennie": dix[0] - 1, "variation_decennie": variation_10,
-    "annee_pic": int(max(sans_elec_serie, key=sans_elec_serie.get)),
-    "pic": max(sans_elec_serie.values()),
-}
-series["ruraux_sans_elec"] = sans_elec_serie
-series["raccordes_par_an"] = raccordes
-series["seuil_stagnation"] = seuil_serie
-
-log(f"   ruraux privés d'électricité : {sans_elec_serie[t0]:,.0f} en {t0} "
-    f"-> {sans_elec_serie[t1]:,.0f} en {t1}  ({variation:+,.0f}, "
-    f"{100*variation/sans_elec_serie[t0]:+.0f} %)")
-log(f"     le taux d'accès passe pourtant de {er_s[t0]:.1f} % à {er_s[t1]:.1f} %")
-log(f"     décomposition : démographie {effet_demo:+,.0f}  |  "
-    f"électrification {effet_acces:+,.0f}")
-log(f"     -> l'électrification n'annule que {100*abs(effet_acces)/effet_demo:.0f} % "
-    f"de la poussée démographique")
-log(f"     -> seuil de stagnation en {t1} : {seuil_stagnation:,.0f} raccordements/an "
-    f"(= la croissance de la population rurale)")
-log(f"     -> sur {dix[0]-1}-{t1} : {raccord_moyen:,.0f} raccordements/an réalisés "
-    f"pour un seuil moyen de {seuil_moyen_10:,.0f}/an, soit un déficit de "
-    f"{seuil_moyen_10-raccord_moyen:,.0f}/an")
-log(f"        -> le stock a donc varié de {variation_10:+,.0f} sur la décennie "
-    f"(= {seuil_moyen_10-raccord_moyen:,.0f} x 10) : le rattrapage n'a pas eu lieu")
-assert abs(variation_10 - (seuil_moyen_10 - raccord_moyen) * len(dix)) < 1, \
-    "le déficit annuel doit reconstituer exactement la variation du stock"
-
-# -----------------------------------------------------------------------------
-# 8.2 LES RÉGIMES DE LA SÉRIE FORESTIÈRE
-# -----------------------------------------------------------------------------
-# La série « surface forestière » est annuelle en apparence. On mesure ses
-# variations successives : si elles ne prennent que quelques valeurs distinctes,
-# la série est une interpolation linéaire entre points de référence, et le
-# nombre de mesures réellement indépendantes est celui des ruptures de pente.
-log("")
-log("8.2 Régimes de la série forestière — combien de mesures réelles ?")
-
-def segments(vals, tol_rel=0.005):
-    """Découpe une série en segments de pente constante.
-
-    Deux pentes consécutives sont tenues pour identiques si elles diffèrent de
-    moins de `tol_rel` fois la plus grande pente observée — un seuil relatif,
-    pour que le test s'applique aussi bien à des km² qu'à des pourcentages.
-    Le nombre de segments donne le nombre de mesures réellement indépendantes :
-    une série interpolée entre deux points de référence n'en contient que deux.
-    """
-    if len(vals) < 3:
-        return [(0, len(vals) - 1, (vals[-1] - vals[0]) if len(vals) > 1 else 0.0)]
-    pentes = [b - a for a, b in zip(vals, vals[1:])]
-    tol = max(abs(p) for p in pentes) * tol_rel
-    seg = [[0, 1, pentes[0]]]
-    for i, p in enumerate(pentes[1:], start=1):
-        if abs(p - seg[-1][2]) <= tol:
-            seg[-1][1] = i + 1
-        else:
-            seg.append([i, i + 1, p])
-    return [tuple(s) for s in seg]
-
-
-fk_ans = sorted(fk)
-regimes = []
-for i0, i1, _ in segments([fk[a] for a in fk_ans]):
-    a0_, a1_ = fk_ans[i0], fk_ans[i1]
-    # Pente moyenne du segment plutôt que son premier écart : les décimales de
-    # la source sont un artefact d'interpolation, la moyenne les absorbe.
-    pente = (fk[a1_] - fk[a0_]) / (a1_ - a0_)
-    regimes.append({"debut": a0_, "fin": a1_,
-                    "pente_km2_an": round(pente, 3), "n_ans": a1_ - a0_,
-                    # Arrondi à la dizaine d'hectares : au-delà, on afficherait
-                    # la précision d'une interpolation, pas celle d'une mesure.
-                    "perte_ha_an": round(-pente * 100, -1)})
-
-reperes["regimes_foret"] = {
-    "n_regimes": len(regimes), "n_intervalles": len(fk_ans) - 1,
-    "n_mesures_independantes": len(regimes) + 1,
-    "regimes": regimes,
-    "perte_recente_ha_an": regimes[-1]["perte_ha_an"],
-    "perte_ancienne_ha_an": regimes[0]["perte_ha_an"],
-    "ralentissement": regimes[0]["perte_ha_an"] / regimes[-1]["perte_ha_an"],
-    "moyenne_toutes_periodes": reperes["deforestation"]["perte_ha_par_an"],
-}
-# Le régime en cours est le chiffre à utiliser pour toute projection : la
-# moyenne 1990-2021 mélange deux rythmes et surestime la perte d'aujourd'hui.
-reperes["deforestation"]["perte_actuelle_ha_an"] = regimes[-1]["perte_ha_an"]
-reperes["deforestation"]["regime_depuis"] = regimes[-1]["debut"]
-log(f"   {len(fk_ans)-1} intervalles annuels, mais seulement {len(regimes)} pentes "
-    f"distinctes :")
-for r in regimes:
-    log(f"     {r['debut']}-{r['fin']} : {r['perte_ha_an']:,.0f} ha/an "
-        f"({r['n_ans']} intervalles identiques)")
-log(f"   -> la série est INTERPOLÉE : {len(regimes)+1} mesures réellement "
-    f"indépendantes sur {len(fk_ans)} points annuels")
-log(f"   -> la perte a été divisée par {regimes[0]['perte_ha_an']/regimes[-1]['perte_ha_an']:.1f} "
-    f"après {regimes[0]['fin']} ; la moyenne 1990-2021 "
-    f"({reperes['deforestation']['perte_ha_par_an']:,.0f} ha/an) mélange les deux régimes")
-
-# -----------------------------------------------------------------------------
-# 8.3 USAGE DES SOLS — qui prend la place de la forêt ?
-# -----------------------------------------------------------------------------
-# Le lien cuisson -> déforestation ne peut pas être établi par ces données.
-# En revanche le moteur concurrent, lui, est mesuré : la surface agricole. On
-# la confronte au recul forestier pour borner ce que le bois-énergie peut
-# expliquer, au lieu de le postuler.
-log("")
-log("8.3 Usage des sols — l'expansion agricole face au recul forestier")
-
-ag = series["agri_km2"]
-ag_ans = sorted(ag)
-# dernière année où la valeur a réellement changé (au-delà, la série est gelée)
-ag_derniere_maj = max((b for a, b in zip(ag_ans, ag_ans[1:]) if ag[b] != ag[a]),
-                      default=ag_ans[-1])
-com = [a for a in sorted(set(ag) & set(fk)) if a <= ag_derniere_maj]
-u0, u1 = com[0], com[-1]
-d_foret = fk[u1] - fk[u0]
-d_agri = ag[u1] - ag[u0]
-
-ch, ct = series["cereales_ha"], series["cereales_t"]
-ans_cer = sorted(set(ch) & set(ct))
-rdt = {a: ct[a] / ch[a] for a in ans_cer}
-c0 = 1990 if 1990 in ans_cer else ans_cer[0]
-c1 = ans_cer[-1]
-# P = S x R  ->  dP = dS.R0 + S0.dR + dS.dR
-eff_surface = (ch[c1] - ch[c0]) * rdt[c0]
-eff_rendement = ch[c0] * (rdt[c1] - rdt[c0])
-eff_croise = (ch[c1] - ch[c0]) * (rdt[c1] - rdt[c0])
-d_prod = ct[c1] - ct[c0]
-pente_cer, _, r2_cer, _ = regression([a for a in ans_cer if a >= c0],
-                                     [ch[a] for a in ans_cer if a >= c0])
-
-reperes["usage_sols"] = {
-    "annee_debut": u0, "annee_fin": u1,
-    "foret_debut_km2": fk[u0], "foret_fin_km2": fk[u1], "delta_foret_km2": d_foret,
-    "agri_debut_km2": ag[u0], "agri_fin_km2": ag[u1], "delta_agri_km2": d_agri,
-    "ratio_agri_foret": abs(d_agri / d_foret),
-    "part_foret_dans_expansion": 100 * abs(d_foret) / d_agri,
-    "agri_derniere_maj": ag_derniere_maj, "agri_ans_geles": ag_ans[-1] - ag_derniere_maj,
-    "agri_pct_territoire": series["agri_pct"][max(series["agri_pct"])],
-    # céréales : extension des surfaces ou progrès des rendements ?
-    "cereales_annee_debut": c0, "cereales_annee_fin": c1,
-    "cereales_ha_debut": ch[c0], "cereales_ha_fin": ch[c1],
-    "rendement_debut": rdt[c0], "rendement_fin": rdt[c1],
-    "expansion_cerealiere_ha_an": pente_cer, "r2_expansion": r2_cer,
-    "part_surface_dans_production": 100 * eff_surface / d_prod,
-    "part_rendement_dans_production": 100 * eff_rendement / d_prod,
-    "part_croisee": 100 * eff_croise / d_prod,
-    # la comparaison qui parle : défrichement agricole vs perte forestière
-    "ratio_defrichement_deforestation": pente_cer / regimes[-1]["perte_ha_an"],
-}
-log(f"   {u0}-{u1} : forêt {d_foret:+,.0f} km²  |  surface agricole {d_agri:+,.0f} km²")
-log(f"     -> l'agricole gagne {abs(d_agri/d_foret):.1f} fois ce que la forêt perd ; "
-    f"la forêt ne peut fournir que {100*abs(d_foret)/d_agri:.0f} % de cette expansion")
-log(f"     -> surface agricole gelée depuis {ag_derniere_maj} "
-    f"({ag_ans[-1]-ag_derniere_maj} ans de valeur répétée) : "
-    f"comparaison arrêtée à {u1}")
-log(f"   céréales {c0}-{c1} : {ch[c0]:,.0f} -> {ch[c1]:,.0f} ha, "
-    f"rendement {rdt[c0]:.2f} -> {rdt[c1]:.2f} t/ha")
-log(f"     -> {100*eff_surface/d_prod:.0f} % de la hausse de production vient de la "
-    f"SURFACE, {100*eff_rendement/d_prod:.0f} % du rendement "
-    f"({100*eff_croise/d_prod:.0f} % d'effet croisé)")
-log(f"     -> +{pente_cer:,.0f} ha de terres céréalières par an (r²={r2_cer:.2f}), soit "
-    f"{pente_cer/regimes[-1]['perte_ha_an']:.1f} fois la perte forestière annuelle actuelle")
-
-# -----------------------------------------------------------------------------
-# 8.4 TRAJECTOIRE D'ÉLECTRIFICATION — la pente et son incertitude
-# -----------------------------------------------------------------------------
-log("")
-log("8.4 Trajectoire d'électrification rurale — pente, r² et intervalle")
-
-ans_er = sorted(er_s)
-a_l, b_l, r2_l, se_l = regression(ans_er, [er_s[a] for a in ans_er])
-recents = [a for a in ans_er if a >= ans_er[-1] - 10]
-a_r, b_r, r2_r, se_r = regression(recents, [er_s[a] for a in recents])
-
-
-def _atteinte(pente):
-    """Année des 100 % en prolongeant `pente` depuis le dernier point observé.
-
-    On part du dernier point mesuré, pas de l'ordonnée à l'origine de la
-    droite : faire pivoter la pente autour de l'an zéro produirait des dates
-    absurdes, la droite passant très loin de la période observée.
-    """
-    return (ans_er[-1] + (100 - er_s[ans_er[-1]]) / pente if pente > 0
-            else float("inf"))
-
-
-reperes["tendance_elec"] = {
-    "periode": [ans_er[0], ans_er[-1]],
-    "pente": a_l, "r2": r2_l, "erreur_type": se_l,
-    "pente_basse": a_l - 1.96 * se_l, "pente_haute": a_l + 1.96 * se_l,
-    "annee_atteinte": _atteinte(a_l),
-    "annee_atteinte_optimiste": _atteinte(a_l + 1.96 * se_l),
-    "annee_atteinte_pessimiste": _atteinte(a_l - 1.96 * se_l),
-    "periode_recente": [recents[0], recents[-1]],
-    "pente_recente": a_r, "r2_recent": r2_r,
-    "pente_recente_basse": a_r - 1.96 * se_r, "pente_recente_haute": a_r + 1.96 * se_r,
-    "annee_atteinte_recente": _atteinte(a_r),
-}
-log(f"   {ans_er[0]}-{ans_er[-1]} : {a_l:+.3f} pt/an  "
-    f"(IC95 {a_l-1.96*se_l:+.3f} .. {a_l+1.96*se_l:+.3f})  r² = {r2_l:.3f}")
-log(f"     -> accès universel rural en {_atteinte(a_l):.0f} "
-    f"(fourchette {_atteinte(a_l+1.96*se_l):.0f} .. "
-    f"{_atteinte(a_l-1.96*se_l):.0f})")
-log(f"   {recents[0]}-{recents[-1]} : {a_r:+.3f} pt/an  r² = {r2_r:.3f} "
-    f"-> {_atteinte(a_r):.0f}")
-log("     -> la décennie récente ne va pas plus vite que la moyenne longue : "
-    "le retard n'est pas en train de se résorber")
-
-# -----------------------------------------------------------------------------
-# 8.5 AUDIT AUTOMATIQUE DE QUALITÉ DES SÉRIES
-# -----------------------------------------------------------------------------
-# Le même test appliqué à toutes les séries : combien de valeurs distinctes,
-# combien de pentes distinctes, la queue est-elle gelée ? Ce sont ces trois
-# questions qui ont fait écarter les précipitations et arrêter la comparaison
-# d'usage des sols à 2013 — appliquées ici systématiquement, pas au cas par cas.
-log("")
-log("8.5 Audit automatique des séries")
-
-
-def audit(nom, code, s):
-    ans = sorted(s)
-    vals = [s[a] for a in ans]
-    n = len(ans)
-    distinctes = len(set(round(v, 6) for v in vals))
-    segs = len(segments(vals)) if n > 2 else 0
-    # queue gelée : nombre d'années finales à valeur identique
-    gel = 0
-    while gel + 1 < n and vals[-1 - gel] == vals[-2 - gel]:
-        gel += 1
-    verdict, gravite = "exploitable", 0
-    if n <= 3:
-        verdict, gravite = (f"{n} point{'s' if n > 1 else ''} seulement — "
-                            "contraste, pas tendance"), 1
-    elif distinctes == 1:
-        verdict, gravite = "valeur unique répétée sur toute la période", 3
-    elif segs and segs + 1 <= max(4, n // 6):
-        verdict, gravite = (f"interpolée — {segs + 1} mesures indépendantes "
-                            f"sur {n} points annuels"), 2
-    elif gel >= 3:
-        verdict, gravite = f"queue gelée — {gel} dernières années identiques", 2
-    return {"nom": nom, "code": code, "n": n, "debut": ans[0], "fin": ans[-1],
-            "valeurs_distinctes": distinctes, "segments": segs,
-            "annees_gelees": gel, "verdict": verdict, "gravite": gravite}
-
-
-qualite = [audit(k, INDICS[k], s) for k, s in series.items() if s and k in INDICS]
-qualite.sort(key=lambda d: (-d["gravite"], d["nom"]))
-for q in qualite:
-    if q["gravite"]:
-        log(f"   [{q['gravite']}] {q['nom']:16s} {q['code']:20s} "
-            f"{q['n']:3d} pts {q['debut']}-{q['fin']}  {q['verdict']}")
-log(f"   {sum(1 for q in qualite if not q['gravite'])}/{len(qualite)} séries sans "
-    f"réserve ; {sum(1 for q in qualite if q['gravite'] >= 2)} portent un défaut "
-    f"structurel qui change la lecture")
-
-# =============================================================================
-# 9. ÉCRITURE
+# 8. ÉCRITURE
 # =============================================================================
 payload = {
     "series": {k: {str(y): v for y, v in s.items()} for k, s in series.items()},
@@ -878,7 +635,6 @@ payload = {
     "ges_total_national": tot_national,
     "fiabilite": fiabilite,
     "saisonnalite": sais.reset_index().to_dict("records"),
-    "qualite": qualite,
     "reperes": reperes,
 }
 with open(GOLD / "diagnostic_national.json", "w", encoding="utf-8") as f:

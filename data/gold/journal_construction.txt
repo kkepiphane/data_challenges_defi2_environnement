@@ -63,60 +63,20 @@ Industrie (PIUP)             71.9   2.8   0.0
      -> au rythme observé, l'accès universel rural tomberait en 2104
    Écart ville/campagne : 72 points (96 % vs 25 %)
    Ruraux sans électricité : 3.72 million de personnes (4.96 M de ruraux x 75 %)
+   Tapis roulant : 3.11 M de ruraux sans électricité en 1998 -> 3.72 M en 2022 (+19 %), alors que le taux passait de 3.1 % à 25.0 %
+     décomposition : démographie +1,693,547 | électrification -1,086,596 -> l'électrification n'annule que 64 % de la poussée démographique
+     seuil de stagnation 2022 : 65,658 raccordements/an ; sur 2012-2022, 56,801/an réalisés pour un seuil moyen de 70,557/an
+     -> déficit de 13,756/an, soit +137,560 personnes sur la décennie
    Cuisson propre rurale : 0.9 % en 2022 (+0.04 pt/an — quasi nul)
    Combustibles ménages 2014 -> 2017 : bois 48.2 -> 51.8 %, charbon 42.1 -> 37.6 %, GPL 6.6 -> 8.8 %
      -> biomasse totale 90.3 -> 89.4 % : la dépendance ne recule pas
    « Renouvelable » 75.1 % de l'énergie finale en 2021, mais seulement 11.9 % des ménages cuisinent proprement -> ce renouvelable EST le bois de feu
    Déforestation 1990-2021 : 13,617 -> 12,063 km² = -1,554 km² (-11.4 %)
      -> 5,011 hectares perdus par an, en moyenne
+     31 intervalles annuels, mais seulement 2 pentes distinctes -> série INTERPOLÉE, 3 mesures réellement indépendantes
+       1990-2000 : 9,320 ha/an
+       2000-2021 : 2,960 ha/an
+     -> la perte a été divisée par 3.1 après 2000, mais elle ne s'est jamais interrompue
    Fiabilité : 5.5 coupures/mois en 2016 (vs 7.2 en 2009), 93.8 % des entreprises touchées
    Air : PM2,5 = 51.7 µg/m³ (2020), soit 10 x la ligne directrice OMS (5 µg/m³)
    Mortalité attribuée à la pollution de l'air : 223 pour 100 000 hab. (2019)
-
-==============================================================================
-8. ANALYSES CROISÉES
-==============================================================================
-
-8.1 Tapis roulant démographique — le taux monte, le stock aussi
-   ruraux privés d'électricité : 3,114,746 en 1998 -> 3,721,696 en 2022  (+606,951, +19 %)
-     le taux d'accès passe pourtant de 3.1 % à 25.0 %
-     décomposition : démographie +1,693,547  |  électrification -1,086,596
-     -> l'électrification n'annule que 64 % de la poussée démographique
-     -> seuil de stagnation en 2022 : 65,658 raccordements/an (= la croissance de la population rurale)
-     -> sur 2012-2022 : 56,801 raccordements/an réalisés pour un seuil moyen de 70,557/an, soit un déficit de 13,756/an
-        -> le stock a donc varié de +137,560 sur la décennie (= 13,756 x 10) : le rattrapage n'a pas eu lieu
-
-8.2 Régimes de la série forestière — combien de mesures réelles ?
-   31 intervalles annuels, mais seulement 2 pentes distinctes :
-     1990-2000 : 9,320 ha/an (10 intervalles identiques)
-     2000-2021 : 2,960 ha/an (21 intervalles identiques)
-   -> la série est INTERPOLÉE : 3 mesures réellement indépendantes sur 32 points annuels
-   -> la perte a été divisée par 3.1 après 2000 ; la moyenne 1990-2021 (5,011 ha/an) mélange les deux régimes
-
-8.3 Usage des sols — l'expansion agricole face au recul forestier
-   1990-2013 : forêt -1,317 km²  |  surface agricole +6,600 km²
-     -> l'agricole gagne 5.0 fois ce que la forêt perd ; la forêt ne peut fournir que 20 % de cette expansion
-     -> surface agricole gelée depuis 2013 (8 ans de valeur répétée) : comparaison arrêtée à 2013
-   céréales 1990-2022 : 648,006 -> 1,233,007 ha, rendement 0.75 -> 1.17 t/ha
-     -> 46 % de la hausse de production vient de la SURFACE, 29 % du rendement (26 % d'effet croisé)
-     -> +19,690 ha de terres céréalières par an (r²=0.81), soit 6.7 fois la perte forestière annuelle actuelle
-
-8.4 Trajectoire d'électrification rurale — pente, r² et intervalle
-   1998-2022 : +0.992 pt/an  (IC95 +0.897 .. +1.088)  r² = 0.947
-     -> accès universel rural en 2098 (fourchette 2091 .. 2106)
-   2012-2022 : +0.905 pt/an  r² = 0.763 -> 2105
-     -> la décennie récente ne va pas plus vite que la moyenne longue : le retard n'est pas en train de se résorber
-
-8.5 Audit automatique des séries
-   [3] precipitations   AG.LND.PRCP.MM        61 pts 1961-2021  valeur unique répétée sur toute la période
-   [2] agri_km2         AG.LND.AGRI.K2        61 pts 1961-2021  queue gelée — 8 dernières années identiques
-   [2] agri_pct         AG.LND.AGRI.ZS        61 pts 1961-2021  queue gelée — 8 dernières années identiques
-   [2] arable_pct       AG.LND.ARBL.ZS        61 pts 1961-2021  queue gelée — 9 dernières années identiques
-   [2] foret_km2        AG.LND.FRST.K2        32 pts 1990-2021  interpolée — 3 mesures indépendantes sur 32 points annuels
-   [2] foret_pct        AG.LND.FRST.ZS        32 pts 1990-2021  interpolée — 3 mesures indépendantes sur 32 points annuels
-   [1] bois             SG.COK.WOOD.ZS         2 pts 2014-2017  2 points seulement — contraste, pas tendance
-   [1] charbon          SG.COK.CHCO.ZS         2 pts 2014-2017  2 points seulement — contraste, pas tendance
-   [1] elec_cuisson     SG.COK.ELEC.ZS         2 pts 2014-2017  2 points seulement — contraste, pas tendance
-   [1] gpl              SG.COK.LPGN.ZS         2 pts 2014-2017  2 points seulement — contraste, pas tendance
-   [1] mortalite_air    SH.STA.AIRP.P5         1 pts 2019-2019  1 point seulement — contraste, pas tendance
-   21/32 séries sans réserve ; 6 portent un défaut structurel qui change la lecture

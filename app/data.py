@@ -8,33 +8,39 @@ import streamlit as st
 GOLD = Path(__file__).resolve().parent.parent / "data" / "gold"
 
 
+def _empreinte(nom):
+    """Date de dernière écriture d'un fichier gold, en nanosecondes.
+
+    Elle sert de clé de cache. Sans elle, régénérer `data/gold/` pendant que
+    l'application tourne ne change rien à l'écran : Streamlit continue de
+    servir le contenu mémorisé, et une clé ajoutée par le pipeline provoque un
+    KeyError sur un fichier qui, sur le disque, la contient bel et bien.
+    """
+    p = GOLD / nom
+    return p.stat().st_mtime_ns if p.exists() else 0
+
+
 @st.cache_data(show_spinner=False)
-def national():
+def _lire_national(_empreinte_fichier):
     with open(GOLD / "diagnostic_national.json", encoding="utf-8") as f:
         return json.load(f)
 
 
-@st.cache_data(show_spinner=False)
-def verification():
-    """Résultat de `src/verify.py` — l'audit qui recalcule tout depuis data/raw/.
-
-    Le fichier est écrit par le script d'audit lui-même : si l'audit n'a jamais
-    tourné, la page le dit au lieu d'afficher un chiffre rassurant sans preuve.
-    """
-    p = GOLD / "verification.json"
-    if not p.exists():
-        return None
-    with open(p, encoding="utf-8") as f:
-        return json.load(f)
+def national():
+    return _lire_national(_empreinte("diagnostic_national.json"))
 
 
 @st.cache_data(show_spinner=False)
-def forets():
+def _lire_forets(_empreinte_fichier):
     return pd.read_csv(GOLD / "forets_vulnerabilite.csv")
 
 
+def forets():
+    return _lire_forets(_empreinte("forets_vulnerabilite.csv"))
+
+
 @st.cache_data(show_spinner=False)
-def geojson_forets():
+def _lire_geojson(_empreinte_fichier):
     """Polygones WKT -> FeatureCollection GeoJSON (parsé une seule fois)."""
     from shapely import wkt
     df = forets()
@@ -50,19 +56,35 @@ def geojson_forets():
     return {"type": "FeatureCollection", "features": feats}
 
 
+def geojson_forets():
+    return _lire_geojson(_empreinte("forets_vulnerabilite.csv"))
+
+
 @st.cache_data(show_spinner=False)
-def robustesse():
+def _lire_robustesse(_empreinte_fichier):
     return pd.read_csv(GOLD / "forets_robustesse.csv")
 
 
+def robustesse():
+    return _lire_robustesse(_empreinte("forets_robustesse.csv"))
+
+
 @st.cache_data(show_spinner=False)
-def villes():
+def _lire_villes(_empreinte_fichier):
     return pd.read_csv(GOLD / "villes_meteo.csv")
 
 
+def villes():
+    return _lire_villes(_empreinte("villes_meteo.csv"))
+
+
 @st.cache_data(show_spinner=False)
-def temperatures():
+def _lire_temperatures(_empreinte_fichier):
     return pd.read_csv(GOLD / "temperatures_mensuelles.csv")
+
+
+def temperatures():
+    return _lire_temperatures(_empreinte("temperatures_mensuelles.csv"))
 
 
 # ------------------------------------------------------------------ accès série
