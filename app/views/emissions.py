@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 import data as D
 from theme import (C, MOIS, RAMPE_T, banniere, section, kpi_row, encart,
                    style_fig, annote, pied, fr, titre_carte, rgba,
-                   telecharger, reglages, jetons)
+                   region_active, rappel_filtre)
 
 nat = D.national()
 R = nat["reperes"]
@@ -57,28 +57,19 @@ with o1:
             "Changez le gaz observé, ou passez en équivalent CO₂ : "
             "le podium ne tient pas en place.")
 
-    with reglages("Réglages de lecture de l'inventaire",
-                  "Le classement des secteurs dépend de ces deux réglages — "
-                  "c'est précisément la démonstration de cette page."):
-        f1, f2 = st.columns([1.5, 1])
-        with f1:
-            choix_gaz = st.radio(
-                "Gaz observé",
-                ["Tous les gaz", "CO₂", "CH₄ (méthane)", "N₂O (protoxyde d'azote)"],
-                horizontal=True, key="emissions_gaz")
-        with f2:
-            base = st.radio("Unité de lecture",
-                            ["Masse brute (Gg, source)",
-                             "Équivalent CO₂ (PRG 100 ans)"],
-                            horizontal=False, key="emissions_unite")
+    f1, f2 = st.columns([1.5, 1])
+    with f1:
+        choix_gaz = st.radio("Gaz observé",
+                             ["Tous les gaz", "CO₂", "CH₄ (méthane)", "N₂O (protoxyde d'azote)"],
+                             horizontal=True)
+    with f2:
+        base = st.radio("Unité de lecture",
+                        ["Masse brute (Gg, source)", "Équivalent CO₂ (PRG 100 ans)"],
+                        horizontal=False)
 
     cle_gaz = {"Tous les gaz": None, "CO₂": "CO2",
                "CH₄ (méthane)": "CH4", "N₂O (protoxyde d'azote)": "N2O"}[choix_gaz]
     en_co2e = base.startswith("Équivalent")
-    jetons(("Gaz", choix_gaz),
-           ("Lecture", "équivalent CO₂ (PRG 100 ans)" if en_co2e
-            else "masse brute, telle que publiée"),
-           ("Source", "inventaire national 2018"))
 
     d = gaz_df.copy()
     d["poids"] = d["gaz"].map(PRG) if en_co2e else 1
@@ -105,10 +96,6 @@ with o1:
         fig.update_xaxes(title=unite, range=[0, agg["val"].max() * 1.22])
         fig.update_yaxes(title=None)
         st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
-        telecharger(agg.rename(columns={"secteur_court": "secteur",
-                                        "val": f"emissions_{unite}",
-                                        "part": "part_pct"}),
-                    "emissions_par_secteur")
 
     with g2:
         # composition interne de chaque secteur : quel gaz le compose
@@ -135,25 +122,22 @@ with o1:
     if en_co2e:
         e_part = float(agg.loc[agg["secteur_court"] == "Énergie", "part"].iloc[0])
         encart("alerte",
-               f"<b>En équivalent CO₂, le secteur énergie passe de "
-               f"{R['ges']['part_energie']:.0f} % à {e_part:.0f} % des émissions "
-               f"nationales.</b> La raison : l'inventaire publie des masses brutes, où une "
-               f"tonne de méthane pèse autant qu'une tonne de CO₂. Or le méthane réchauffe "
-               f"{PRG['CH4']} fois plus, et le protoxyde d'azote {PRG['N2O']} fois plus. "
-               f"L'énergie concentre {R['ges']['energie_dans_ch4']:.0f} % du méthane et "
-               f"{R['ges']['energie_dans_n2o']:.0f} % du N₂O du pays — deux gaz typiques "
-               f"de la <b>combustion incomplète de biomasse</b>, c'est-à-dire des foyers "
-               f"de cuisson. Conclusion : « l'énergie ne pèse que 6 % » est une lecture "
-               f"comptable, pas une lecture climatique.")
+               f"En équivalent CO₂, le secteur énergie passe de "
+               f"{R['ges']['part_energie']:.0f} % à <b>{e_part:.0f} %</b> des "
+               f"émissions nationales. Il concentre en effet "
+               f"{R['ges']['energie_dans_ch4']:.0f} % du méthane et "
+               f"{R['ges']['energie_dans_n2o']:.0f} % du N₂O du pays — les deux gaz "
+               f"de la combustion incomplète de biomasse, c'est-à-dire des foyers "
+               f"de cuisson. « L'énergie ne pèse que 6 % » est une lecture "
+               f"comptable, pas climatique.")
     else:
         encart("constat",
-               f"En masse brute — la lecture publiée par l'inventaire — l'agriculture et "
-               f"l'usage des terres représentent {R['ges']['part_afat']:.0f} % des émissions, "
-               f"contre {R['ges']['part_energie']:.0f} % pour l'énergie. Cette prépondérance "
-               f"inclut le <b>changement d'affectation des sols et la déforestation</b> : "
-               f"elle ne contredit pas l'enjeu forestier, elle le confirme. "
-               f"Mais basculez l'unité de lecture en équivalent CO₂ : le classement change "
-               f"radicalement.")
+               f"En masse brute, l'agriculture et l'usage des terres pèsent "
+               f"{R['ges']['part_afat']:.0f} % des émissions contre "
+               f"{R['ges']['part_energie']:.0f} % pour l'énergie — mais cette part "
+               f"inclut la déforestation : elle confirme l'enjeu forestier au lieu "
+               f"de le contredire. Basculez l'unité de lecture : le classement "
+               f"change radicalement.")
 
     section("Le CO₂ du secteur énergie sur longue période",
             "Le fichier dédié du défi couvre plus de cinquante ans.")
@@ -169,16 +153,13 @@ with o1:
     fig3.update_yaxes(title="Mt CO₂e")
     fig3.update_xaxes(title=None)
     st.plotly_chart(fig3, width="stretch", config={"displayModeBar": False})
-    telecharger(co2.rename(columns={"valeur": "co2_energie_Mt"}), "co2_secteur_energie")
     if len(co2) > 1:
         encart("constat",
-               f"Les émissions de CO₂ du secteur énergie sont passées de "
-               f"{co2['valeur'].iloc[0]:.3f} à {co2['valeur'].iloc[-1]:.3f} Mt CO₂e entre "
-               f"{int(co2['annee'].iloc[0])} et {int(co2['annee'].iloc[-1])}. Le niveau "
-               f"absolu reste faible : l'électricité togolaise n'est pas le problème "
-               f"climatique du pays. Le problème est la <b>biomasse brûlée dans les "
-               f"foyers</b>, qui est comptabilisée ailleurs — en usage des terres et en "
-               f"méthane.")
+               f"De {co2['valeur'].iloc[0]:.3f} à {co2['valeur'].iloc[-1]:.3f} Mt CO₂e "
+               f"entre {int(co2['annee'].iloc[0])} et {int(co2['annee'].iloc[-1])} : "
+               f"le niveau absolu reste faible. L'électricité togolaise n'est pas le "
+               f"problème climatique du pays — c'est la <b>biomasse brûlée dans les "
+               f"foyers</b>, comptabilisée ailleurs.")
 
 # ================================================================== 2. CLIMAT
 with o2:
@@ -199,38 +180,36 @@ with o2:
          C["energie"]),
     ])
 
+    rappel_filtre("stations climatiques présélectionnées ; "
+                  "l'inventaire des émissions reste national")
     section("Le gradient Sud → Nord, mois par mois",
             "10 stations, 2013-2019. Sélectionnez les villes à comparer.")
 
-    with reglages("Réglages des stations",
-                  "Les dix stations sont listées du Sud vers le Nord ; "
-                  "la couleur des courbes suit cet ordre."):
-        f1, f2 = st.columns([2.4, 1])
-        with f1:
-            ordre_sud_nord = list(villes.sort_values("lat")["ville"])
-            choix = st.multiselect("Stations affichées", ordre_sud_nord,
-                                   default=ordre_sud_nord, key="climat_stations",
-                                   help="Les stations sont listées du Sud vers "
-                                        "le Nord.")
-        with f2:
-            mesure = st.selectbox("Mesure",
-                                  ["Température maximale", "Température minimale",
-                                   "Amplitude jour / nuit"], key="climat_mesure")
+    f1, f2 = st.columns([2.4, 1])
+    with f1:
+        ordre_sud_nord = list(villes.sort_values("lat")["ville"])
+        # Le filtre régional du volet présélectionne les stations de la région.
+        # La clé du widget porte la région : changer de région remet donc la
+        # sélection à jour au lieu de conserver l'ancienne, silencieusement.
+        _reg = region_active()
+        defaut = ([v for v in ordre_sud_nord
+                   if v in set(villes.loc[villes["region"] == _reg, "ville"])]
+                  if _reg else ordre_sud_nord)
+        choix = st.multiselect("Stations affichées", ordre_sud_nord,
+                               default=defaut or ordre_sud_nord,
+                               key=f"climat_stations_{_reg or 'tout'}",
+                               help="Les stations sont listées du Sud vers le "
+                                    "Nord. La région choisie dans le volet "
+                                    "présélectionne les siennes.")
+    with f2:
+        mesure = st.selectbox("Mesure",
+                              ["Température maximale", "Température minimale",
+                               "Amplitude jour / nuit"])
     col_mes = {"Température maximale": "t_max", "Température minimale": "t_min",
                "Amplitude jour / nuit": "amplitude"}[mesure]
 
-    # Une sélection vide viderait les deux graphiques sans rien expliquer :
-    # on retombe sur les dix stations et on le dit.
-    vide = not choix
-    if vide:
-        choix = ordre_sud_nord
-
     t = temp[(temp["annee"] >= an_min) & (temp["annee"] <= an_max)]
     t = t[t["ville"].isin(choix)]
-    jetons(("Stations", f"{len(choix)} / {len(villes)}"
-            + (" — sélection vide, toutes affichées" if vide else "")),
-           ("Mesure", mesure.lower()),
-           ("Relevés", f"{len(t)} observations ville × mois"))
 
     g1, g2 = st.columns([1.35, 1])
     with g1:
@@ -248,7 +227,7 @@ with o2:
             fig4.add_trace(go.Scatter(
                 x=[MOIS[m - 1] for m in sub["mois"]], y=sub[col_mes], name=v,
                 mode="lines", line=dict(color=coul, width=2.4),
-                hovertemplate=f"{v} · %{{x}} : %{{y:.1f}} °C<extra></extra>"))
+                hovertemplate=f"{v} · %{{x}} : %{{fr(y, 1)}} °C<extra></extra>"))
         style_fig(fig4, hauteur=384)
         fig4.update_yaxes(title="°C")
         fig4.update_xaxes(title=None)
@@ -259,8 +238,6 @@ with o2:
                            annotation_text="pic thermique", annotation_position="top left",
                            annotation_font=dict(size=11, color=C["risque"]))
         st.plotly_chart(fig4, width="stretch", config={"displayModeBar": False})
-        telecharger(prof_mois.rename(columns={col_mes: mesure}),
-                    "saisonnalite_par_station")
 
     with g2:
         # profil latitudinal : la température suit-elle vraiment la latitude ?
@@ -289,28 +266,20 @@ with o2:
         fig5.update_xaxes(title="latitude Nord (°)")
         fig5.update_yaxes(title="°C")
         st.plotly_chart(fig5, width="stretch", config={"displayModeBar": False})
-        telecharger(vv[["ville", "lat", "lon", "region", "t_max", "t_min",
-                        "amplitude"]], "stations_meteo")
 
     encart("constat",
-           f"Le Togo s'étire sur près de 700 km du Sud au Nord et cela se lit dans les "
-           f"températures : {fr(cl['gradient'], 1)} °C séparent la station la plus fraîche "
-           f"({cl['ville_froide']}, sur les hauteurs des Plateaux) de la plus chaude "
+           f"{fr(cl['gradient'], 1)} °C séparent la station la plus fraîche "
+           f"({cl['ville_froide']}, sur les Plateaux) de la plus chaude "
            f"({cl['ville_chaude']}, dans les Savanes). Le pic national tombe en "
-           f"<b>{cl['mois_chaud_nom']}</b> ({fr(cl['t_mois_chaud'], 1)} °C de maximum moyen) — "
-           f"c'est-à-dire en fin de saison sèche, avant les pluies. "
-           f"L'amplitude jour/nuit croît elle aussi vers le Nord, jusqu'à "
-           f"{fr(cl['amplitude_max'], 1)} °C à {cl['amplitude_max_ville']}.")
+           f"<b>{cl['mois_chaud_nom']}</b> ({fr(cl['t_mois_chaud'], 1)} °C de maximum "
+           f"moyen), en fin de saison sèche.")
     encart("action",
-           f"<b>Le lien avec l'énergie est un argument, pas une illustration.</b> "
-           f"Le maximum de besoin — ventilation, conservation des aliments, pompage d'eau, "
-           f"santé des personnes fragiles — tombe en {cl['mois_chaud_nom']}, au cœur de la "
-           f"saison sèche, c'est-à-dire au moment où l'ensoleillement est maximal et la "
+           f"Le maximum de besoin — ventilation, conservation, pompage — tombe en "
+           f"{cl['mois_chaud_nom']}, quand l'ensoleillement est maximal et la "
            f"couverture nuageuse minimale. <b>La pointe de demande et la pointe de "
-           f"production solaire coïncident.</b> C'est exactement la configuration où le "
-           f"photovoltaïque décentralisé est le plus efficace, et elle est la plus marquée "
-           f"dans les régions du Nord — celles où l'accès est le plus faible et où se "
-           f"trouvent les forêts sèches les plus exposées.")
+           f"production solaire coïncident</b>, et le plus nettement au Nord : là où "
+           f"l'accès est le plus faible et les forêts sèches les plus exposées. "
+           f"C'est un argument de dimensionnement, pas une illustration.")
 
 with st.expander("Méthode, données et limites de cette page"):
     st.markdown(f"""

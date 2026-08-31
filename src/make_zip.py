@@ -48,13 +48,19 @@ NOMS_EXCLUS = {"secrets.toml"}
 # la première minute. Chaque retrait est vérifié — si le README change et
 # qu'un motif ne correspond plus, la construction échoue au lieu de livrer
 # un document faux.
+GARDE_FOU_RAPPORT = (
+    "\nUn second garde-fou protège le rapport : `src/make_report.py` **refuse de le"
+    "\nproduire** si l'un de ses 14 chiffres directeurs ne correspond plus au fichier"
+    "\ngold. Le texte, rédigé à la main, ne peut donc pas dériver silencieusement des"
+    "\ndonnées." + "\n"
+)
+
 RETRAITS = [
     ("Le rapport se lit hors ligne dans un navigateur : ouvrir "
      "`report/rapport.html`\n(document autonome, imprimable en PDF).\n\n", ""),
     ("│   ├── verify.py                 audit : recalcul indépendant depuis data/raw/\n"
      "│   ├── make_figures.py           figures SVG du rapport\n"
-     "│   ├── make_report.py            assemblage du rapport + contrôle de cohérence\n"
-     "│   └── make_pptx.py              présentation 10 diapositives\n",
+     "│   └── make_report.py            assemblage du rapport final\n",
      "│   └── verify.py                 audit : recalcul indépendant depuis data/raw/\n"),
     ("├── report/\n"
      "│   ├── rapport.html              rapport autonome, imprimable\n"
@@ -64,16 +70,11 @@ RETRAITS = [
     ("python src/make_figures.py    # figures SVG du rapport\n"
      "python src/make_report.py     # rapport HTML final\n", ""),
     ("dashboard_defi2_togo/\n", f"{NOM}/\n"),
+    # Le garde-fou du rapport ne concerne pas l'archive, qui ne contient pas
+    # le rapport : le mentionner enverrait le jury chercher un fichier absent.
+    (GARDE_FOU_RAPPORT, ""),
     ("**Aucun chiffre du rapport\nou du tableau de bord n'est saisi à la main**",
      "**Aucun chiffre du tableau de bord\nn'est saisi à la main**"),
-    # Le second garde-fou porte sur le rapport, absent de l'archive : on ne
-    # garde que celui qui concerne les fichiers livrés ici.
-    ("Deux garde-fous complètent cet audit :\n", "Un garde-fou le complète :\n"),
-    ("  change la lecture, et le tableau de bord en tient compte explicitement ;\n"
-     "- `src/make_report.py` **refuse de produire le rapport** si l'un des 34 chiffres\n"
-     "  directeurs qu'il contient ne correspond plus au fichier gold : le texte rédigé\n"
-     "  à la main ne peut donc pas dériver silencieusement des données.\n",
-     "  change la lecture, et le tableau de bord en tient compte explicitement.\n"),
 ]
 # Aucun de ces mots ne doit subsister dans le README livré.
 INTERDITS = ("report/", "make_figures", "make_report", "make_pptx", ".pptx",

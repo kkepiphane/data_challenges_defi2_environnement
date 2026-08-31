@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Rapport du Défi 2 — énergie, climat et forêts au Togo.">
-﻿<title>Le Bois et la Lumière</title>
+<title>Le Bois et la Lumière</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,300;1,6..72,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 
@@ -142,27 +142,26 @@ figcaption b{color:#131E18; font-weight:600;}
   text-transform:uppercase; color:var(--muted); display:block; margin-bottom:6px;}
 .reco-grid .t{font-size:14px; color:var(--ink2); line-height:1.55;}
 .r2 .reco-n{background:var(--energie);} .r3 .reco-n{background:var(--foret-d);}
-.r4 .reco-n{background:var(--muted);}
 :root[data-theme="dark"] .reco-n,
 :root:not([data-theme="light"]) .reco-n{color:#0D1411;}
 
 /* ---------- sommaire ----------
    Un rapport de cette longueur se consulte autant qu'il se lit : le sommaire
-   donne la carte, et les ancres permettent d'aller droit à la section utile. */
+   donne la carte, et les ancres mènent droit à la section utile. */
 .sommaire{border:1px solid var(--rule); border-radius:12px; background:var(--sunk);
-  padding:24px 28px 26px; margin:34px 0 10px;}
-.sommaire h2{margin:0 0 16px; font-size:19px;}
+  padding:24px 28px 26px; margin:30px 0 0;}
+.sommaire h2{margin:0 0 14px; font-size:20px;}
 .sommaire ol{list-style:none; margin:0; padding:0; counter-reset:som;
-  display:grid; gap:2px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
-.sommaire li{counter-increment:som; padding:7px 0; border-top:1px solid var(--rule);}
-.sommaire li:first-child, .sommaire li:nth-child(2){border-top:none;}
+  display:grid; gap:0 30px; grid-template-columns:repeat(auto-fit,minmax(310px,1fr));}
+.sommaire li{counter-increment:som; padding:8px 0;
+  border-top:1px solid var(--rule);}
 .sommaire a{display:flex; gap:12px; align-items:baseline; text-decoration:none;
-  color:var(--ink); font-size:14.5px; line-height:1.4;}
+  color:var(--ink); font-size:14.5px; line-height:1.35;}
 .sommaire a:hover{color:var(--foret);}
 .sommaire a::before{content:counter(som,decimal-leading-zero);
   font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted);
   flex:0 0 auto;}
-.sommaire .q{display:block; font-size:12.5px; color:var(--muted); margin-top:2px;}
+.sommaire .q{display:block; font-size:12.5px; color:var(--muted); margin-top:3px;}
 
 /* ---------- tableaux ---------- */
 .tbl-wrap{overflow-x:auto; margin:24px 0; border:1px solid var(--rule);
@@ -207,9 +206,8 @@ td strong{color:var(--ink);}
   regarde pas là.</p>
   <div class="meta">
     <span><b>6</b> jeux de données analysés</span>
-    <span><b>32</b> séries auditées</span>
     <span><b>53</b> forêts classées cartographiées</span>
-    <span><b>59</b> chiffres recalculés indépendamment</span>
+    <span><b>10</b> stations météo</span>
     <span><b>1998–2023</b> période couverte</span>
   </div>
 </header>
@@ -217,16 +215,16 @@ td strong{color:var(--ink);}
 <div class="chiffres">
   <div class="chiffre c-alerte"><div class="v">+ 19 %</div>
     <div class="l">de ruraux privés d'électricité depuis 1998 — alors que le taux
-    d'accès a été multiplié par huit</div></div>
-  <div class="chiffre c-energie"><div class="v">49 000</div>
-    <div class="l">raccordements ruraux par an nécessaires rien que pour stabiliser
-    ce nombre</div></div>
+    d'accès était multiplié par huit</div></div>
   <div class="chiffre c-alerte"><div class="v">89 %</div>
     <div class="l">des ménages cuisinent au bois ou au charbon — une part inchangée
     depuis 2014</div></div>
-  <div class="chiffre c-foret"><div class="v">× 5</div>
-    <div class="l">l'expansion agricole gagne cinq fois ce que la forêt perd :
-    le défrichement précède le bois de feu</div></div>
+  <div class="chiffre c-foret"><div class="v">2 960</div>
+    <div class="l">hectares de forêt perdus chaque année depuis 2000 — trois
+    fois moins que dans les années 1990, mais sans interruption</div></div>
+  <div class="chiffre c-alerte"><div class="v">× 10</div>
+    <div class="l">l'accélération requise pour tenir l'objectif d'accès universel
+    en 2030</div></div>
   <div class="chiffre c-foret"><div class="v">9</div>
     <div class="l">forêts prioritaires qui ressortent quelle que soit la
     pondération testée</div></div>
@@ -235,91 +233,75 @@ td strong{color:var(--ink);}
 <div class="resume">
   <h2>Ce que disent les données</h2>
   <p>L'électrification rurale togolaise progresse réellement : de 3,1 % en 1998 à
-  25 % en 2022, soit un taux multiplié par huit. Confrontée à la démographie, cette
+  25 % en 2022, un taux multiplié par huit. Confrontée à la démographie, cette
   réussite se retourne. La population rurale a gagné 1,7 million d'habitants sur la
-  même période, et le <strong>nombre</strong> de ruraux privés d'électricité est passé
-  de 3,11 à 3,72 millions — il a <strong>augmenté de 19 %</strong>. La décomposition
-  est exacte et ne fait appel à aucune hypothèse : la démographie a ajouté 1,69 million
-  de personnes non raccordées, l'électrification en a retiré 1,09 million. Le
-  raccordement n'annule que <strong>64 %</strong> de la poussée démographique.</p>
+  même période, et le <strong>nombre</strong> de ruraux privés d'électricité est
+  passé de 3,11 à 3,72 millions : il a <strong>augmenté de 19 %</strong>. Le repère
+  à piloter n'est donc pas un pourcentage mais un volume — il faut raccorder chaque
+  année autant de personnes que la population rurale en gagne, soit
+  <strong>65 700 en 2022</strong>.</p>
 
-  <p>Ce résultat commande la lecture de tout le reste. Un objectif exprimé en taux
-  peut être approché pendant que le problème grandit. Le repère opérationnel n'est pas
-  un pourcentage mais un volume : il faut raccorder chaque année autant de personnes
-  que la population rurale en gagne — <strong>65 700 en 2022</strong>. Sur la décennie
-  2012-2022, 56 800 raccordements annuels ont été réalisés pour un seuil moyen de
-  70 600 : le déficit de 13 800 par an explique, au chiffre près, les 137 560 personnes
-  supplémentaires sans électricité. Et le réseau qui arrive n'est pas fiable :
-  93,8 % des entreprises raccordées subissaient des coupures en 2016, contre 80,4 %
-  en 2009.</p>
+  <p>Le rythme, lui, reste dix fois trop lent : <strong>0,91 point par an</strong>
+  quand l'objectif 2030 en exigerait 9,4. Au rythme observé, le dernier village
+  togolais serait raccordé vers <strong>2104</strong>. Et le réseau qui arrive n'est
+  pas fiable : 93,8 % des entreprises raccordées subissaient des coupures en 2016,
+  contre 80,4 % en 2009.</p>
 
   <p>Pendant ces vingt-cinq ans d'électrification, le couvert forestier n'a pas
-  cessé de reculer. La raison tient en une statistique : <strong>0,9 % des ruraux ont
-  accès à une cuisson propre</strong>. L'électricité éclaire les foyers ; elle ne
-  remplace pas le bois dans les marmites. Entre les enquêtes ménages de 2014 et 2017,
-  la part du bois de chauffe a même <em>augmenté</em> de 3,6 points. Cette dépendance
-  est masquée par un indicateur flatteur : le Togo affiche <strong>75,1 % d'énergie
-  « renouvelable »</strong> dans sa consommation finale, un taux que peu de pays
-  atteignent — et 11,9 % d'accès à une cuisson propre. Les deux chiffres décrivent la
-  même réalité vue de deux côtés : ce renouvelable est du bois de feu.</p>
+  cessé de reculer — 11,4 % perdus entre 1990 et 2021. La raison tient en une
+  statistique : <strong>0,9 % des ruraux ont accès à une cuisson propre</strong>.
+  L'électricité éclaire les foyers ; elle ne remplace pas le bois dans les marmites.
+  Entre les enquêtes ménages de 2014 et 2017, la part du bois de chauffe a même
+  <em>augmenté</em> de 3,6 points.</p>
 
-  <p>Sur la forêt, l'analyse conduit à deux corrections importantes. D'abord, la série
-  forestière de la FAO ne contient que <strong>trois mesures indépendantes</strong> sur
-  trente-deux points annuels : elle est interpolée. La perte n'est donc pas de
-  5 011 hectares par an, moyenne qui ne correspond à aucune année réelle, mais de
-  9 320 ha/an jusqu'en 2000 puis <strong>2 960 ha/an depuis</strong> — divisée par
-  trois, jamais interrompue. Ensuite, le moteur du recul est mesurable, et ce n'est pas
-  le bois de feu : entre 1990 et 2013, la surface agricole a gagné 6 600 km² quand la
-  forêt en perdait 1 317, soit <strong>cinq fois plus</strong>. Le pays met en culture
-  19 700 hectares de terres nouvelles chaque année, près de sept fois ce qu'il perd de
-  forêt, et 46 % de la hausse de sa production céréalière vient de l'extension des
-  surfaces, non du rendement.</p>
+  <p>Cette dépendance est masquée par un indicateur flatteur. Le Togo affiche
+  <strong>75,1 % d'énergie « renouvelable »</strong> dans sa consommation finale —
+  un taux que peu de pays atteignent. Ce renouvelable est du bois de feu. Le même
+  pays affiche 11,9 % d'accès à une cuisson propre. Les deux chiffres décrivent la
+  même réalité vue de deux côtés.</p>
 
-  <p>Quatre recommandations en découlent, dans cet ordre : donner la priorité à la
+  <p>Trois recommandations en découlent, dans cet ordre : donner la priorité à la
   <strong>cuisson propre</strong>, qui touche 8,1 millions de Togolais et agit
-  simultanément sur la santé, le climat et la forêt ; déployer le <strong>solaire
-  décentralisé</strong> pour franchir le seuil démographique, plutôt que d'attendre
-  l'extension d'un réseau lui-même instable ; concentrer la protection forestière sur
-  les <strong>neuf massifs prioritaires</strong> identifiés par un indice robuste au
-  changement de pondération ; et engager l'<strong>intensification agricole</strong>,
-  parce que tant que produire plus signifie défricher plus, la protection forestière
-  restera un combat d'arrière-garde.</p>
+  simultanément sur la forêt, la santé et le climat ; déployer le <strong>solaire
+  décentralisé</strong> plutôt que d'attendre l'extension d'un réseau lui-même
+  instable ; et concentrer la protection forestière sur les <strong>neuf massifs
+  prioritaires</strong> identifiés par un indice de vulnérabilité robuste au
+  changement de pondération.</p>
 </div>
 
 <nav class="sommaire" aria-label="Sommaire">
   <h2>Sommaire</h2>
   <ol>
     <li><a href="#s-methode">Ce qui entre dans l'analyse, et ce qui en a été écarté
-      <span class="q">Sources, correctifs qualité, audit automatique des séries,
-      vérification indépendante</span></a></li>
+      <span class="q">Sources, correctifs qualité, périmètre</span></a></li>
     <li><a href="#s-acces">Une fracture qui se comble trop lentement, un réseau qui
       ne tient pas
-      <span class="q">Objectif 1 · le tapis roulant démographique, le rythme réel des
-      raccordements, la fiabilité</span></a></li>
+      <span class="q">Objectif 1 · le tapis roulant démographique, le rythme, la
+      fiabilité</span></a></li>
     <li><a href="#s-cuisson">La marmite, pas l'ampoule
       <span class="q">Objectif 2 · combustibles des ménages, le piège du
-      « renouvelable », ce qui prend la place de la forêt</span></a></li>
+      « renouvelable », le coût forestier</span></a></li>
     <li><a href="#s-ges">Le secteur énergie n'est marginal que si l'on ne regarde
       que le CO₂
       <span class="q">Objectif 3 · inventaire 2018, lecture gaz par gaz, test de
-      sensibilité en équivalent CO₂</span></a></li>
+      sensibilité</span></a></li>
     <li><a href="#s-climat">Le gradient thermique plaide pour le solaire
       <span class="q">Objectif 4 · dix stations, gradient Sud-Nord, coïncidence des
-      pointes de demande et de production</span></a></li>
+      pointes</span></a></li>
     <li><a href="#s-forets">Cinquante-trois forêts, neuf priorités
-      <span class="q">Objectif 5 · indice de vulnérabilité, cartographie, test de
-      robustesse du classement</span></a></li>
-    <li><a href="#s-reco">Quatre leviers, dans cet ordre
-      <span class="q">Objectif 6 · ce qui justifie chacun, où agir, cible 2030,
-      indicateur de suivi</span></a></li>
+      <span class="q">Objectif 5 · indice de vulnérabilité, test de robustesse du
+      classement</span></a></li>
+    <li><a href="#s-reco">Trois leviers, dans cet ordre
+      <span class="q">Objectif 6 · ce qui les justifie, où agir, cibles et
+      indicateurs de suivi</span></a></li>
     <li><a href="#s-portee">Ce que ces données ne permettent pas de dire
-      <span class="q">Limites assumées et les trois indicateurs qui manquent pour
-      piloter</span></a></li>
+      <span class="q">Limites assumées, et les trois indicateurs qui manquent
+      pour piloter</span></a></li>
     <li><a href="#s-conclusion">Conclusion
-      <span class="q">Ce qu'il faut décider, et sur quel chiffre le vérifier</span></a></li>
-    <li><a href="#s-annexe">Annexes
-      <span class="q">Le tableau de bord, les codes d'indicateurs, la
-      reproductibilité</span></a></li>
+      <span class="q">Ce qu'il faut décider, et sur quels chiffres le
+      vérifier</span></a></li>
+    <li><a href="#s-annexe">Annexe · le tableau de bord
+      <span class="q">Les six pages, leurs interactions, la reproductibilité</span></a></li>
   </ol>
 </nav>
 
@@ -377,65 +359,6 @@ td strong{color:var(--ink);}
     </table>
     </div>
 
-    <h3>Un audit automatique appliqué à toutes les séries</h3>
-
-    <p>Les correctifs ci-dessus ont d'abord été trouvés à la main. Ils ont ensuite été
-    systématisés : les <strong>32 séries</strong> qui alimentent une page du tableau de
-    bord subissent le même test automatique, dont le résultat est écrit dans le fichier
-    de données et publié dans l'application. Trois questions, posées à chaque série.</p>
-
-    <div class="tbl-wrap">
-    <table>
-      <thead><tr><th>Question posée</th><th>Ce que révèle une réponse anormale</th>
-        <th>Séries concernées</th></tr></thead>
-      <tbody>
-        <tr><td>Combien de <strong>valeurs distinctes</strong> ?</td>
-          <td>Une seule : la série ne porte aucune information temporelle</td>
-          <td><span class="mono">AG.LND.PRCP.MM</span> — précipitations, une valeur
-          répétée sur 61 ans</td></tr>
-        <tr><td>Combien de <strong>pentes distinctes</strong> ?</td>
-          <td>Deux ou trois sur trente ans : la série est interpolée linéairement
-          entre points de référence, et le nombre de ruptures de pente donne le
-          nombre de mesures réellement indépendantes</td>
-          <td><span class="mono">AG.LND.FRST.K2</span> et
-          <span class="mono">AG.LND.FRST.ZS</span> — 3 mesures pour 32 points
-          annuels</td></tr>
-        <tr><td>Les <strong>dernières années</strong> sont-elles identiques ?</td>
-          <td>Queue gelée : la source a cessé de mettre la série à jour sans le
-          signaler</td>
-          <td><span class="mono">AG.LND.AGRI.K2</span>,
-          <span class="mono">AG.LND.AGRI.ZS</span>,
-          <span class="mono">AG.LND.ARBL.ZS</span> — gelées depuis 2013</td></tr>
-      </tbody>
-    </table>
-    </div>
-
-    <p>Vingt-et-une séries sur trente-deux passent sans réserve. <strong>Six portent un
-    défaut structurel</strong> qui ne change pas seulement la précision, mais la
-    conclusion : c'est ce qui a conduit à écarter les précipitations, à arrêter la
-    comparaison d'usage des sols à 2013, et à présenter la perte forestière par régime
-    plutôt qu'en moyenne. Cinq autres n'ont que deux ou trois points et se lisent comme
-    un contraste, jamais comme une tendance.</p>
-
-    <h3>Vérification indépendante de tous les chiffres publiés</h3>
-
-    <p>Un second programme (<code>python src/verify.py</code>) recalcule
-    <strong>62 chiffres clés directement depuis <span class="mono">data/raw/</span></strong>,
-    avec un code écrit sans réutiliser une seule ligne du pipeline : lectures
-    <span class="mono">csv</span> standard, aucune fonction partagée, aucune
-    dépendance commune. Chaque valeur recalculée est comparée à la valeur publiée, et
-    le script sort en erreur au moindre écart. Il vérifie aussi les
-    <strong>identités comptables</strong> sur lesquelles reposent les conclusions —
-    par exemple que la somme de l'effet démographique et de l'effet d'électrification
-    reconstitue bien la variation observée du nombre de ruraux sans électricité, ou
-    que le déficit annuel de raccordement multiplié par dix redonne bien la hausse
-    du stock sur la décennie.</p>
-
-    <div class="encart"><span class="k">Résultat</span>
-    <p><strong>62 contrôles sur 62 conformes.</strong> Le détail ligne par ligne est
-    consultable dans la page « Données » du tableau de bord, et le fichier de résultat
-    est écrit par le script d'audit lui-même — il n'est jamais saisi à la main.</p></div>
-
     <div class="encart limite"><span class="k">Périmètre</span>
     <p>Aucun des six fichiers ne contient de donnée infranationale sur l'énergie.
     L'électrification, la cuisson et les émissions ne sont disponibles qu'au niveau
@@ -462,60 +385,50 @@ td strong{color:var(--ink);}
 
     <h3>Le taux monte, le nombre de personnes privées d'électricité aussi</h3>
 
-    <p>Un taux d'accès est un rapport. Son dénominateur — la population rurale
-    togolaise — est passé de 3,21 à 4,96 millions d'habitants entre 1998 et 2022,
-    soit <strong>+54 %</strong>. En croisant les deux séries, on obtient le nombre de
-    personnes réellement concernées, et il ne va pas dans le même sens que le taux :
-    <strong>3,11 millions de ruraux privés d'électricité en 1998, 3,72 millions en
-    2022</strong>. Une hausse de 606 951 personnes, soit 19 %.</p>
+    <p>Un taux d'accès est un rapport, et son dénominateur bouge : la population
+    rurale togolaise est passée de 3,21 à 4,96 millions d'habitants entre 1998 et
+    2022, soit <strong>+54 %</strong>. En croisant les deux séries, on obtient le
+    nombre de personnes réellement concernées — et il ne va pas dans le même sens
+    que le taux : <strong>3,11 millions de ruraux privés d'électricité en 1998,
+    3,72 millions en 2022</strong>, soit 606 951 de plus.</p>
 
-    <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" width="100%" role="img" aria-label="Le taux monte, le nombre de personnes privées d'électricité aussi"><rect width="760" height="330" fill="none"/><text x="0" y="17" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="15.5" font-weight="700" fill="#0A5533">Le taux monte, le nombre de personnes privées d'électricité aussi</text><text x="0" y="35" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" fill="#5D6E64">Ruraux sans électricité, 1998–2022 · décomposition exacte, sans hypothèse</text><line x1="62" y1="256.0" x2="740" y2="256.0" stroke="#D5DED8"/><text x="54.0" y="260.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#5D6E64" text-anchor="end">0 M</text><line x1="62" y1="220.7" x2="740" y2="220.7" stroke="#D5DED8"/><text x="54.0" y="224.7" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#5D6E64" text-anchor="end">1 M</text><line x1="62" y1="185.4" x2="740" y2="185.4" stroke="#D5DED8"/><text x="54.0" y="189.4" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#5D6E64" text-anchor="end">2 M</text><line x1="62" y1="150.1" x2="740" y2="150.1" stroke="#D5DED8"/><text x="54.0" y="154.1" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#5D6E64" text-anchor="end">3 M</text><line x1="62" y1="114.7" x2="740" y2="114.7" stroke="#D5DED8"/><text x="54.0" y="118.7" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#5D6E64" text-anchor="end">4 M</text><line x1="62" y1="79.4" x2="740" y2="79.4" stroke="#D5DED8"/><text x="54.0" y="83.4" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#5D6E64" text-anchor="end">5 M</text><rect x="80.0" y="146.0" width="118" height="110.0" rx="3" fill="#85938B"/><text x="139.0" y="137.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#85938B" text-anchor="middle">3,11 M</text><text x="139.0" y="276.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#0C1A14" text-anchor="middle">1998</text><rect x="238.0" y="86.2" width="118" height="59.8" rx="3" fill="#B32418"/><text x="297.0" y="77.2" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#B32418" text-anchor="middle">+1,69 M</text><text x="297.0" y="276.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#0C1A14" text-anchor="middle">Croissance de la</text><text x="297.0" y="290.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#0C1A14" text-anchor="middle">population rurale</text><line x1="198.0" y1="146.0" x2="238.0" y2="146.0" stroke="#5D6E64" stroke-width="1" stroke-dasharray="3 3"/><rect x="396.0" y="86.2" width="118" height="38.4" rx="3" fill="#0F7A4A"/><text x="455.0" y="77.2" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#0F7A4A" text-anchor="middle">−1,09 M</text><text x="455.0" y="276.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#0C1A14" text-anchor="middle">Effet de</text><text x="455.0" y="290.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#0C1A14" text-anchor="middle">l'électrification</text><line x1="356.0" y1="86.2" x2="396.0" y2="86.2" stroke="#5D6E64" stroke-width="1" stroke-dasharray="3 3"/><rect x="554.0" y="124.6" width="118" height="131.4" rx="3" fill="#0C1A14"/><text x="613.0" y="115.6" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#0C1A14" text-anchor="middle">3,72 M</text><text x="613.0" y="276.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#0C1A14" text-anchor="middle">2022</text><line x1="514.0" y1="124.6" x2="554.0" y2="124.6" stroke="#5D6E64" stroke-width="1" stroke-dasharray="3 3"/><text x="62.0" y="318.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="400" fill="#5D6E64" text-anchor="start">Le taux d'accès rural passe pourtant de 3,1 % à 25 % sur la même période. L'électrification n'annule que 64 % de la poussée démographique.</text></svg><figcaption><b>Figure 6</b> — Décomposition de la variation du nombre de ruraux privés d'électricité entre 1998 et 2022. Identité comptable : la somme de l'effet démographique et de l'effet d'électrification reconstitue la variation observée au chiffre près.</figcaption></figure>
+    <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" width="100%" role="img" aria-label="Le taux monte, le nombre de personnes privées d'électricité aussi"><rect width="760" height="330" fill="none"/><text x="0" y="17" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="15.5" font-weight="700" fill="#0A5533">Le taux monte, le nombre de personnes privées d'électricité aussi</text><text x="0" y="35" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" fill="#5D6E64">Ruraux sans électricité, 1998–2022 · décomposition exacte, sans hypothèse</text><line x1="62" y1="254.0" x2="740" y2="254.0" stroke="#D5DED8"/><text x="54.0" y="258.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#5D6E64" text-anchor="end">0 M</text><line x1="62" y1="219.1" x2="740" y2="219.1" stroke="#D5DED8"/><text x="54.0" y="223.1" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#5D6E64" text-anchor="end">1 M</text><line x1="62" y1="184.2" x2="740" y2="184.2" stroke="#D5DED8"/><text x="54.0" y="188.2" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#5D6E64" text-anchor="end">2 M</text><line x1="62" y1="149.2" x2="740" y2="149.2" stroke="#D5DED8"/><text x="54.0" y="153.2" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#5D6E64" text-anchor="end">3 M</text><line x1="62" y1="114.3" x2="740" y2="114.3" stroke="#D5DED8"/><text x="54.0" y="118.3" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#5D6E64" text-anchor="end">4 M</text><line x1="62" y1="79.4" x2="740" y2="79.4" stroke="#D5DED8"/><text x="54.0" y="83.4" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="10.5" font-weight="400" fill="#5D6E64" text-anchor="end">5 M</text><rect x="80.0" y="145.2" width="118" height="108.8" rx="3" fill="#85938B"/><text x="139.0" y="136.2" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#85938B" text-anchor="middle">3,11 M</text><text x="139.0" y="274.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#0C1A14" text-anchor="middle">1998</text><line x1="198.0" y1="145.2" x2="238.0" y2="145.2" stroke="#5D6E64" stroke-width="1" stroke-dasharray="3 3"/><rect x="238.0" y="86.1" width="118" height="59.1" rx="3" fill="#B32418"/><text x="297.0" y="77.1" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#B32418" text-anchor="middle">+1,69 M</text><text x="297.0" y="274.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#0C1A14" text-anchor="middle">Croissance de la</text><text x="297.0" y="288.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#0C1A14" text-anchor="middle">population rurale</text><line x1="356.0" y1="86.1" x2="396.0" y2="86.1" stroke="#5D6E64" stroke-width="1" stroke-dasharray="3 3"/><rect x="396.0" y="86.1" width="118" height="37.9" rx="3" fill="#0F7A4A"/><text x="455.0" y="77.1" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#0F7A4A" text-anchor="middle">−1,09 M</text><text x="455.0" y="274.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#0C1A14" text-anchor="middle">Effet de</text><text x="455.0" y="288.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#0C1A14" text-anchor="middle">l'électrification</text><line x1="514.0" y1="124.0" x2="554.0" y2="124.0" stroke="#5D6E64" stroke-width="1" stroke-dasharray="3 3"/><rect x="554.0" y="124.0" width="118" height="130.0" rx="3" fill="#0C1A14"/><text x="613.0" y="115.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#0C1A14" text-anchor="middle">3,72 M</text><text x="613.0" y="274.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11" font-weight="600" fill="#0C1A14" text-anchor="middle">2022</text><text x="62.0" y="320.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="400" fill="#5D6E64" text-anchor="start">Le taux d'accès rural passe pourtant de 3,1 % à 25 % sur la même période : l'électrification n'annule que 64 % de la poussée démographique.</text></svg><figcaption><b>Figure 6</b> — Décomposition de la variation du nombre de ruraux privés d'électricité entre 1998 et 2022. La somme de l'effet démographique et de l'effet d'électrification reconstitue la variation observée au chiffre près.</figcaption></figure>
 
     <p>La décomposition est une identité comptable, pas un modèle : la variation du
     produit population × (1 − taux d'accès) se sépare exactement en un effet
-    démographique, (P₁ − P₀) × (1 − a₀), et un effet d'électrification,
-    − P₁ × (a₁ − a₀). Le premier vaut <strong>+1 693 547</strong> personnes, le second
-    <strong>− 1 086 596</strong>. Leur somme reconstitue la hausse observée au chiffre
-    près. Autrement dit : <strong>l'électrification n'annule que 64 % de la poussée
-    démographique</strong>, et le reste s'accumule.</p>
+    démographique, (P₁ − P₀) × (1 − a₀) = <strong>+1 693 547</strong> personnes, et
+    un effet d'électrification, − P₁ × (a₁ − a₀) = <strong>−1 086 596</strong>. Leur
+    somme reconstitue la hausse observée au chiffre près. Autrement dit :
+    l'électrification n'annule que <strong>64 %</strong> de la poussée
+    démographique, et le reste s'accumule.</p>
 
     <div class="encart alerte"><span class="k">Ce qu'il faut en retenir</span>
     <p>Le repère opérationnel n'est pas un pourcentage mais un volume. Le nombre de
     personnes privées d'électricité vaut P − raccordés ; il cesse d'augmenter
     exactement quand les raccordements annuels égalent la <strong>croissance de la
     population rurale</strong>, soit <strong>65 700 personnes en 2022</strong>.</p>
-    <p>Ce seuil n'a pas été franchi. Sur 2012-2022, 56 800 raccordements par an ont
-    été réalisés pour un seuil moyen de 70 600 : le déficit de 13 800 personnes par an
-    explique, multiplié par dix, les <strong>137 560 personnes supplémentaires</strong>
-    sans électricité sur la décennie. Le seuil décroît à mesure que la croissance
-    rurale ralentit — il est aujourd'hui à portée, mais il n'est pas atteint.</p></div>
+    <p>Ce seuil n'a pas été franchi. Sur 2012-2022, 56 801 raccordements par an ont
+    été réalisés pour un seuil moyen de 70 557 : le déficit de 13 756 personnes par
+    an explique, multiplié par dix, les <strong>137 560 personnes
+    supplémentaires</strong> sans électricité sur la décennie. Le seuil décroît à
+    mesure que la croissance rurale ralentit — il est aujourd'hui à portée, mais il
+    n'est pas atteint.</p></div>
 
-    <h3>Le rythme, maintenant : un facteur dix à trouver</h3>
+    <h3>Le rythme : un facteur dix à trouver</h3>
 
     <p>Sur vingt-quatre ans, l'accès rural a gagné 21,9 points, soit
     <strong>0,91 point par an</strong>. Atteindre l'accès universel en 2030 demande
     9,4 points par an. Le rapport est de un à dix. Traduit en personnes : il faudrait
-    raccorder environ <strong>465 000 ruraux par an</strong> jusqu'en 2030. Prolongé
-    tel quel, le rythme actuel place l'accès universel rural aux alentours de
-    <strong>2104</strong>.</p>
+    raccorder environ <strong>465 000 ruraux par an</strong> jusqu'en 2030, contre
+    quelque 45 000 aujourd'hui. Prolongé tel quel, le rythme actuel place l'accès
+    universel rural aux alentours de <strong>2104</strong>.</p>
 
     <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 210" width="100%" role="img" aria-label="L'objectif 2030 demande dix fois le rythme actuel"><rect width="760" height="210" fill="none"/><text x="0" y="17" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="15.5" font-weight="700" fill="#0A5533">L'objectif 2030 demande dix fois le rythme actuel</text><text x="0" y="35" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" fill="#5D6E64">Accès rural à l'électricité · au rythme observé, l'accès universel tomberait en 2104</text><rect x="210" y="58" width="38.9" height="26" rx="4" fill="#85938B"/><text x="198.0" y="76.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#0C1A14" text-anchor="end">Rythme observé 1998–2022</text><text x="258.9" y="76.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#85938B" text-anchor="start">+0,91 point/an</text><rect x="210" y="104" width="400.0" height="26" rx="4" fill="#B32418"/><text x="198.0" y="122.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#0C1A14" text-anchor="end">Rythme requis pour l'accès universel en 2030</text><text x="620.0" y="122.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#B32418" text-anchor="start">+9,38 point/an</text><rect x="210" y="164" width="420" height="30" rx="6" fill="#B32418" opacity=".07"/><text x="224.0" y="184.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="13" font-weight="700" fill="#B32418" text-anchor="start">soit un effort à multiplier par 10</text><text x="198.0" y="184.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#0C1A14" text-anchor="end">Écart à combler</text></svg><figcaption><b>Figure 2</b> — Rythme d'électrification rurale observé depuis 1998, comparé au rythme qu'exigerait l'accès universel en 2030.</figcaption></figure>
-
-    <div class="encart"><span class="k">Robustesse</span>
-    <p>Ce résultat ne dépend pas de la méthode d'estimation. Le rythme ci-dessus est
-    celui du premier au dernier point. Une régression par moindres carrés sur les
-    vingt-cinq points de la série donne <strong>+0,99 point par an</strong>
-    (r² = 0,947), avec un intervalle de confiance à 95 % de 0,90 à 1,09 point par an —
-    soit, prolongée depuis le dernier point observé, un accès universel rural entre
-    <strong>2091 et 2106</strong>. La seule dernière décennie (2012-2022) progresse à
-    +0,91 point par an : le retard n'est pas en train de se résorber. Quelle que soit
-    l'estimation retenue, 2030 est hors d'atteinte par prolongement de la
-    tendance.</p></div>
 
     <p>Une accélération de cet ordre ne s'obtient pas en prolongeant le réseau
     national. Le coût du raccordement croît avec la distance et la dispersion de
     l'habitat, et 3,72 millions de ruraux — 75 % de la population rurale — restent à
-    couvrir. Un troisième constat, moins attendu, renforce cette conclusion.</p>
+    couvrir. Un second constat, moins attendu, renforce cette conclusion.</p>
 
     <h3>Le réseau existant n'est pas fiable, et il l'est de moins en moins largement</h3>
 
@@ -619,91 +532,38 @@ td strong{color:var(--ink);}
     (<span class="mono">EG.CFT.ACCS.RU.ZS</span>) et la part des ménages sortis de la
     biomasse.</p></div>
 
-    <h3>Ce que cela coûte, et ce que la série forestière permet réellement de dire</h3>
+    <h3>Ce que cela coûte</h3>
 
-    <p>Entre 1990 et 2021, le Togo a perdu <strong>1 554 km² de forêt</strong>, soit
-    155 350 hectares, soit 11,4 % de son couvert. Diviser cette perte par le nombre
-    d'années donne 5 011 hectares par an — un chiffre qu'il faut refuser d'employer,
-    parce qu'il ne correspond à aucune année réelle.</p>
+    <p>Entre 1990 et 2021, le Togo a perdu <strong>1 554 km² de forêt</strong>,
+    soit 11,4 % de son couvert. Mais diviser cette perte par le nombre d'années
+    donne un chiffre qui ne correspond à aucune année réelle : les écarts
+    annuels de la série <span class="mono">AG.LND.FRST.K2</span> ne prennent que
+    <strong>deux valeurs distinctes</strong> sur trente-et-un intervalles. La
+    série est interpolée entre trois points de référence, et elle décrit deux
+    régimes : <strong>9 320 hectares par an jusqu'en 2000</strong>, puis
+    <strong>2 960 depuis</strong>.</p>
 
-    <p>L'audit automatique des séries (section 01) établit en effet que la série
-    <span class="mono">AG.LND.FRST.K2</span> ne contient que <strong>trois mesures
-    indépendantes</strong> sur trente-deux points annuels : les écarts d'une année à
-    la suivante n'y prennent que deux valeurs distinctes, ce qui est la signature
-    d'une interpolation linéaire entre points de référence FAO. Le pays a donc connu
-    deux régimes, non une moyenne.</p>
+    <p>Le rythme a donc été <strong>divisé par trois</strong> — un résultat que
+    la moyenne sur trente ans efface complètement. Il n'a en revanche jamais
+    cessé : aucune année de reprise du couvert. Et parce qu'elle est interpolée,
+    cette série serait <strong>incapable de détecter un retournement
+    récent</strong> : elle ne le montrerait qu'au prochain inventaire de
+    référence. C'est l'argument central en faveur d'un suivi surfacique annuel
+    par massif.</p>
 
-    <div class="tbl-wrap">
-    <table>
-      <thead><tr><th>Période</th><th class="num-col">Perte annuelle</th>
-        <th>Ce que cela change</th></tr></thead>
-      <tbody>
-        <tr><td>1990 → 2000</td><td class="num-col"><strong>9 320 ha/an</strong></td>
-          <td>Le régime des années 1990, presque deux fois la moyenne affichée
-          habituellement</td></tr>
-        <tr><td>2000 → 2021</td><td class="num-col"><strong>2 960 ha/an</strong></td>
-          <td>Le régime en cours : la perte a été <strong>divisée par 3,1</strong>,
-          mais elle n'a jamais cessé</td></tr>
-        <tr><td>Moyenne 1990-2021</td><td class="num-col">5 011 ha/an</td>
-          <td>Mélange les deux régimes ; surestime la perte d'aujourd'hui de
-          70 %</td></tr>
-      </tbody>
-    </table>
-    </div>
-
-    <p>Ce constat a deux conséquences opposées et toutes deux importantes. La
-    première est une bonne nouvelle que la moyenne effaçait complètement : la
-    déforestation togolaise a fortement ralenti après 2000. La seconde est un
-    avertissement : une série interpolée est <strong>structurellement incapable de
-    détecter un retournement récent</strong>. Elle ne le montrerait qu'au prochain
-    inventaire de référence. C'est l'argument central en faveur d'un suivi surfacique
-    annuel par massif, recommandé plus loin.</p>
-
-    <p>Le coût humain, lui, ne dépend d'aucune de ces conventions. L'exposition
-    moyenne aux particules fines atteint 51,7 µg/m³ en 2020, soit <strong>dix fois la
-    ligne directrice de l'OMS</strong> (5 µg/m³). La mortalité attribuée à la
-    pollution de l'air s'élève à 223 décès pour 100 000 habitants en 2019.</p>
-
-    <h3>Ce qui prend la place de la forêt se mesure — et ce n'est pas le bois de feu</h3>
-
-    <p>Aucun fichier du défi ne mesure les prélèvements de bois-énergie : le lien
-    cuisson → déforestation ne peut pas être établi directement, et il serait
-    malhonnête de le postuler. En revanche, le <strong>moteur concurrent est
-    mesuré</strong>. La surface agricole togolaise figure dans le fichier Banque
-    Mondiale, et sa confrontation au couvert forestier est sans ambiguïté.</p>
-
-    <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" width="100%" role="img" aria-label="Ce qui prend la place de la forêt se mesure, et ce n'est pas le bois de feu"><rect width="760" height="300" fill="none"/><text x="0" y="17" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="15.5" font-weight="700" fill="#0A5533">Ce qui prend la place de la forêt se mesure, et ce n'est pas le bois de feu</text><text x="0" y="35" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" fill="#5D6E64">Togo, 1990–2013 · comparaison arrêtée à 2013, la surface agricole étant gelée depuis 2013</text><rect x="250" y="74" width="348.2" height="32" rx="4" fill="#B87407"/><text x="238.0" y="96.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="600" fill="#0C1A14" text-anchor="end">Surface agricole gagnée</text><text x="608.2" y="96.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="13" font-weight="700" fill="#B87407" text-anchor="start">+6 600 km²</text><rect x="250" y="128" width="69.5" height="32" rx="4" fill="#0F7A4A"/><text x="238.0" y="150.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="600" fill="#0C1A14" text-anchor="end">Couvert forestier perdu</text><text x="329.5" y="150.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="13" font-weight="700" fill="#0F7A4A" text-anchor="start">−1 317 km²</text><rect x="250" y="192" width="500" height="34" rx="6" fill="#B87407" opacity=".08"/><text x="264.0" y="214.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#B87407" text-anchor="start">l'agricole gagne 5.0 fois ce que la forêt perd — la forêt ne peut fournir que 20 % de cette expansion</text><text x="238.0" y="214.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="600" fill="#0C1A14" text-anchor="end">Rapport des deux</text><text x="238.0" y="248.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="600" fill="#0C1A14" text-anchor="end">Chaque année</text><text x="250.0" y="248.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#B32418" text-anchor="start">19 690 ha de terres nouvelles mises en culture, contre 2 960 ha de forêt perdus</text><text x="250.0" y="268.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="400" fill="#5D6E64" text-anchor="start">soit un rapport de 6.7 pour 1 · rendement céréalier 1,17 t/ha, 46 % de la hausse de production venant de la surface</text></svg><figcaption><b>Figure 7</b> — Expansion de la surface agricole et recul du couvert forestier sur la même fenêtre, 1990-2013. La comparaison s'arrête à 2013 : au-delà, la surface agricole est gelée dans la source.</figcaption></figure>
-
-    <p>Entre 1990 et 2013, la surface agricole a gagné <strong>6 600 km²</strong>
-    pendant que la forêt en perdait <strong>1 317</strong>. Le rapport est de cinq
-    pour un, et il se lit dans les deux sens. D'un côté, la forêt ne peut avoir fourni
-    que <strong>20 %</strong> de l'expansion agricole : le reste vient des savanes et
-    des jachères. De l'autre, l'expansion agricole est à elle seule <strong>largement
-    suffisante</strong> pour absorber la totalité du recul forestier. Une attribution
-    majoritaire au bois-énergie n'est donc pas soutenable par ces données.</p>
-
-    <p>La dynamique agricole confirme le diagnostic. Le Togo met en culture
-    <strong>19 700 hectares de terres céréalières nouvelles chaque année</strong>
-    (r² = 0,81 sur 1990-2022), soit près de <strong>sept fois</strong> ce qu'il perd
-    de forêt dans le régime actuel. Et cette expansion n'est pas un choix, c'est une
-    conséquence : le rendement céréalier togolais est de <strong>1,17 t/ha</strong>,
-    et la décomposition de la hausse de production (production = surface × rendement)
-    montre que <strong>46 %</strong> de cette hausse vient de l'extension des surfaces,
-    29 % du progrès des rendements, 26 % de l'effet croisé des deux. Tant que produire
-    plus signifie défricher plus, la protection forestière restera un combat
-    d'arrière-garde.</p>
+    <p>Le coût humain est du même ordre. L'exposition moyenne aux particules fines
+    atteint 51,7 µg/m³ en 2020, soit <strong>dix fois la ligne directrice de
+    l'OMS</strong> (5 µg/m³). La mortalité attribuée à la pollution de l'air s'élève
+    à 223 décès pour 100 000 habitants en 2019.</p>
 
     <div class="encart limite"><span class="k">Limite</span>
-    <p>La comparaison forêt / agriculture s'arrête à <strong>2013</strong> et non à
-    2021 : l'audit des séries montre que la surface agricole est gelée à la même
-    valeur depuis 2013, sur huit années consécutives. La prolonger aurait produit une
-    fausse stabilisation de l'usage des sols, présentée comme un résultat.</p>
-    <p>Par ailleurs, l'indicateur PM2,5 mesure une exposition ambiante et non la
+    <p>Le lien entre cuisson au bois et déforestation est <strong>corrélatif</strong>
+    dans les données du défi : aucun fichier ne mesure les prélèvements de
+    bois-énergie. C'est pourquoi le tableau de bord rend cette attribution
+    <em>paramétrable</em> par l'utilisateur plutôt que de la fixer arbitrairement.
+    Par ailleurs, l'indicateur PM2,5 mesure une exposition ambiante et non la
     pollution intérieure des habitations, qui est la voie dominante pour la cuisson
-    au bois : il sous-estime l'exposition réelle des ménages concernés. La mortalité
-    <span class="mono">SH.STA.AIRP.P5</span> agrège pollution intérieure et
-    extérieure, ne compte qu'un seul point de mesure, et n'est pas imputable à la
-    seule cuisson.</p></div>
+    au bois : il sous-estime l'exposition réelle des ménages concernés.</p></div>
   </div>
 </section>
 
@@ -886,15 +746,12 @@ td strong{color:var(--ink);}
   <div class="marge"><span class="num">07</span>
     <span class="tag">Objectif 6<br>Recommandations</span></div>
   <div class="corps">
-    <h2>Quatre leviers, dans cet ordre</h2>
+    <h2>Trois leviers, dans cet ordre</h2>
 
-    <p>L'ordre n'est pas une préférence. Il découle de trois critères mesurés : le
-    nombre de personnes touchées, le nombre de problèmes traités simultanément, et la
-    certitude du lien de causalité. Le quatrième levier vient en dernier non parce
-    qu'il pèse peu — il pèse sept fois la perte forestière annuelle — mais parce qu'il
-    relève de la politique agricole, hors du périmètre énergie du défi.</p>
+    <p>L'ordre n'est pas une préférence : il découle de la portée mesurée de chaque
+    levier.</p>
 
-    <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 240" width="100%" role="img" aria-label="Ce que chaque levier touche réellement"><rect width="760" height="240" fill="none"/><text x="0" y="17" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="15.5" font-weight="700" fill="#0A5533">Ce que chaque levier touche réellement</text><text x="0" y="35" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" fill="#5D6E64">Population directement concernée · population totale 9,1 M</text><rect x="236" y="62" width="366.7" height="30" rx="4" fill="#B32418"/><text x="224.0" y="82.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#0C1A14" text-anchor="end">Cuisson propre</text><text x="612.7" y="82.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="700" fill="#B32418" text-anchor="start">8,1 millions de personnes</text><rect x="236" y="114" width="168.6" height="30" rx="4" fill="#B87407"/><text x="224.0" y="134.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#0C1A14" text-anchor="end">Électrification rurale décentralisée</text><text x="414.6" y="134.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="700" fill="#B87407" text-anchor="start">3,7 millions de personnes</text><rect x="236" y="170" width="494" height="30" rx="4" fill="#0F7A4A" opacity=".10"/><text x="224.0" y="190.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#0C1A14" text-anchor="end">Protection ciblée des forêts</text><text x="248.0" y="190.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="600" fill="#0A5533" text-anchor="start">9 massifs prioritaires · 91 468 ha — ne se compte pas en personnes</text><text x="224.0" y="228.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="400" fill="#5D6E64" text-anchor="end">La cuisson propre concerne 2.2 fois plus de Togolais que l'électrification — et agit aussi sur la forêt, la santé et le climat.</text></svg><figcaption><b>Figure 4</b> — Population directement concernée par chacun des leviers énergétiques. L'ordre de priorité des recommandations découle de cette mesure.</figcaption></figure>
+    <figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 240" width="100%" role="img" aria-label="Ce que chaque levier touche réellement"><rect width="760" height="240" fill="none"/><text x="0" y="17" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="15.5" font-weight="700" fill="#0A5533">Ce que chaque levier touche réellement</text><text x="0" y="35" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" fill="#5D6E64">Population directement concernée · population totale 9,1 M</text><rect x="236" y="62" width="366.7" height="30" rx="4" fill="#B32418"/><text x="224.0" y="82.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#0C1A14" text-anchor="end">Cuisson propre</text><text x="612.7" y="82.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="700" fill="#B32418" text-anchor="start">8,1 millions de personnes</text><rect x="236" y="114" width="168.6" height="30" rx="4" fill="#B87407"/><text x="224.0" y="134.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#0C1A14" text-anchor="end">Électrification rurale décentralisée</text><text x="414.6" y="134.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="700" fill="#B87407" text-anchor="start">3,7 millions de personnes</text><rect x="236" y="170" width="494" height="30" rx="4" fill="#0F7A4A" opacity=".10"/><text x="224.0" y="190.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600" fill="#0C1A14" text-anchor="end">Protection ciblée des forêts</text><text x="248.0" y="190.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="600" fill="#0A5533" text-anchor="start">9 massifs prioritaires · 91 468 ha — ne se compte pas en personnes</text><text x="224.0" y="228.0" font-family="Inter,'Segoe UI',system-ui,sans-serif" font-size="11.5" font-weight="400" fill="#5D6E64" text-anchor="end">La cuisson propre concerne 2.2 fois plus de Togolais que l'électrification — et agit aussi sur la forêt, la santé et le climat.</text></svg><figcaption><b>Figure 4</b> — Population directement concernée par chacun des trois leviers. L'ordre de priorité des recommandations découle de cette mesure.</figcaption></figure>
 
     <div class="reco r1">
       <div class="reco-tete"><span class="reco-n">LEVIER 1</span>
@@ -924,20 +781,17 @@ td strong{color:var(--ink);}
       pour l'habitat dispersé, dimensionnés sur les usages productifs — mouture,
       froid, pompage — et non sur le seul éclairage.</p>
       <div class="reco-grid">
-        <div><span class="k">Ce qui le justifie</span><div class="t">Le nombre de
-          ruraux privés d'électricité a augmenté de 19 % depuis 1998 malgré la hausse
-          du taux ; un facteur dix de rythme reste à trouver ; et le réseau national
-          laisse 93,8 % des entreprises raccordées subir des coupures.</div></div>
+        <div><span class="k">Ce qui le justifie</span><div class="t">Un facteur dix
+          de rythme à trouver, et un réseau national qui laisse 93,8 % des
+          entreprises raccordées subir des coupures.</div></div>
         <div><span class="k">Où agir</span><div class="t">Zones à plus de 40 km d'un
           pôle raccordé, priorité au Nord où le pic thermique de mars coïncide avec
           le maximum d'ensoleillement.</div></div>
-        <div><span class="k">Cible 2030</span><div class="t">Dépasser durablement
-          65 700 raccordements ruraux par an — le seuil démographique — puis viser
-          les 465 000 par an qu'exige l'accès universel.</div></div>
+        <div><span class="k">Cible 2030</span><div class="t">Environ 465 000 ruraux
+          raccordés par an jusqu'en 2030.</div></div>
         <div><span class="k">Indicateur de suivi</span><div class="t"><span
-          class="mono">EG.ELC.ACCS.RU.ZS</span> <strong>converti en volume annuel de
-          raccordements</strong>, complété d'un indicateur de disponibilité horaire
-          qui n'existe pas encore.</div></div>
+          class="mono">EG.ELC.ACCS.RU.ZS</span>, complété d'un indicateur de
+          disponibilité horaire qui n'existe pas encore.</div></div>
       </div>
     </div>
 
@@ -948,55 +802,24 @@ td strong{color:var(--ink);}
       nombre restreint de massifs, plutôt que de saupoudrer sur les 53 forêts
       classées.</p>
       <div class="reco-grid">
-        <div><span class="k">Ce qui le justifie</span><div class="t">2 960 hectares
-          perdus chaque année depuis 2000, sans une seule année de reprise — et une
-          série nationale interpolée, incapable de détecter un retournement.</div></div>
+        <div><span class="k">Ce qui le justifie</span><div class="t">11,4 % de
+          couvert perdu en 31 ans, sans une seule année de reprise.</div></div>
         <div><span class="k">Où agir</span><div class="t">Les 9 massifs qui restent
           dans le top 10 quelle que soit la pondération testée.</div></div>
         <div><span class="k">Cible 2030</span><div class="t">Perte nette nulle sur
           les massifs prioritaires.</div></div>
-        <div><span class="k">Indicateur de suivi</span><div class="t">Un <strong>suivi
-          surfacique annuel par massif</strong>, à créer :
-          <span class="mono">AG.LND.FRST.K2</span> ne contient que trois mesures
-          indépendantes et ne peut pas servir d'indicateur de pilotage.</div></div>
-      </div>
-    </div>
-
-    <div class="reco r4">
-      <div class="reco-tete"><span class="reco-n">LEVIER 4</span>
-        <h3>Intensification agricole</h3></div>
-      <p>Semences améliorées, restauration de la fertilité des sols et conseil
-      agricole sur les bassins céréaliers riverains des massifs prioritaires, pour
-      que produire plus cesse de signifier défricher plus.</p>
-      <div class="reco-grid">
-        <div><span class="k">Ce qui le justifie</span><div class="t">19 700 hectares
-          de terres nouvelles mises en culture chaque année, soit près de sept fois
-          la perte forestière ; un rendement céréalier de 1,17 t/ha ; 46 % de la
-          hausse de production venant de la surface, non du rendement.</div></div>
-        <div><span class="k">Où agir</span><div class="t">Les bassins céréaliers des
-          Plateaux, de la Centrale et de la Kara, qui jouxtent les massifs
-          prioritaires du classement.</div></div>
-        <div><span class="k">Cible 2030</span><div class="t">Ramener l'expansion des
-          surfaces céréalières vers zéro, en faisant porter la hausse de production
-          par le seul rendement.</div></div>
         <div><span class="k">Indicateur de suivi</span><div class="t"><span
-          class="mono">AG.PRD.CREL.MT</span> ÷ <span class="mono">AG.LND.CREL.HA</span>
-          lus ensemble comme un rendement, et la surface comme indicateur de pression
-          foncière.</div></div>
+          class="mono">AG.LND.FRST.K2</span> et un suivi surfacique par massif,
+          à créer.</div></div>
       </div>
     </div>
 
-    <h3>Une cinquième recommandation, de pilotage</h3>
+    <h3>Une quatrième recommandation, de pilotage</h3>
 
     <p>Abandonner <span class="mono">EG.FEC.RNEW.ZS</span> — le taux d'énergie
     renouvelable — comme indicateur de progrès de la transition énergétique. Il
     décrira une dégradation apparente au moment même où les ménages sortiront du bois
     de feu. Le remplacer par la part des ménages sortis de la biomasse.</p>
-
-    <p>Plus généralement, ce rapport conduit à une règle de pilotage : <strong>vérifier
-    systématiquement, sous chaque indicateur exprimé en taux, l'évolution du nombre de
-    personnes concernées</strong>. C'est la seule manière d'éviter qu'un dénominateur
-    en croissance ne transforme une stagnation en progrès apparent.</p>
   </div>
 </section>
 
@@ -1020,26 +843,13 @@ td strong{color:var(--ink);}
       recommandations géographiques reposent sur le croisement forêts × stations ×
       éloignement urbain construit ici, et non sur des taux d'accès locaux qui
       n'existent pas.</li>
-      <li><strong>Le lien cuisson → déforestation n'est pas mesuré.</strong> Aucun
-      fichier ne quantifie les prélèvements de bois-énergie. Ce que les données
-      permettent, c'est de mesurer le moteur concurrent — l'expansion agricole gagne
-      cinq fois ce que la forêt perd — et donc de <em>borner</em> l'attribution au lieu
-      de la postuler. Le simulateur du tableau de bord la laisse paramétrable pour
+      <li><strong>Le lien cuisson → déforestation est corrélatif</strong>, pas
+      mesuré. Le simulateur du tableau de bord rend l'attribution paramétrable pour
       cette raison.</li>
-      <li><strong>La série forestière ne contient que trois mesures
-      indépendantes</strong> sur trente-deux points annuels. Elle établit deux régimes
-      de perte, mais elle ne peut ni confirmer ni infirmer un retournement récent, et
-      elle ne peut pas servir d'indicateur de pilotage d'une politique ciblée.</li>
-      <li><strong>La surface agricole est gelée depuis 2013</strong> dans la source :
-      toute comparaison d'usage des sols postérieure à cette date serait un artefact.</li>
       <li><strong>La fiabilité est mesurée sur les entreprises</strong>, pas sur les
       ménages, et sur deux vagues d'enquête seulement.</li>
       <li><strong>Les températures sont au degré entier</strong>, sur sept ans : le
       gradient spatial est exploitable, la tendance temporelle ne l'est pas.</li>
-      <li><strong>Les projections en personnes supposent la population rurale
-      constante.</strong> C'est une hypothèse conservatrice : la section 02 montre que
-      cette population croît encore, donc l'effort réel sera supérieur à celui
-      affiché.</li>
     </ul>
 
     <h3>Trois indicateurs manquent pour piloter cette politique</h3>
@@ -1063,45 +873,45 @@ td strong{color:var(--ink);}
   <div class="marge"><span class="num">09</span>
     <span class="tag">Conclusion</span></div>
   <div class="corps">
-    <h2>Ce qu'il faut décider, et sur quel chiffre le vérifier</h2>
+    <h2>Ce qu'il faut décider, et sur quels chiffres le vérifier</h2>
 
     <p>Le Togo poursuit deux objectifs qui paraissent en tension — électrifier ses
     campagnes et protéger ses forêts — et les données du défi montrent qu'ils ne le
-    sont pas. Ils échouent ou réussissent au même endroit, et pour des raisons que ni
-    l'un ni l'autre des indicateurs officiels ne rend visibles.</p>
+    sont pas. Ils se jouent au même endroit, et pour des raisons qu'aucun des
+    indicateurs officiels ne rend visibles à lui seul.</p>
 
-    <p>Sur l'électrification, le taux d'accès rural n'est pas le bon instrument de
-    pilotage. Il progresse pendant que le nombre de personnes concernées augmente,
-    parce que son dénominateur croît plus vite que le numérateur. La grandeur à
-    piloter est le <strong>volume annuel de raccordements</strong>, et elle a un seuil
-    arithmétique : la croissance de la population rurale, 65 700 personnes en 2022.
-    En dessous, tout progrès affiché est un progrès apparent.</p>
+    <p>Sur l'électrification, <strong>le taux d'accès rural n'est pas le bon
+    instrument de pilotage</strong>. Il progresse pendant que le nombre de personnes
+    concernées augmente, parce que son dénominateur croît plus vite que son
+    numérateur. La grandeur à suivre est le volume annuel de raccordements, et elle
+    a un seuil arithmétique : la croissance de la population rurale. En dessous,
+    tout progrès affiché est un progrès apparent.</p>
 
-    <p>Sur la forêt, le bois de feu n'est pas le premier coupable, et le dire ne
-    diminue en rien l'urgence de la cuisson propre — elle reste le premier levier, mais
-    pour ses effets sanitaires et climatiques, mesurés et certains, plus que pour son
-    effet forestier, non mesuré et probablement minoritaire. Le premier moteur du recul
-    forestier est l'<strong>extension des surfaces cultivées</strong>, cinq fois plus
-    vaste que la perte de forêt, elle-même causée par des rendements qui ne suivent pas
-    la démographie. Une politique forestière qui ignore l'agriculture s'attaque à la
-    conséquence, pas à la cause.</p>
+    <p>Sur la forêt, <strong>c'est la cuisson qui commande, pas le raccordement</strong>.
+    L'accès à l'électricité a été multiplié par huit sans que la part des ménages
+    dépendant du bois bouge d'un point : 89,4 %. L'électricité éclaire les foyers,
+    elle ne remplace pas le bois dans les marmites. Et le pays affiche 75,1 %
+    d'énergie « renouvelable » pour 11,9 % de cuisson propre — le même fait, vu de
+    deux côtés.</p>
 
-    <p>Enfin, sur la donnée elle-même : deux des séries les plus citées de ce dossier —
-    le couvert forestier et la surface agricole — sont respectivement interpolée et
-    gelée. Elles ne permettent pas de savoir si une politique fonctionne. Créer un
-    <strong>suivi surfacique annuel par massif</strong> n'est pas une recommandation
-    technique de second rang : c'est la condition pour que les trois autres puissent
-    être évaluées.</p>
+    <p>Enfin, sur la donnée elle-même : la série nationale de couvert forestier ne
+    contient que <strong>trois mesures indépendantes</strong> en trente-deux ans.
+    Elle établit deux régimes de perte, mais elle serait incapable de signaler un
+    retournement récent. Créer un suivi surfacique annuel par massif n'est pas une
+    recommandation technique de second rang : c'est la condition pour que les trois
+    autres puissent être évaluées.</p>
 
     <div class="encart"><span class="k">Les quatre chiffres à suivre</span>
-    <p><strong>1.</strong> Le volume annuel de raccordements ruraux, à comparer chaque
-    année à la croissance de la population rurale.
+    <p><strong>1.</strong> Le volume annuel de raccordements ruraux, comparé chaque
+    année à la croissance de la population rurale — le seul indicateur qui ne puisse
+    pas mentir par effet de dénominateur.
     <strong>2.</strong> <span class="mono">EG.CFT.ACCS.RU.ZS</span>, l'accès rural à
-    une cuisson propre — et non le taux d'énergie renouvelable.
+    une cuisson propre — et surtout pas le taux d'énergie renouvelable, qui baissera
+    quand la situation s'améliorera.
     <strong>3.</strong> La surface forestière des neuf massifs prioritaires, mesurée
-    annuellement, indicateur qui reste à créer.
-    <strong>4.</strong> Le rendement céréalier en t/ha, et la surface céréalière comme
-    indicateur de pression foncière sur la forêt.</p></div>
+    annuellement : indicateur à créer.
+    <strong>4.</strong> La part des ménages sortis de la biomasse, mesurée plus
+    souvent que tous les trois ans.</p></div>
   </div>
 </section>
 
@@ -1109,129 +919,41 @@ td strong{color:var(--ink);}
 <!-- ================================================================ annexe -->
 <section class="sec" id="s-annexe">
   <div class="marge"><span class="num">A</span>
-    <span class="tag">Annexes</span></div>
+    <span class="tag">Annexe</span></div>
   <div class="corps">
     <h2>Le tableau de bord</h2>
 
-    <p>Ce rapport accompagne un tableau de bord interactif en sept pages, construit
-    avec Python et Streamlit. Chaque analyse présentée ici y est explorable, chaque
-    hypothèse y est réglable, et les données de chaque graphique y sont
-    téléchargeables au format CSV telles qu'elles sont affichées à l'écran.</p>
+    <p>Ce rapport accompagne un tableau de bord interactif en six pages, construit
+    avec Python et Streamlit. Chaque analyse présentée ici y est explorable, et
+    chaque hypothèse y est réglable.</p>
 
     <div class="tbl-wrap">
     <table>
       <thead><tr><th>Page</th><th>Objectif du défi</th><th>Interactions</th></tr></thead>
       <tbody>
-        <tr><td><strong>Diagnostic</strong></td><td>Vue décisionnelle</td>
-          <td>Filtre de période global, cascade de décomposition du stock,
-          export des séries</td></tr>
-        <tr><td><strong>Électrification</strong></td><td>Objectif 1</td>
-          <td>Cible d'accès 2030 réglable, enveloppe d'incertitude à 95 % de la
-          pente, effort recalculé en personnes, comparaison des raccordements
-          annuels au seuil démographique, lissage optionnel</td></tr>
-        <tr><td><strong>Cuisson</strong></td><td>Objectif 2</td>
+        <tr><td><strong>Synthèse</strong></td><td>Vue décisionnelle</td>
+          <td>Filtre de période global</td></tr>
+        <tr><td><strong>Accès &amp; fiabilité</strong></td><td>Objectif 1</td>
+          <td>Cible d'accès 2030 réglable, projection tendancielle, effort recalculé
+          en personnes</td></tr>
+        <tr><td><strong>Cuisson &amp; forêts</strong></td><td>Objectif 2</td>
           <td>Simulateur de sortie de la biomasse, attribution du recul forestier
-          paramétrable et bornée par la mesure d'usage des sols, unité du couvert
-          au choix</td></tr>
-        <tr><td><strong>Inventaire</strong></td><td>Objectifs 3 et 4</td>
+          paramétrable, unité du couvert au choix</td></tr>
+        <tr><td><strong>Émissions &amp; climat</strong></td><td>Objectifs 3 et 4</td>
           <td>Sélecteur de gaz, bascule masse brute / équivalent CO₂, choix des
           stations et de la mesure</td></tr>
-        <tr><td><strong>Forêts</strong></td><td>Objectif 5</td>
-          <td>Quatre doctrines de priorisation pré-réglées, trois curseurs de
-          pondération recalculant carte et classement en direct, recherche par nom
-          de massif, filtres région et qualité de surface</td></tr>
-        <tr><td><strong>Recommandations</strong></td><td>Objectif 6</td>
-          <td>Trois scénarios pré-réglés, simulateur de trajectoire 2030 à trois
-          curseurs, récapitulatif décisionnel exportable</td></tr>
-        <tr><td><strong>Données</strong></td><td>Méthode et qualité</td>
-          <td>Audit automatique des 32 séries filtrable par verdict, série
-          forestière et ses points d'ancrage, détail des 62 contrôles
-          d'intégrité</td></tr>
+        <tr><td><strong>Où agir</strong></td><td>Objectif 5</td>
+          <td>Trois curseurs de pondération recalculant carte et classement en
+          direct, filtres région et qualité de surface</td></tr>
+        <tr><td><strong>Plan d'action</strong></td><td>Objectif 6</td>
+          <td>Simulateur de trajectoire 2030 à trois leviers</td></tr>
       </tbody>
     </table>
     </div>
 
-    <h3>Reproductibilité</h3>
-
-    <p>Tout se régénère depuis les six fichiers bruts, dans cet ordre :</p>
-
-    <div class="tbl-wrap">
-    <table>
-      <thead><tr><th>Commande</th><th>Ce qu'elle produit</th></tr></thead>
-      <tbody>
-        <tr><td><code>python src/build_gold.py</code></td>
-          <td>Données analytiques, repères décisionnels, analyses croisées, audit
-          des séries, et le journal complet des traitements
-          (<span class="mono">data/gold/journal_construction.txt</span>)</td></tr>
-        <tr><td><code>python src/verify.py</code></td>
-          <td>Recalcule 62 chiffres depuis <span class="mono">data/raw/</span> avec
-          un code indépendant ; sort en erreur au moindre écart</td></tr>
-        <tr><td><code>python src/make_figures.py</code></td>
-          <td>Les sept figures SVG de ce rapport, écrites depuis les mêmes données
-          et la même palette que le tableau de bord</td></tr>
-        <tr><td><code>python src/make_report.py</code></td>
-          <td>Ce document, autonome et imprimable</td></tr>
-        <tr><td><code>streamlit run app/Accueil.py</code></td>
-          <td>Le tableau de bord</td></tr>
-      </tbody>
-    </table>
-    </div>
-
-    <h3>Codes des indicateurs utilisés</h3>
-
-    <div class="tbl-wrap">
-    <table>
-      <thead><tr><th>Domaine</th><th>Codes</th><th>Ce qu'ils servent à établir</th></tr></thead>
-      <tbody>
-        <tr><td>Accès à l'énergie</td>
-          <td><span class="mono">EG.ELC.ACCS.ZS</span>,
-          <span class="mono">.RU.ZS</span>, <span class="mono">.UR.ZS</span>,
-          <span class="mono">EG.CFT.ACCS.ZS</span>, <span class="mono">.RU.ZS</span>,
-          <span class="mono">.UR.ZS</span></td>
-          <td>Fracture ville / campagne, trajectoire 2030, accès à une cuisson
-          propre</td></tr>
-        <tr><td>Combustibles des ménages</td>
-          <td><span class="mono">SG.COK.WOOD.ZS</span>,
-          <span class="mono">SG.COK.CHCO.ZS</span>,
-          <span class="mono">SG.COK.LPGN.ZS</span>,
-          <span class="mono">SG.COK.ELEC.ZS</span></td>
-          <td>Composition du mix de cuisson entre les deux enquêtes ménages</td></tr>
-        <tr><td>Fiabilité du réseau</td>
-          <td><span class="mono">IC.ELC.OUTG</span>,
-          <span class="mono">IC.ELC.OUTG.ZS</span>,
-          <span class="mono">IC.FRM.OUTG.ZS</span>,
-          <span class="mono">IC.ELC.DURS</span>,
-          <span class="mono">IC.ELC.TIME</span></td>
-          <td>Coupures, entreprises touchées, pertes de chiffre d'affaires,
-          délais</td></tr>
-        <tr><td>Forêt et usage des sols</td>
-          <td><span class="mono">AG.LND.FRST.K2</span>,
-          <span class="mono">AG.LND.FRST.ZS</span>,
-          <span class="mono">AG.LND.AGRI.K2</span>,
-          <span class="mono">AG.LND.ARBL.ZS</span>,
-          <span class="mono">AG.LND.CREL.HA</span>,
-          <span class="mono">AG.PRD.CREL.MT</span></td>
-          <td>Régimes de déforestation, expansion agricole, rendements
-          céréaliers</td></tr>
-        <tr><td>Population</td>
-          <td><span class="mono">SP.POP.TOTL</span>,
-          <span class="mono">SP.RUR.TOTL</span>,
-          <span class="mono">SP.URB.TOTL</span>,
-          <span class="mono">SP.RUR.TOTL.ZS</span></td>
-          <td>Décomposition démographique du stock de ruraux sans électricité</td></tr>
-        <tr><td>Énergie et air</td>
-          <td><span class="mono">EG.FEC.RNEW.ZS</span>,
-          <span class="mono">EN.ATM.PM25.MC.M3</span>,
-          <span class="mono">SH.STA.AIRP.P5</span></td>
-          <td>Le piège du « renouvelable », exposition aux particules, mortalité
-          attribuée</td></tr>
-        <tr><td>Écarté après audit</td>
-          <td><span class="mono">AG.LND.PRCP.MM</span></td>
-          <td>Précipitations — valeur unique répétée sur 61 ans, aucune information
-          temporelle</td></tr>
-      </tbody>
-    </table>
-    </div>
+    <p>Reconstruction complète depuis les fichiers bruts :
+    <code>python src/build_gold.py</code> puis <code>python src/make_figures.py</code>.
+    Lancement : <code>streamlit run app/Accueil.py</code>.</p>
   </div>
 </section>
 

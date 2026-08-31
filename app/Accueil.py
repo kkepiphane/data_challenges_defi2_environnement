@@ -42,32 +42,44 @@ PAGES = [
             icon=":material/forest:"),
     st.Page("views/plan.py",         title="Recommandations",
             icon=":material/target:"),
-    st.Page("views/donnees.py",      title="Données",
-            icon=":material/rule:"),
 ]
 nav = st.navigation(PAGES, position="sidebar")
 
+# Les cinq régions administratives du Togo, du Sud au Nord. Elles ne
+# s'appliquent qu'aux données réellement géolocalisées — les 53 forêts
+# classées et les 10 stations météorologiques. L'électrification, la cuisson
+# et les émissions n'existent qu'au niveau national dans les six jeux de
+# données : le filtre le dit au lieu de faire semblant de les découper.
+REGIONS = ["Tout le pays", "Maritime", "Plateaux", "Centrale", "Kara", "Savanes"]
 DEFAUT_PERIODE = (1998, 2023)
 
 with st.sidebar:
-    st.markdown('<div class="repere-volet">Réglage commun à toutes les pages</div>',
+    st.markdown('<div class="repere-volet">Filtres communs à toutes les pages</div>',
                 unsafe_allow_html=True)
+    # Un clic sur la carte ne peut pas écrire directement dans la clé du
+    # sélecteur : Streamlit refuse qu'on modifie un widget déjà rendu. La page
+    # dépose donc sa demande dans une clé neutre, que l'on consomme ici, avant
+    # que le sélecteur n'existe.
+    if "region_demandee" in st.session_state:
+        st.session_state["region_globale"] = st.session_state.pop("region_demandee")
+
+    region = st.selectbox(
+        "Région", REGIONS, key="region_globale",
+        help="Agit sur la carte des forêts, leur classement et les stations "
+             "climatiques. Les séries nationales (accès, cuisson, émissions) "
+             "n'existent pas à cette maille dans les données du défi.")
+    st.session_state["region"] = region
+
     periode = st.slider("Période affichée", 1990, 2023, DEFAUT_PERIODE,
                         key="periode_globale",
                         help="S'applique à toutes les courbes historiques "
-                             "du tableau de bord. Les réglages propres à chaque "
-                             "page sont dans son bandeau « Réglages ».")
+                             "du tableau de bord.")
     st.session_state["an_min"], st.session_state["an_max"] = periode
-    if periode != DEFAUT_PERIODE:
-        st.caption(f"Période restreinte à {periode[0]}–{periode[1]} — "
-                   "certaines séries peuvent être tronquées.")
 
-    # Un tableau de bord qu'on explore accumule des réglages. Sans retour en
-    # arrière, on finit par lire un écran dont on ne sait plus ce qui l'a
-    # produit : le bouton rend l'état de départ à portée de main.
-    if st.button("Réinitialiser tous les réglages", width="stretch",
-                 help="Curseurs, filtres et sélections de toutes les pages "
-                      "reviennent à leur valeur par défaut."):
+    if region != "Tout le pays":
+        st.caption(f"**{region}** — forêts, classement et stations filtrés. "
+                   "Les chiffres nationaux restent nationaux, et le signalent.")
+    if st.button("Réinitialiser les filtres", width="stretch"):
         for cle in list(st.session_state.keys()):
             del st.session_state[cle]
         st.rerun()

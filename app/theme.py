@@ -19,7 +19,6 @@ logiciel. Ce que cela implique, concrètement :
 Aucune couleur en dur ailleurs que dans ce fichier.
 """
 import base64
-from contextlib import contextmanager
 from pathlib import Path
 
 import streamlit as st
@@ -226,87 +225,53 @@ label[data-testid="stWidgetLabel"] p {{ font-size:12.5px; font-weight:600;
 div[data-testid="stDataFrame"] {{ border-radius:10px; }}
 hr {{ margin:.9rem 0; border-color:{C['bord']}; }}
 
-/* ---- bandeau de réglages ------------------------------------------------
-   Tous les contrôles d'une page tiennent dans un seul bloc, au même endroit
-   d'une page à l'autre. Un fond enfoncé le distingue des blocs de contenu :
-   on voit d'un coup d'œil ce qui se règle et ce qui se lit. */
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.barre-reglages) {{
-  background:{C['sunk']}; }}
-.barre-reglages {{ display:flex; align-items:baseline; gap:10px;
-  flex-wrap:wrap; margin:4px 2px 2px; }}
-.barre-reglages .titre {{ font-size:11px; font-weight:700; letter-spacing:.55px;
-  text-transform:uppercase; color:{C['encre']}; }}
-.barre-reglages .aide {{ font-size:11.5px; color:{C['sourdine']}; }}
-
-/* ---- jetons de rappel : ce qui est actif, en un coup d'œil ---- */
-.jetons {{ display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 4px; }}
-.jeton {{ font-size:11px; font-weight:600; color:{C['encre_2']};
-  background:{C['surface']}; border:1px solid {C['bord_fort']};
-  border-radius:20px; padding:3px 11px; white-space:nowrap; }}
-.jeton b {{ color:{C['encre']}; font-weight:700; }}
-
-/* ---- boutons de téléchargement : discrets, jamais concurrents du contenu ---- */
-div[data-testid="stDownloadButton"] button {{
-  background:transparent; border:1px solid {C['bord']}; color:{C['sourdine']};
-  font-size:11.5px; font-weight:600; padding:2px 11px; min-height:0;
-  border-radius:6px; }}
-div[data-testid="stDownloadButton"] button:hover {{
-  border-color:{C['foret']}; color:{C['foret']}; background:{C['foret_l']}; }}
-div[data-testid="stDownloadButton"] button p {{ font-size:11.5px; }}
-
-/* ---- bouton de réinitialisation, dans le volet ---- */
+/* ---- volet : intitulé de groupe et bouton de remise à zéro ----
+   Le volet porte désormais deux filtres communs à toutes les pages. Il faut
+   donc dire qu'ils sont communs, sans quoi on les prend pour les réglages de
+   la page ouverte. */
+.repere-volet {{ font-size:10.5px; font-weight:600; letter-spacing:.5px;
+  text-transform:uppercase; color:{C['sur_nuit_2']}; margin:2px 0 8px; }}
 section[data-testid="stSidebar"] div[data-testid="stButton"] button {{
   background:rgba(255,255,255,.08); border:1px solid {C['sur_nuit_2']}55;
   color:{C['sur_nuit']}; font-size:12px; font-weight:600; border-radius:8px; }}
 section[data-testid="stSidebar"] div[data-testid="stButton"] button:hover {{
   background:rgba(255,255,255,.16); border-color:{C['sur_nuit_2']}; }}
+section[data-testid="stSidebar"] .stSelectbox label {{
+  font-size:12.5px; font-weight:600; }}
+/* Le volet impose une encre claire à tous ses descendants (règle ci-dessus,
+   `color … !important`). Le sélecteur, lui, garde le fond clair par défaut de
+   Streamlit : le nom de la région s'y affichait donc blanc sur blanc. On lui
+   rend un fond sombre, un filet visible et un chevron lisible. */
+section[data-testid="stSidebar"] [data-baseweb="select"] *,
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="combobox"],
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] input {{
+  color:{C['encre']} !important; -webkit-text-fill-color:{C['encre']} !important; }}
+section[data-testid="stSidebar"] [data-baseweb="select"] svg {{
+  fill:{C['sourdine']} !important; }}
+section[data-testid="stSidebar"] [data-baseweb="select"] > div {{
+  border-color:{C['bord_fort']} !important; }}
+/* La liste déroulante est rendue hors du volet, sur fond clair : elle doit
+   donc reprendre l'encre sombre du reste de l'application, sans quoi les
+   options seraient à leur tour illisibles. */
+div[data-baseweb="popover"] ul[role="listbox"] li,
+div[data-baseweb="popover"] [role="option"] {{
+  color:{C['encre']} !important; }}
+div[data-baseweb="popover"] [role="option"][aria-selected="true"] {{
+  background:{C['foret_l']} !important; font-weight:600; }}
 
-/* ---- repère de position dans le volet ---- */
-.repere-volet {{ font-size:10.5px; font-weight:600; letter-spacing:.5px;
-  text-transform:uppercase; color:{C['sur_nuit_2']}; margin:2px 0 6px; }}
+/* ---- rappel du filtre actif, en tête de page ----
+   Un filtre réglé dans le volet sort du champ de vision. Le bandeau redit ce
+   qui est actif à l'endroit où on lit son résultat, et surtout sur quoi il
+   agit : c'est ce qui évite de prendre un chiffre national pour un chiffre
+   régional. */
+.rappel-filtre {{ display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+  background:{C['foret_l']}; border:1px solid {C['foret']}33;
+  border-radius:8px; padding:8px 14px; margin:0 0 14px;
+  font-size:12.5px; color:{C['encre_2']}; }}
+.rappel-filtre b {{ color:{C['foret_d']}; }}
+.rappel-filtre .portee {{ color:{C['sourdine']}; font-size:11.5px;
+  margin-left:auto; }}
 </style>""", unsafe_allow_html=True)
-
-
-# ====================================================== réglages & interactions
-@contextmanager
-def reglages(titre="Réglages de la page", aide=None):
-    """Bandeau de contrôles — un seul bloc, toujours au même endroit.
-
-    Avant, les filtres d'une page étaient répartis entre le haut de page, un
-    onglet et le voisinage d'un graphique : on ne savait pas ce qui agissait
-    sur quoi. Ils tiennent désormais dans un bloc unique, identifiable à son
-    fond enfoncé, placé juste sous le titre de section qu'il commande.
-    """
-    with st.container(border=True):
-        st.markdown(
-            f'<div class="barre-reglages"><span class="titre">{titre}</span>'
-            + (f'<span class="aide">{aide}</span>' if aide else '')
-            + '</div>', unsafe_allow_html=True)
-        yield
-
-
-def jetons(*paires):
-    """Rappel de l'état des réglages : « Cible · 100 % », « Région · Kara ».
-
-    Un curseur réglé plus haut dans la page sort du champ de vision dès qu'on
-    fait défiler. Les jetons redisent l'hypothèse au moment où on lit son
-    résultat — c'est ce qui évite de prendre une projection pour une donnée.
-    """
-    items = "".join(f'<span class="jeton">{k} · <b>{v}</b></span>'
-                    for k, v in paires if v is not None)
-    st.markdown(f'<div class="jetons">{items}</div>', unsafe_allow_html=True)
-
-
-def telecharger(df, nom, libelle="Données de ce graphique (CSV)"):
-    """Export des données exactes qui viennent d'être tracées.
-
-    Ce n'est pas un ornement : un décideur qui veut vérifier un chiffre doit
-    pouvoir l'extraire sans relancer le pipeline, et les données exportées
-    sont celles de l'écran — filtres et curseurs compris.
-    """
-    st.download_button(libelle, df.to_csv(index=False).encode("utf-8-sig"),
-                       file_name=f"{nom}.csv", mime="text/csv",
-                       key=f"dl_{nom}", width="content")
 
 
 # =========================================================== composants
@@ -395,9 +360,8 @@ def sparkline(valeurs, couleur, periode=None, largeur=150, hauteur=30):
             f'{bornes}</svg>')
 
 
-_UNITES = ("%", "M", "ha/an", "ha", "km²/an", "km²", "km", "°C", "pts", "pt/an",
-           "Gg", "j", "/mois", "/an", "forêts", "massifs", "Mt", "k/an", "k",
-           "t/ha", "mesures", "régimes", "ans", "fois", "M/an", "séries")
+_UNITES = ("%", "M", "ha/an", "ha", "km²", "km", "°C", "pts", "pt/an",
+           "Gg", "j", "/mois", "forêts", "massifs", "Mt", "k/an")
 
 
 def _scinde(valeur):
@@ -535,6 +499,27 @@ def encart(kind, texte, titre=None):
         f'{titre or defaut}</div>'
         f'<div style="font-size:14px;color:{C["encre"]};line-height:1.65">'
         f'{texte}</div></div>', unsafe_allow_html=True)
+
+
+def region_active():
+    """Région choisie dans le volet, ou None si le filtre est sur tout le pays."""
+    r = st.session_state.get("region", "Tout le pays")
+    return None if r == "Tout le pays" else r
+
+
+def rappel_filtre(portee):
+    """Bandeau de rappel du filtre régional, avec sa portée exacte.
+
+    `portee` dit sur quoi le filtre agit réellement dans la page. C'est la
+    partie qui compte : un tableau de bord qui filtre la carte mais laisse un
+    chiffre national à côté, sans le dire, ment par juxtaposition.
+    """
+    r = region_active()
+    if not r:
+        return
+    st.markdown(
+        f'<div class="rappel-filtre">Région&nbsp;: <b>{r}</b>'
+        f'<span class="portee">{portee}</span></div>', unsafe_allow_html=True)
 
 
 def legende(*items):
